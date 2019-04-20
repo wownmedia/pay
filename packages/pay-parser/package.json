@@ -1,5 +1,5 @@
 {
-    "name": "@cryptology/pay-parser",
+    "name": "pay-parser",
     "version": "1.0.0",
     "author": "Marc Schot",
     "license": "MIT",
