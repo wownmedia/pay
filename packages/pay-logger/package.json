@@ -1,10 +1,10 @@
 {
-    "name": "@cryptology/pay-parser",
+    "name": "@cryptology/logger",
     "version": "1.0.0",
+    "description": "Logger Manager for ARK Pay",
+    "main": "dist/index",
     "author": "Marc Schot",
     "license": "MIT",
-    "description": "Parse text for ARK pay commands",
-    "main": "dist/index",
     "types": "dist/index",
     "files": [
         "dist"
@@ -39,6 +39,7 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "joi": "^14.3.1"
+        "pino": "^5.12.2",
+        "pino-pretty": "^2.6.0"
     }
 }
