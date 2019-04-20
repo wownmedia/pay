@@ -1,5 +1,5 @@
 import pino = require("pino");
-module.exports = pino({
+export const logger = pino({
     name: "Pay",
     safe: true,
     prettyPrint: {

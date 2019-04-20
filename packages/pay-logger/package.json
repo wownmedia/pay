@@ -1,5 +1,5 @@
 {
-    "name": "@cryptology/logger",
+    "name": "@cryptology/pay-logger",
     "version": "1.0.0",
     "description": "Logger Manager for ARK Pay",
     "main": "dist/index",
