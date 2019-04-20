@@ -1,3 +1,3 @@
-import { logger } from "@cryptology/pay-logger";
+import { logger } from "../../pay-logger";
 
 logger.info("test");

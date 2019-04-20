@@ -2,7 +2,6 @@
     "private": true,
     "name": "pay",
     "version": "1.0.0",
-    "main": "/bin/index.ts",
     "license": "MIT",
     "description": "Payment application for ARK and ARK-based bridgechains",
     "author": "Cryptology",
@@ -67,8 +66,10 @@
         "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
         "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
         "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
+        "snyk": "./node_modules/.bin/snyk protect",
         "version": "cross-env-shell ./scripts/version.sh",
-        "updates": "yarn lerna run updates"
+        "updates": "yarn lerna run updates",
+        "preinstall": "cross-env-shell ./scripts/pre-install.sh"
     },
     "workspaces": [
         "packages/*"

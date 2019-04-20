@@ -1,5 +1,5 @@
 {
-    "name": "@cryptology/pay-logger",
+    "name": "pay-logger",
     "version": "1.0.0",
     "description": "Logger Manager for ARK Pay",
     "main": "dist/index",
@@ -10,11 +10,6 @@
         "dist"
     ],
     "scripts": {
-        "publish:alpha": "npm publish --tag alpha",
-        "publish:beta": "npm publish --tag beta",
-        "publish:rc": "npm publish --tag rc",
-        "publish:latest": "npm publish --tag latest",
-        "prepublishOnly": "yarn build",
         "pretest": "bash ../../scripts/pre-test.sh",
         "compile": "../../node_modules/typescript/bin/tsc",
         "build": "yarn clean && yarn compile",
