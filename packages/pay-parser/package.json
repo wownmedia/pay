@@ -34,7 +34,7 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology/pay-logger": "^1.0.0",
+        "pay-logger": "file:../pay-logger",
         "joi": "^14.3.1"
     }
 }
