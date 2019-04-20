@@ -1,0 +1,51 @@
+{
+    "private": true,
+    "name": "pay",
+    "version": "1.0.0",
+    "main": "/bin/index.ts",
+    "license": "MIT",
+    "description": "Payment application for ARK and ARK-based bridgechains",
+    "author": "Cryptology",
+    "devDependencies": {
+        "@sindresorhus/tsconfig": "^0.3.0",
+        "cross-env": "^5.2.0",
+        "jest": "^24.7.1",
+        "jest-extended": "^0.11.1",
+        "lerna": "^3.13.3",
+        "lint-staged": "^8.1.5",
+        "prettier": "^1.17.0",
+        "ts-jest": "^24.0.2",
+        "tslint": "^5.16.0",
+        "tslint-config-prettier": "^1.18.0",
+        "typescript": "^3.4.4"
+    },
+    "scripts": {
+        "lerna": "./node_modules/lerna/cli.js",
+        "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
+        "bootstrap": "yarn lerna bootstrap",
+        "clean": "yarn lerna clean --yes",
+        "build": "yarn lerna run build",
+        "lint": "yarn lerna run lint",
+        "format": "yarn lint && yarn prettier",
+        "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
+        "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
+        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
+        "version": "cross-env-shell ./scripts/version.sh",
+        "updates": "yarn lerna run updates"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged && cross-env-shell ./scripts/pre-commit.sh"
+        }
+    },
+    "jest": {
+        "preset": "./jest-preset.json",
+        "collectCoverageFrom": [
+            "packages/**/src/**/*.ts",
+            "!**/node_modules/**"
+        ]
+    }
+}
