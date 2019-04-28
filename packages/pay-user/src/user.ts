@@ -19,6 +19,6 @@ export class User {
     // noinspection JSMethodCanBeStatic
     public async isValidUser(): Promise<boolean> {
         // TODO
-        return true;
+        return this.username.startsWith("user");
     }
 }

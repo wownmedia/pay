@@ -380,6 +380,84 @@ describe("Parser", () => {
                 expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
             });
         });
+
+        describe("Should correctly parse REWARD mentions", () => {
+            it("for a single REWARD entry", async () => {
+                const inputText: string = "REWARD u/arktippr \
+                    10 user1";
+                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
+                expect(result.command).toEqual("REWARD");
+                expect(result.smallFooter).toBeFalse();
+                expect(result.transfers).toBeArrayOfSize(1);
+                expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result.transfers[0].user).toContainAllKeys(["username", "platform"]);
+                expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
+                expect(result.transfers[0].command).toEqual("TIP");
+                expect(result.transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].check.currency).toEqual("ARK");
+                expect(result.transfers[0].check.amount).toEqual(new BigNumber(10));
+                expect(result.transfers[0].check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].user.username).toEqual("user1");
+                expect(result.transfers[0].user.platform).toEqual("reddit");
+            });
+
+            it("for a single STICKERS REWARD entry", async () => {
+                const inputText: string = "REWARD u/arktippr \
+                    STICKERS user1";
+                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
+                expect(result.command).toEqual("REWARD");
+                expect(result.smallFooter).toBeFalse();
+                expect(result.transfers).toBeArrayOfSize(1);
+                expect(result.transfers[0]).toContainAllKeys(["user", "command"]);
+                expect(result.transfers[0].user).toContainAllKeys(["username", "platform"]);
+                expect(result.transfers[0].command).toEqual("STICKERS");
+                expect(result.transfers[0].user.username).toEqual("user1");
+                expect(result.transfers[0].user.platform).toEqual("reddit");
+            });
+
+            it("for a multiple REWARD entry", async () => {
+                const inputText: string =
+                    "REWARD u/arktippr \
+                    10 user1 \
+                    20USD user2@twitter \
+                    EUR30 user3 \
+                    40 USD user4 \
+                    STICKERS user5\
+                    EUR 50 user6";
+                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
+                expect(result.command).toEqual("REWARD");
+                expect(result.smallFooter).toBeFalse();
+                expect(result.transfers).toBeArrayOfSize(6);
+                expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result.transfers[0].user).toContainAllKeys(["username", "platform"]);
+                expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
+                expect(result.transfers[0].command).toEqual("TIP");
+                expect(result.transfers[4].command).toEqual("STICKERS");
+                expect(result.transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].check.currency).toEqual("ARK");
+                expect(result.transfers[1].check.currency).toEqual("USD");
+                expect(result.transfers[2].check.currency).toEqual("EUR");
+                expect(result.transfers[3].check.currency).toEqual("USD");
+                expect(result.transfers[5].check.currency).toEqual("EUR");
+                expect(result.transfers[0].check.amount).toEqual(new BigNumber(10));
+                expect(result.transfers[1].check.amount).toEqual(new BigNumber(20));
+                expect(result.transfers[2].check.amount).toEqual(new BigNumber(30));
+                expect(result.transfers[3].check.amount).toEqual(new BigNumber(40));
+                expect(result.transfers[5].check.amount).toEqual(new BigNumber(50));
+                expect(result.transfers[0].check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].user.username).toEqual("user1");
+                expect(result.transfers[1].user.username).toEqual("user2");
+                expect(result.transfers[2].user.username).toEqual("user3");
+                expect(result.transfers[3].user.username).toEqual("user4");
+                expect(result.transfers[4].user.username).toEqual("user5");
+                expect(result.transfers[5].user.username).toEqual("user6");
+                expect(result.transfers[0].user.platform).toEqual("reddit");
+                expect(result.transfers[1].user.platform).toEqual("twitter");
+            });
+        });
     });
 
     describe("isValidCurrency()", () => {
@@ -428,6 +506,7 @@ describe("Parser", () => {
     describe("parseAmount()", () => {
         describe("should return null on bad input", () => {
             const currency = "USD";
+            const badInput = "";
             const parser = new Parser();
             const badInputValidCurrency = "USD";
             it("for input without a numerical part, but with valid currency (USD)", async () => {

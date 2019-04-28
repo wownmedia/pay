@@ -292,35 +292,30 @@ export class Parser {
         const smallFooter: boolean = bodyParts[mentionIndex + 1] === "~";
         switch (command) {
             case "STICKERS":
-                logger.info("Mention received: STICKERS");
                 return { command, smallFooter };
 
             case "REWARD":
-                logger.info("Mention received: REWARD");
                 const transfers: Transfer[] = await this.__parseReward(mentionBody, mentionIndex, platform);
                 return { command, transfers, smallFooter };
 
             default:
                 // Check if we received a TIP command
                 const amountCurrency: AmountCurrency = await this.__parseTip(bodyParts, mentionIndex);
-
                 if (amountCurrency !== null) {
-                    const tipMention: Mention = {
+                    return {
                         command: "TIP",
                         arkToshiValue: amountCurrency.arkToshiValue,
                         check: amountCurrency,
                         smallFooter,
                     };
-                    logger.info(`Mention received: TIP ${JSON.stringify(amountCurrency)}`);
-                    return tipMention;
                 }
         }
         return null;
     }
 
     private async __parseTip(bodyParts: string[], mentionIndex: number): Promise<AmountCurrency> {
-        const leftInput: string = mentionIndex >= 2 ? bodyParts[mentionIndex - 2] : "";
-        const rightInput: string = mentionIndex >= 1 ? bodyParts[mentionIndex - 1] : "";
+        const leftInput: string = mentionIndex >= 2 ? bodyParts[mentionIndex - 2].toUpperCase() : "";
+        const rightInput: string = mentionIndex >= 1 ? bodyParts[mentionIndex - 1].toUpperCase() : "";
         const amountCurrency: AmountCurrency = await this.parseAmount(leftInput, rightInput);
 
         if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
@@ -340,16 +335,20 @@ export class Parser {
                     const user: Username = Parser.__parseUsername(bodyParts[item], platform);
                     if (await this.__isValidUser(user)) {
                         const index: number = parseInt(item, 10);
-                        const leftInput: string = index >= 2 ? bodyParts[index - 2] : "";
-                        const rightInput: string = index >= 1 ? bodyParts[index - 1] : "";
+                        const command: string = index >= 1 ? bodyParts[index - 1].toUpperCase() : "";
 
-                        if (rightInput === "STICKERS") {
+                        if (command === "STICKERS") {
                             const transfer: Transfer = {
                                 user,
                                 command: "STICKERS",
                             };
                             requestedRewards.push(transfer);
                         } else {
+                            const rightInput: string = index >= 1 ? bodyParts[index - 1].toUpperCase() : "";
+                            const leftInput: string =
+                                index >= 2 && this.__needsLeftInput(rightInput)
+                                    ? bodyParts[index - 2].toUpperCase()
+                                    : "";
                             const amountCurrency: AmountCurrency = await this.parseAmount(leftInput, rightInput);
                             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                                 const transfer: Transfer = {
@@ -369,6 +368,14 @@ export class Parser {
         }
 
         return requestedRewards.length ? requestedRewards : null;
+    }
+
+    private __needsLeftInput(rightInput: string): boolean {
+        return (
+            this.isValidCurrency(rightInput) ||
+            !Parser.__isValidCurrencyInput(rightInput) ||
+            Parser.__isNumericalInput(rightInput)
+        );
     }
 
     private async __isValidUser(user: Username): Promise<boolean> {
