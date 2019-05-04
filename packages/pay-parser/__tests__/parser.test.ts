@@ -1,17 +1,17 @@
-import { Mention, Parser } from "@cryptology.hk/pay-parser";
 import BigNumber from "bignumber.js";
 import "jest-extended";
+import { Command } from "../../pay-commands";
+import { Parser } from "../dist";
 
-describe("Parser", () => {
+describe("pay-Parser: Parser()", () => {
     describe("parseMention()", () => {
-        const parser = new Parser();
         const mentionUser = "arktippr";
-        const platform = "twitter";
+        const platform = "reddit";
 
-        describe("should return a valid Mention for a STICKERS mention", () => {
+        describe("should return a valid Command for a STICKERS mention", () => {
             it("for: stickers u/arktippr", async () => {
                 const inputText: string = "stickers u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeFalse();
@@ -19,7 +19,7 @@ describe("Parser", () => {
 
             it("for: stickers u/arktippr.", async () => {
                 const inputText: string = "stickers u/arktippr.";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeFalse();
@@ -27,7 +27,7 @@ describe("Parser", () => {
 
             it("for: stickers u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "stickers u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeTrue();
@@ -35,7 +35,7 @@ describe("Parser", () => {
 
             it("for: I am giving you stickers u/arktippr so you can enjoy them", async () => {
                 const inputText: string = "I am giving you stickers u/arktippr so you can enjoy them";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeFalse();
@@ -43,7 +43,7 @@ describe("Parser", () => {
 
             it("for: I am giving you stickers u/arktippr ~ so you can enjoy them (small footer)", async () => {
                 const inputText: string = "I am giving you stickers u/arktippr ~ so you can enjoy them";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeTrue();
@@ -51,7 +51,7 @@ describe("Parser", () => {
 
             it("for: stickers @arktippr.", async () => {
                 const inputText: string = "stickers @arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser, platform);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeFalse();
@@ -59,7 +59,7 @@ describe("Parser", () => {
 
             it("for: stickers @arktippr.", async () => {
                 const inputText: string = "stickers @arktippr.";
-                const result: Mention = await parser.parseMention(inputText, mentionUser, platform);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeFalse();
@@ -67,17 +67,17 @@ describe("Parser", () => {
 
             it("for: I am giving you stickers @arktippr so you can enjoy them", async () => {
                 const inputText: string = "I am giving you stickers @arktippr so you can enjoy them";
-                const result: Mention = await parser.parseMention(inputText, mentionUser, platform);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "smallFooter"]);
                 expect(result.command).toEqual("STICKERS");
                 expect(result.smallFooter).toBeFalse();
             });
         });
 
-        describe("should return a valid Mention for a TIP mention", () => {
+        describe("should return a valid Command for a TIP mention", () => {
             it("for: 10 USD u/arktippr", async () => {
                 const inputText: string = "10 USD u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -90,7 +90,7 @@ describe("Parser", () => {
 
             it("for: 10 USD u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 USD u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -103,7 +103,7 @@ describe("Parser", () => {
 
             it("for: 10USD u/arktippr", async () => {
                 const inputText: string = "10USD u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -116,7 +116,7 @@ describe("Parser", () => {
 
             it("for: 10USD u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10USD u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -128,10 +128,10 @@ describe("Parser", () => {
             });
         });
 
-        describe("should return a valid Mention for a TIP mention", () => {
+        describe("should return a valid Command for a TIP mention", () => {
             it("for: USD 10 u/arktippr", async () => {
                 const inputText: string = "USD 10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -144,7 +144,7 @@ describe("Parser", () => {
 
             it("for: USD 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "USD 10 u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -157,7 +157,7 @@ describe("Parser", () => {
 
             it("for: USD10 u/arktippr", async () => {
                 const inputText: string = "USD10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -170,7 +170,7 @@ describe("Parser", () => {
 
             it("for: USD10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "USD10 u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -185,33 +185,89 @@ describe("Parser", () => {
         describe("should return null for a bad mention", () => {
             it("for: u/arktippr", async () => {
                 const inputText: string = "u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toBeNull();
             });
 
             it("for: 10EOS u/arktippr", async () => {
                 const inputText: string = "10EOS u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toBeNull();
             });
 
             it("for: 10 EOS u/arktippr", async () => {
                 const inputText: string = "10 for u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toBeNull();
             });
 
             it("for: a message without a tip u/arktippr", async () => {
                 const inputText: string = "a message without a tip u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toBeNull();
             });
         });
 
-        describe("should return a valid Mention for a TIP mention", () => {
+        describe("Should return null on non-valid input", () => {
+            it("for empty input", async () => {
+                const emptyInput = "";
+                let result: Command = await Parser.parseMention(emptyInput, mentionUser, platform);
+                expect(result).toBeNull();
+                result = await Parser.parseMention(emptyInput, emptyInput, platform);
+                expect(result).toBeNull();
+                const inputText: string = "10 u/arktippr";
+                result = await Parser.parseMention(inputText, emptyInput, platform);
+                expect(result).toBeNull();
+            });
+
+            it("for a mention without a command", async () => {
+                const onlyMention = "u/arktippr";
+                const result: Command = await Parser.parseMention(onlyMention, mentionUser, platform);
+                expect(result).toBeNull();
+            });
+
+            it("for invalid or badly formatted input", async () => {
+                let badInput: string = "anything that is not valid for u/arktippr We just mentioned him";
+                let result: Command = await Parser.parseMention(badInput, mentionUser, platform);
+                expect(result).toBeNull();
+                badInput = "10 for u/arktippr";
+                result = await Parser.parseMention(badInput, mentionUser, platform);
+                expect(result).toBeNull();
+                badInput = "10 nocurrency u/arktippr";
+                result = await Parser.parseMention(badInput, mentionUser, platform);
+                expect(result).toBeNull();
+                badInput = "10nocurrency u/arktippr";
+                result = await Parser.parseMention(badInput, mentionUser, platform);
+                expect(result).toBeNull();
+            });
+
+            it("for badly formatted REWARD commands", async () => {
+                let inputText: string = "REWARD u/arktippr \
+                    10 badUser1";
+                let result: Command = await Parser.parseMention(inputText, mentionUser, platform);
+                expect(result).toBeNull();
+                inputText = "REWARD u/arktippr \
+                    STICKERS badUser1";
+                result = await Parser.parseMention(inputText, mentionUser, platform);
+                expect(result).toBeNull();
+            });
+
+            it("for empty input", async () => {
+                const emptyInput = "";
+                let result: Command = await Parser.parseMention(emptyInput, mentionUser, platform);
+                expect(result).toBeNull();
+                result = await Parser.parseMention(emptyInput, emptyInput, platform);
+                expect(result).toBeNull();
+                const inputText: string = "10 u/arktippr";
+                result = await Parser.parseMention(inputText, emptyInput, platform);
+                expect(result).toBeNull();
+            });
+        });
+
+        describe("should return a valid Command for a TIP mention", () => {
             it("for: 10 $ u/arktippr", async () => {
                 const inputText: string = "10 $ u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -224,7 +280,7 @@ describe("Parser", () => {
 
             it("for: 10 $ u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 $ u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -237,7 +293,7 @@ describe("Parser", () => {
 
             it("for: 10$ u/arktippr", async () => {
                 const inputText: string = "10$ u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -250,7 +306,7 @@ describe("Parser", () => {
 
             it("for: 10$ u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10$ u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -262,10 +318,10 @@ describe("Parser", () => {
             });
         });
 
-        describe("should return a valid Mention for a TIP mention", () => {
+        describe("should return a valid Command for a TIP mention", () => {
             it("for: $ 10 u/arktippr", async () => {
                 const inputText: string = "$ 10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -278,7 +334,7 @@ describe("Parser", () => {
 
             it("for: $ 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "$ 10 u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -291,7 +347,7 @@ describe("Parser", () => {
 
             it("for: $10 u/arktippr", async () => {
                 const inputText: string = "$10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -304,7 +360,7 @@ describe("Parser", () => {
 
             it("for: $10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "$10 u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -317,7 +373,7 @@ describe("Parser", () => {
 
             it("for: 10 u/arktippr", async () => {
                 const inputText: string = "10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -330,7 +386,7 @@ describe("Parser", () => {
 
             it("for: EOS 10 u/arktippr (expected behaviour is ARK for any text that is not a valid currency before the number)", async () => {
                 const inputText: string = "10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -343,7 +399,7 @@ describe("Parser", () => {
 
             it("for: 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -356,7 +412,7 @@ describe("Parser", () => {
 
             it("for: text here that is no currency 10 u/arktippr", async () => {
                 const inputText: string = "10 u/arktippr";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
@@ -369,7 +425,7 @@ describe("Parser", () => {
 
             it("for: text here that is no currency 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 u/arktippr ~";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
@@ -384,8 +440,8 @@ describe("Parser", () => {
         describe("Should correctly parse REWARD mentions", () => {
             it("for a single REWARD entry", async () => {
                 const inputText: string = "REWARD u/arktippr \
-                    10 user1";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                    10 u/user1";
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
                 expect(result.command).toEqual("REWARD");
                 expect(result.smallFooter).toBeFalse();
@@ -399,13 +455,13 @@ describe("Parser", () => {
                 expect(result.transfers[0].check.amount).toEqual(new BigNumber(10));
                 expect(result.transfers[0].check.arkToshiValue).toEqual(new BigNumber(1));
                 expect(result.transfers[0].user.username).toEqual("user1");
-                expect(result.transfers[0].user.platform).toEqual("reddit");
+                expect(result.transfers[0].user.platform).toEqual(platform);
             });
 
             it("for a single STICKERS REWARD entry", async () => {
                 const inputText: string = "REWARD u/arktippr \
                     STICKERS user1";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
                 expect(result.command).toEqual("REWARD");
                 expect(result.smallFooter).toBeFalse();
@@ -414,19 +470,19 @@ describe("Parser", () => {
                 expect(result.transfers[0].user).toContainAllKeys(["username", "platform"]);
                 expect(result.transfers[0].command).toEqual("STICKERS");
                 expect(result.transfers[0].user.username).toEqual("user1");
-                expect(result.transfers[0].user.platform).toEqual("reddit");
+                expect(result.transfers[0].user.platform).toEqual(platform);
             });
 
             it("for a multiple REWARD entry", async () => {
                 const inputText: string =
                     "REWARD u/arktippr \
                     10 user1 \
-                    20USD user2@twitter \
+                    20USD @user2@twitter \
                     EUR30 user3 \
-                    40 USD user4 \
-                    STICKERS user5\
+                    40 USD u/user4 \
+                    STICKERS user5@reddit\
                     EUR 50 user6";
-                const result: Mention = await parser.parseMention(inputText, mentionUser);
+                const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
                 expect(result.command).toEqual("REWARD");
                 expect(result.smallFooter).toBeFalse();
@@ -454,311 +510,234 @@ describe("Parser", () => {
                 expect(result.transfers[3].user.username).toEqual("user4");
                 expect(result.transfers[4].user.username).toEqual("user5");
                 expect(result.transfers[5].user.username).toEqual("user6");
-                expect(result.transfers[0].user.platform).toEqual("reddit");
+                expect(result.transfers[0].user.platform).toEqual(platform);
                 expect(result.transfers[1].user.platform).toEqual("twitter");
+                expect(result.transfers[4].user.platform).toEqual("reddit");
             });
         });
     });
 
-    describe("isValidCurrency()", () => {
-        const baseCurrency = "TEST";
-        const parser = new Parser(baseCurrency);
+    describe("parseDirectMessage", () => {
+        const platform = "reddit";
 
-        describe("should return true on a valid currency", () => {
-            it("for the base currency added via the constructor", () => {
-                const data = "test";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-            });
-
-            it("for ARK and Ѧ", () => {
-                let data = "ark";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-                data = "Ѧ";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-            });
-
-            it("for USD and $", () => {
-                let data = "usd";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-                data = "$";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-            });
-
-            it("for EUR and €", () => {
-                let data = "eur";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-                data = "€";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-            });
-
-            it("for BTC", () => {
-                const data = "btc";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-            });
-
-            it("for BCH", () => {
-                const data = "bch";
-                expect(parser.isValidCurrency(data)).toBeTrue();
-            });
+        it("should return NULL on input that contains no commands", async () => {
+            const messageBody: string = "whatever is here does not matter";
+            const result = await Parser.parseDirectMessage(messageBody, platform);
+            expect(result).toBeNull();
         });
-    });
 
-    describe("parseAmount()", () => {
-        describe("should return null on bad input", () => {
-            const currency = "USD";
-            const badInput = "";
-            const parser = new Parser();
-            const badInputValidCurrency = "USD";
-            it("for input without a numerical part, but with valid currency (USD)", async () => {
-                let amountCurrency = await parser.parseAmount(badInputValidCurrency);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInputValidCurrency, badInput);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInput, badInputValidCurrency);
-                expect(amountCurrency).toBeNull();
+        describe("should correctly parse a single command that has no input arguments", () => {
+            it("HELP", async () => {
+                const messageBody: string = "HELP whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("HELP");
             });
 
-            const badInputBadCurrency = "EOS";
-            it("for input without a numerical part and without valid currency (EOS)", async () => {
-                let amountCurrency = await parser.parseAmount(badInputBadCurrency);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInputBadCurrency, badInput);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInput, badInputBadCurrency);
-                expect(amountCurrency).toBeNull();
+            it("BALANCE", async () => {
+                const messageBody: string = "BALANCE whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("BALANCE");
             });
 
-            const badInputBadCurrencyWithNumerical = "10EOS";
-            it("for input with a numerical part and without valid currency (10EOS)", async () => {
-                let amountCurrency = await parser.parseAmount(badInputBadCurrencyWithNumerical);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInputBadCurrencyWithNumerical, badInput);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInput, badInputBadCurrencyWithNumerical);
-                expect(amountCurrency).toBeNull();
+            it("TIP", async () => {
+                const messageBody: string = "TIP whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("TIP");
             });
 
-            const amount = "10";
-            it("for input with a numerical part and without valid currency (10 EOS)", async () => {
-                let amountCurrency = await parser.parseAmount(amount, badInputBadCurrency);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInputBadCurrency, amount);
-                expect(amountCurrency).toBeNull();
+            it("DEPOSIT", async () => {
+                const messageBody: string = "DEPOSIT whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("DEPOSIT");
             });
 
-            const badInputWithNumericalLargerThanMAXINT = `${Number.MAX_SAFE_INTEGER + 1}`;
-            it("for input with a numerical part that is larger than, or equal to, Max Integer value", async () => {
-                let amountCurrency = await parser.parseAmount(badInputWithNumericalLargerThanMAXINT);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInputWithNumericalLargerThanMAXINT, badInput);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInput, badInputWithNumericalLargerThanMAXINT);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(badInputWithNumericalLargerThanMAXINT, currency);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await parser.parseAmount(currency, badInputWithNumericalLargerThanMAXINT);
-                expect(amountCurrency).toBeNull();
+            it("ADDRESS", async () => {
+                const messageBody: string = "ADDRESS whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("ADDRESS");
             });
         });
 
-        describe("should correctly parse a valid numerical input as a value in the base currency", () => {
-            const baseCurrency = "TEST";
-            const parser = new Parser(baseCurrency);
-
-            it("for an Integer value (10)", async () => {
-                const input: string = "10";
-                let amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(baseCurrency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-                amountCurrency = await parser.parseAmount(input, "");
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(baseCurrency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-                amountCurrency = await parser.parseAmount("", input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(baseCurrency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+        describe("should correctly parse a single command that has input arguments", () => {
+            it("STICKERS without valid arguments (request for HELP)", async () => {
+                const messageBody: string = "STICKERS whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("STICKERS");
             });
 
-            it("for a decimal value (1.0)", async () => {
-                const input = "1.0";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(baseCurrency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+            it("STICKERS with valid argument", async () => {
+                const messageBody: string = "STICKERS user1";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "user"]);
+                expect(result[0].command).toEqual("STICKERS");
+                expect(result[0].user).toContainAllKeys(["username", "platform"]);
+                expect(result[0].user.username).toEqual("user1");
+                expect(result[0].user.platform).toEqual(platform);
             });
 
-            it("for an international decimal value (1,0)", async () => {
-                const input = "1,0";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(baseCurrency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-        });
-
-        describe("should correctly parse and valuate valid ammountCurrency input", () => {
-            const currency = "USD";
-            const parser = new Parser();
-
-            it("for an Integer value + a currency (10USD)", async () => {
-                const input: string = "10USD";
-                let amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-                amountCurrency = await parser.parseAmount(input, "");
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-                amountCurrency = await parser.parseAmount("", input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+            it("SEND without arguments (request for HELP)", async () => {
+                const messageBody: string = "SEND whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("SEND");
             });
 
-            it("for a decimal value + a currency (1.0USD)", async () => {
-                const input = "1.0USD";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+            it("SEND with valid arguments", async () => {
+                let messageBody: string = "SEND user1 10 USD";
+                let result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("SEND");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].user.username).toEqual("user1");
+                expect(result[0].transfers[0].user.platform).toEqual(platform);
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("USD");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "SEND user1 ARK 10";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("SEND");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].user.username).toEqual("user1");
+                expect(result[0].transfers[0].user.platform).toEqual(platform);
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("ARK");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "SEND user1 10";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("SEND");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].user.username).toEqual("user1");
+                expect(result[0].transfers[0].user.platform).toEqual(platform);
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("ARK");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "SEND user1 EUR10";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("SEND");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].user.username).toEqual("user1");
+                expect(result[0].transfers[0].user.platform).toEqual(platform);
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("EUR");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "SEND user1 10BTC";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("SEND");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].user.username).toEqual("user1");
+                expect(result[0].transfers[0].user.platform).toEqual(platform);
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("BTC");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
             });
 
-            it("for an international decimal value + a currency (1,0USD)", async () => {
-                const input = "1,0USD";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+            it("WITHDRAW without arguments (request for WITHDRAW)", async () => {
+                const messageBody: string = "WITHDRAW whatever is here does not matter";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainKey("command");
+                expect(result[0].command).toEqual("WITHDRAW");
             });
 
-            it("for a currency + an Integer value (USD10)", async () => {
-                const input: string = "USD10";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+            it("WITHDRAW with valid arguments", async () => {
+                let messageBody: string = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+                let result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("WITHDRAW");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
+                expect(result[0].transfers[0].arkToshiValue).toBeNull();
+                messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("WITHDRAW");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("ARK");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V ARK 10";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("WITHDRAW");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("ARK");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10 USD";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("WITHDRAW");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("USD");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10USD";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("WITHDRAW");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("USD");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
+                messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V EUR10";
+                result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfers"]);
+                expect(result[0].command).toEqual("WITHDRAW");
+                expect(result[0].transfers).toBeArrayOfSize(1);
+                expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
+                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].check.currency).toEqual("EUR");
+                expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
             });
 
-            it("for a currency + a decimal value (USD1.0)", async () => {
-                const input = "USD1.0";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for a currency + an international decimal value (USD1,0)", async () => {
-                const input = "USD1,0";
-                const amountCurrency = await parser.parseAmount(input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-        });
-
-        describe("should correctly parse and valuate valid ammount and valid currency input", () => {
-            const currency = "USD";
-            const parser = new Parser();
-
-            it("for an Integer value + a currency (10 USD)", async () => {
-                const input: string = "10";
-                const amountCurrency = await parser.parseAmount(input, currency);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for a decimal value + a currency (1.0 USD)", async () => {
-                const input = "1.0";
-                const amountCurrency = await parser.parseAmount(input, currency);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for an international decimal value + a currency (1,0 USD)", async () => {
-                const input = "1,0";
-                const amountCurrency = await parser.parseAmount(input, currency);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for a currency + an Integer value (USD 10)", async () => {
-                const input: string = "10";
-                const amountCurrency = await parser.parseAmount(currency, input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for a currency + a decimal value (USD 1.0)", async () => {
-                const input = "1.0";
-                const amountCurrency = await parser.parseAmount(currency, input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for a currency + an international decimal value (USD 1,0)", async () => {
-                const input = "1,0";
-                const amountCurrency = await parser.parseAmount(currency, input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(currency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
-            });
-
-            it("for a currency symbol + a valid value (Ѧ 1)", async () => {
-                const input = "1";
-                const inputCurrency = "Ѧ";
-                const expectedCurrency = "ARK";
-                const amountCurrency = await parser.parseAmount(inputCurrency, input);
-                expect(amountCurrency).toBeObject();
-                expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
-                expect(amountCurrency.currency).toEqual(expectedCurrency);
-                expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+            it("Should return an array of parsed commands", async () => {
+                const messageBody: string = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V SEND user1 10 USD HELP";
+                const result = await Parser.parseDirectMessage(messageBody, platform);
+                expect(result).toBeArrayOfSize(3);
             });
         });
     });
