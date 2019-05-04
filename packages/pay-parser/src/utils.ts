@@ -42,7 +42,7 @@ export class ParserUtils {
 
             // Convert currency to its current Arktoshi value
             amountCurrency.currency = Currency.currencySymbolsToName(amountCurrency.currency);
-            amountCurrency.arkToshiValue = await Currency.amountToArktoshi(
+            amountCurrency.arkToshiValue = await Currency.getExchangedValue(
                 amountCurrency.amount,
                 amountCurrency.currency,
             );
