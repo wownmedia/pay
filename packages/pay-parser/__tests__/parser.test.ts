@@ -3,6 +3,7 @@ import "jest-extended";
 import { Command } from "../../pay-commands";
 import { Parser } from "../dist";
 
+const arktoshiValue = new BigNumber(Math.pow(10, 8));
 describe("pay-Parser: Parser()", () => {
     describe("parseMention()", () => {
         const mentionUser = "arktippr";
@@ -81,11 +82,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10 USD u/arktippr ~ (small footer)", async () => {
@@ -94,11 +95,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10USD u/arktippr", async () => {
@@ -107,11 +108,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10USD u/arktippr ~ (small footer)", async () => {
@@ -120,11 +121,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
 
@@ -135,11 +136,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: USD 10 u/arktippr ~ (small footer)", async () => {
@@ -148,11 +149,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: USD10 u/arktippr", async () => {
@@ -161,11 +162,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: USD10 u/arktippr ~ (small footer)", async () => {
@@ -174,11 +175,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
 
@@ -271,11 +272,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10 $ u/arktippr ~ (small footer)", async () => {
@@ -284,11 +285,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10$ u/arktippr", async () => {
@@ -297,11 +298,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10$ u/arktippr ~ (small footer)", async () => {
@@ -310,11 +311,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
 
@@ -325,11 +326,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: $ 10 u/arktippr ~ (small footer)", async () => {
@@ -338,11 +339,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: $10 u/arktippr", async () => {
@@ -351,11 +352,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: $10 u/arktippr ~ (small footer)", async () => {
@@ -364,11 +365,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("USD");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10 u/arktippr", async () => {
@@ -377,11 +378,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("ARK");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: EOS 10 u/arktippr (expected behaviour is ARK for any text that is not a valid currency before the number)", async () => {
@@ -390,11 +391,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("ARK");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: 10 u/arktippr ~ (small footer)", async () => {
@@ -403,11 +404,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("ARK");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: text here that is no currency 10 u/arktippr", async () => {
@@ -416,11 +417,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("ARK");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for: text here that is no currency 10 u/arktippr ~ (small footer)", async () => {
@@ -429,11 +430,11 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toContainAllKeys(["command", "arkToshiValue", "check", "smallFooter"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.check.currency).toEqual("ARK");
                 expect(result.check.amount).toEqual(new BigNumber(10));
-                expect(result.check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
 
@@ -450,10 +451,10 @@ describe("pay-Parser: Parser()", () => {
                 expect(result.transfers[0].user).toContainAllKeys(["username", "platform"]);
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].command).toEqual("TIP");
-                expect(result.transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check.currency).toEqual("ARK");
                 expect(result.transfers[0].check.amount).toEqual(new BigNumber(10));
-                expect(result.transfers[0].check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].user.username).toEqual("user1");
                 expect(result.transfers[0].user.platform).toEqual(platform);
             });
@@ -492,7 +493,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].command).toEqual("TIP");
                 expect(result.transfers[4].command).toEqual("STICKERS");
-                expect(result.transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check.currency).toEqual("ARK");
                 expect(result.transfers[1].check.currency).toEqual("USD");
                 expect(result.transfers[2].check.currency).toEqual("EUR");
@@ -503,7 +504,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result.transfers[2].check.amount).toEqual(new BigNumber(30));
                 expect(result.transfers[3].check.amount).toEqual(new BigNumber(40));
                 expect(result.transfers[5].check.amount).toEqual(new BigNumber(50));
-                expect(result.transfers[0].check.arkToshiValue).toEqual(new BigNumber(1));
+                expect(result.transfers[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].user.username).toEqual("user1");
                 expect(result.transfers[1].user.username).toEqual("user2");
                 expect(result.transfers[2].user.username).toEqual("user3");
@@ -606,7 +607,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].user.username).toEqual("user1");
                 expect(result[0].transfers[0].user.platform).toEqual(platform);
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("USD");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "SEND user1 ARK 10";
@@ -618,7 +619,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].user.username).toEqual("user1");
                 expect(result[0].transfers[0].user.platform).toEqual(platform);
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("ARK");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "SEND user1 10";
@@ -630,7 +631,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].user.username).toEqual("user1");
                 expect(result[0].transfers[0].user.platform).toEqual(platform);
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("ARK");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "SEND user1 EUR10";
@@ -642,7 +643,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].user.username).toEqual("user1");
                 expect(result[0].transfers[0].user.platform).toEqual(platform);
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("EUR");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "SEND user1 10BTC";
@@ -654,7 +655,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].user.username).toEqual("user1");
                 expect(result[0].transfers[0].user.platform).toEqual(platform);
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("BTC");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
             });
@@ -685,7 +686,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers).toBeArrayOfSize(1);
                 expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("ARK");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V ARK 10";
@@ -696,7 +697,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers).toBeArrayOfSize(1);
                 expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("ARK");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10 USD";
@@ -707,7 +708,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers).toBeArrayOfSize(1);
                 expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("USD");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10USD";
@@ -718,7 +719,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers).toBeArrayOfSize(1);
                 expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("USD");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V EUR10";
@@ -729,7 +730,7 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfers).toBeArrayOfSize(1);
                 expect(result[0].transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
                 expect(result[0].transfers[0].address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
-                expect(result[0].transfers[0].arkToshiValue).toEqual(new BigNumber(1));
+                expect(result[0].transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfers[0].check.currency).toEqual("EUR");
                 expect(result[0].transfers[0].check.amount).toEqual(new BigNumber(10));
             });

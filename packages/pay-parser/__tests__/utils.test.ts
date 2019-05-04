@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import "jest-extended";
 import { ParserUtils } from "../dist/utils";
 
-const arktoshiValue = new BigNumber(1);
+const arktoshiValue = new BigNumber(Math.pow(10, 8));
 const amount = new BigNumber(10);
 
 describe("pay-Parser: ParserUtils()", () => {
@@ -76,19 +76,19 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(baseCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
                 amountCurrency = await ParserUtils.parseAmount(input, "");
                 expect(amountCurrency).toBeObject();
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(baseCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
                 amountCurrency = await ParserUtils.parseAmount("", input);
                 expect(amountCurrency).toBeObject();
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(baseCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
             });
 
             it("for a decimal value (1.0)", async () => {
@@ -98,7 +98,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(baseCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for an international decimal value (1,0)", async () => {
@@ -108,7 +108,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(baseCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
         });
 
@@ -122,19 +122,19 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
                 amountCurrency = await ParserUtils.parseAmount(input, "");
                 expect(amountCurrency).toBeObject();
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
                 amountCurrency = await ParserUtils.parseAmount("", input);
                 expect(amountCurrency).toBeObject();
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
             });
 
             it("for a decimal value + a currency (1.0USD)", async () => {
@@ -144,7 +144,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for an international decimal value + a currency (1,0USD)", async () => {
@@ -154,7 +154,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for a currency + an Integer value (USD10)", async () => {
@@ -164,7 +164,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
             });
 
             it("for a currency + a decimal value (USD1.0)", async () => {
@@ -174,7 +174,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for a currency + an international decimal value (USD1,0)", async () => {
@@ -184,7 +184,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
         });
 
@@ -198,7 +198,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
             });
 
             it("for a decimal value + a currency (1.0 USD)", async () => {
@@ -208,7 +208,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for an international decimal value + a currency (1,0 USD)", async () => {
@@ -218,7 +218,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for a currency + an Integer value (USD 10)", async () => {
@@ -228,7 +228,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
             });
 
             it("for a currency + a decimal value (USD 1.0)", async () => {
@@ -238,7 +238,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for a currency + an international decimal value (USD 1,0)", async () => {
@@ -248,7 +248,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
 
             it("for a currency symbol + a valid value (Ѧ 1)", async () => {
@@ -260,7 +260,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(expectedCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
-                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(1));
+                expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
             });
         });
     });
@@ -271,12 +271,12 @@ describe("pay-Parser: ParserUtils()", () => {
                 const input: string = "10";
                 let result: AmountCurrency = await ParserUtils.parseAmount(input);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("ARK");
                 expect(result.amount).toEqual(amount);
                 result = await ParserUtils.parseAmount("", input);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("ARK");
                 expect(result.amount).toEqual(amount);
             });
@@ -285,23 +285,23 @@ describe("pay-Parser: ParserUtils()", () => {
                 let input: string = "10USD";
                 let result: AmountCurrency = await ParserUtils.parseAmount(input);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 result = await ParserUtils.parseAmount("", input);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 input = "USD10";
                 result = await ParserUtils.parseAmount(input);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 result = await ParserUtils.parseAmount("", input);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
             });
@@ -311,12 +311,12 @@ describe("pay-Parser: ParserUtils()", () => {
                 const currency = "USD";
                 let result: AmountCurrency = await ParserUtils.parseAmount(value, currency);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 result = await ParserUtils.parseAmount(currency, value);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
             });
@@ -373,21 +373,21 @@ describe("pay-Parser: ParserUtils()", () => {
                 let mentionIndex: number = input.indexOf(mentionedUser);
                 let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("ARK");
                 expect(result.amount).toEqual(amount);
                 input = ["something", tipValue, mentionedUser];
                 mentionIndex = input.indexOf(mentionedUser);
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("ARK");
                 expect(result.amount).toEqual(amount);
                 input = [tipValue, tipValue, mentionedUser];
                 mentionIndex = input.indexOf(mentionedUser);
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("ARK");
                 expect(result.amount).toEqual(amount);
             });
@@ -399,27 +399,27 @@ describe("pay-Parser: ParserUtils()", () => {
                 let mentionIndex: number = input.indexOf(mentionedUser);
                 let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 tipValue = "USD10";
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 input = ["something", tipValue, mentionedUser];
                 mentionIndex = input.indexOf(mentionedUser);
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 input = [tipValue, tipValue, mentionedUser];
                 mentionIndex = input.indexOf(mentionedUser);
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
             });
@@ -432,21 +432,21 @@ describe("pay-Parser: ParserUtils()", () => {
                 let mentionIndex: number = input.indexOf(mentionedUser);
                 let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 input = [currency, tipValue, mentionedUser];
                 mentionIndex = input.indexOf(mentionedUser);
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
                 input = ["something", currency, tipValue, mentionedUser];
                 mentionIndex = input.indexOf(mentionedUser);
                 result = await ParserUtils.parseTip(input, mentionIndex);
                 expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
             });
@@ -694,7 +694,7 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result.command).toEqual(command);
             expect(result.transfers).toBeArrayOfSize(1);
             expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-            expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+            expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             arg2 = "10USD";
             commandArguments = [command, arg1, arg2];
             result = await ParserUtils.parseCommand(command, commandArguments, platform);
@@ -702,7 +702,7 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result.command).toEqual(command);
             expect(result.transfers).toBeArrayOfSize(1);
             expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-            expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+            expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             commandArguments = [command, arg1];
             result = await ParserUtils.parseCommand(command, commandArguments, platform);
             expect(result).toContainAllKeys(["command", "transfers"]);
@@ -779,7 +779,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual("SEND");
                 expect(result.transfers).toBeArrayOfSize(1);
                 expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].check.currency).toEqual("USD");
                 expect(result.transfers[0].check.amount).toEqual(amount);
@@ -794,7 +794,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual("SEND");
                 expect(result.transfers).toBeArrayOfSize(1);
                 expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].check.currency).toEqual("USD");
                 expect(result.transfers[0].check.amount).toEqual(amount);
@@ -857,7 +857,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual("WITHDRAW");
                 expect(result.transfers).toBeArrayOfSize(1);
                 expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("with 3 valid arguments", async () => {
@@ -870,7 +870,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual("WITHDRAW");
                 expect(result.transfers).toBeArrayOfSize(1);
                 expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
     });
@@ -946,7 +946,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.transfers).toBeArrayOfSize(3);
                 expect(result.transfers[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
                 expect(result.transfers[0].command).toEqual("TIP");
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for REWARD with small footer argument", async () => {
@@ -980,7 +980,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.transfers).toBeArrayOfSize(3);
                 expect(result.transfers[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
                 expect(result.transfers[0].command).toEqual("TIP");
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue);
+                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
 
@@ -999,7 +999,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result).toContainAllKeys(["command", "check", "smallFooter", "arkToshiValue"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("for a TIP with small footer argument", async () => {
@@ -1016,7 +1016,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result).toContainAllKeys(["command", "check", "smallFooter", "arkToshiValue"]);
                 expect(result.command).toEqual("TIP");
                 expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(arktoshiValue);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
 
@@ -1048,14 +1048,14 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeArrayOfSize(3);
             expect(result[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
             expect(result[0].command).toEqual("TIP");
-            expect(result[0].arkToshiValue).toEqual(arktoshiValue);
+            expect(result[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             expect(result[0].user).toContainAllKeys(["username", "platform"]);
             expect(result[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
             expect(result[0].user.username).toEqual("user1");
             expect(result[0].user.platform).toEqual(platform);
             expect(result[0].check.currency).toEqual("ARK");
             expect(result[0].check.amount).toEqual(amount);
-            expect(result[0].check.arkToshiValue).toEqual(arktoshiValue);
+            expect(result[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
             expect(result[1].user.username).toEqual("user2");
             expect(result[1].user.platform).toEqual("twitter");
             expect(result[1].check.currency).toEqual("USD");
