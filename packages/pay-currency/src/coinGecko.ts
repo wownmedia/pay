@@ -24,10 +24,7 @@ export class CoinGeckoAPI {
                 fiat = "usd";
         }
 
-        const simpleCurrencyTicker = await coinGeckoClient.simple.price({
-            ids: [currency],
-            vs_currencies: [fiat],
-        });
+        const simpleCurrencyTicker = await this.getSimplePrice(currency, fiat);
 
         if (!simpleCurrencyTicker.hasOwnProperty("data") || !simpleCurrencyTicker.success === true) {
             throw new Error("Can not communicate to CoinGecko: simpleCurrencyTicker");
@@ -39,5 +36,21 @@ export class CoinGeckoAPI {
         }
 
         return currencyValue;
+    }
+
+    /**
+     * Interface to the CoinGecko API
+     * @param currency
+     * @param fiat
+     */
+    public static async getSimplePrice(currency: string, fiat: string): Promise<any> {
+        if (process.env.NODE_ENV === "test") {
+            return false;
+        }
+
+        return await coinGeckoClient.simple.price({
+            ids: [currency],
+            vs_currencies: [fiat],
+        });
     }
 }

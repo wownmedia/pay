@@ -25,20 +25,89 @@ describe("pay-currency: CurrencyUtils()", () => {
 
     describe("getCurrencyValue()", () => {
         it("should return 1 if currency is a potential base currency (BTC, BCH, USD, EUR)", async () => {
-            const currency = "USD";
+            let currency = "USD";
             const fiat = "anythingReally";
-            const result: BigNumber = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            let result: BigNumber = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            currency = "EUR";
+            result = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            currency = "BTC";
+            result = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            currency = "BCH";
+            result = await CurrencyUtils.getCurrencyValue(currency, fiat);
             expect(result).toEqual(new BigNumber(1));
         });
 
         it("should return 1 if base currency is not a valid base currency (BTC, BCH, USD, EUR)", async () => {
-            const mock = jest.spyOn(CoinGeckoAPI, "price");
-            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+            const mock = jest.spyOn(CoinGeckoAPI, "getSimplePrice");
+            mock.mockImplementation(() =>
+                Promise.resolve({
+                    success: true,
+                    data: {
+                        ark: { usd: "1", btc: "1", bch: "1", eur: "1" },
+                    },
+                }),
+            );
             const currency = "ARK";
             const fiat = "anythingReally";
             const result: BigNumber = await CurrencyUtils.getCurrencyValue(currency, fiat);
             expect(result).toEqual(new BigNumber(1));
             mock.mockRestore();
+        });
+
+        it("should return 1 if base currency is a valid base currency (BTC, BCH, USD, EUR)", async () => {
+            const mock = jest.spyOn(CoinGeckoAPI, "getSimplePrice");
+            mock.mockImplementation(() =>
+                Promise.resolve({
+                    success: true,
+                    data: {
+                        ark: { usd: "1", btc: "1", bch: "1", eur: "1" },
+                    },
+                }),
+            );
+            const currency = "ARK";
+            let fiat = "USD";
+            let result: BigNumber = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            fiat = "EUR";
+            result = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            fiat = "BTC";
+            result = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            fiat = "BCH";
+            result = await CurrencyUtils.getCurrencyValue(currency, fiat);
+            expect(result).toEqual(new BigNumber(1));
+            mock.mockRestore();
+        });
+
+        it("should throw an Error if no data is received from CoinGecko", async () => {
+            const mock = jest.spyOn(CoinGeckoAPI, "getSimplePrice");
+            mock.mockImplementation(() =>
+                Promise.resolve({
+                    success: false,
+                }),
+            );
+            const currency = "ARK";
+            const fiat = "USD";
+            await expect(CurrencyUtils.getCurrencyValue(currency, fiat)).rejects.toThrowError();
+        });
+
+        it("should throw an Error if bad data is received from CoinGecko", async () => {
+            const mock = jest.spyOn(CoinGeckoAPI, "getSimplePrice");
+            mock.mockImplementation(() =>
+                Promise.resolve({
+                    success: true,
+                    data: {
+                        ark: { usd: "a", btc: "a", bch: "a", eur: "a" },
+                    },
+                }),
+            );
+            const currency = "ARK";
+            const fiat = "USD";
+            await expect(CurrencyUtils.getCurrencyValue(currency, fiat)).rejects.toThrowError();
         });
     });
 
