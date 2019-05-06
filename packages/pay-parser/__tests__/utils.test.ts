@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import "jest-extended";
 import { Command, Transfer } from "../../pay-commands/src";
 import { AmountCurrency } from "../../pay-currency/src";
+import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { Username } from "../../pay-user/src/";
 import { ParserUtils } from "../src/utils";
 
@@ -114,6 +115,8 @@ describe("pay-Parser: ParserUtils()", () => {
 
         describe("should correctly parse and valuate valid ammountCurrency input", () => {
             const currency = "USD";
+            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
 
             it("for an Integer value + a currency (10USD)", async () => {
                 const input: string = "10USD";
@@ -190,6 +193,8 @@ describe("pay-Parser: ParserUtils()", () => {
 
         describe("should correctly parse and valuate valid ammount and valid currency input", () => {
             const currency = "USD";
+            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
 
             it("for an Integer value + a currency (10 USD)", async () => {
                 const input: string = "10";
@@ -267,6 +272,8 @@ describe("pay-Parser: ParserUtils()", () => {
 
     describe("parseAmount()", () => {
         describe("should correctly parse amount/currency combinations", () => {
+            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
             it("for a numerical input only (10)", async () => {
                 const input: string = "10";
                 let result: AmountCurrency = await ParserUtils.parseAmount(input);
@@ -366,6 +373,8 @@ describe("pay-Parser: ParserUtils()", () => {
 
     describe("parseTip()", () => {
         describe("should correctly parse a TIP in a mention", () => {
+            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
             it("for numerical input (10 u/arktippr)", async () => {
                 const tipValue: string = "10";
                 const mentionedUser: string = "u/arktippr";

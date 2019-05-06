@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
 import { Command } from "../../pay-commands";
+import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { Parser } from "../src";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
@@ -76,6 +77,8 @@ describe("pay-Parser: Parser()", () => {
         });
 
         describe("should return a valid Command for a TIP mention", () => {
+            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
             it("for: 10 USD u/arktippr", async () => {
                 const inputText: string = "10 USD u/arktippr";
                 const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
@@ -520,6 +523,8 @@ describe("pay-Parser: Parser()", () => {
 
     describe("parseDirectMessage", () => {
         const platform = "reddit";
+        const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+        mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
 
         it("should return NULL on input that contains no commands", async () => {
             const messageBody: string = "whatever is here does not matter";

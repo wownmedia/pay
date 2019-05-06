@@ -1,7 +1,9 @@
 import BigNumber from "bignumber.js";
 BigNumber.config({ DECIMAL_PLACES: 8, ROUNDING_MODE: BigNumber.ROUND_DOWN });
-import CoinGecko from "coingecko-api";
-const coinGeckoClient = new CoinGecko();
+import { config } from "@cryptology.hk/pay-config";
+import { CoinGeckoAPI } from "./coinGecko";
+import { AmountCurrency } from "./currency";
+const acceptedCurrencies: string[] = config.getCurrencies();
 
 // Use a CurrencyUtils class to be able to add these methods to Unit testing without exposing them to the module
 export class CurrencyUtils {
@@ -19,12 +21,7 @@ export class CurrencyUtils {
         const currencyValue: BigNumber = await CurrencyUtils.getCurrencyValue(currency, currency);
         const baseCurrencyValue: BigNumber = await CurrencyUtils.getCurrencyValue(baseCurrency, currency);
 
-        const exchangeRate = baseCurrencyValue.div(currencyValue);
-        if (exchangeRate.isNaN()) {
-            throw new Error("Bad exchange rate.");
-        }
-
-        return exchangeRate;
+        return baseCurrencyValue.div(currencyValue);
     }
 
     /**
@@ -33,50 +30,37 @@ export class CurrencyUtils {
      * @param fiat
      */
     public static async getCurrencyValue(currency: string, fiat: string): Promise<BigNumber> {
-        currency = currency.toLowerCase();
-        switch (currency) {
-            case "btc":
-            case "bch":
-            case "usd":
-            case "eur":
-                return new BigNumber(1);
+        return await CoinGeckoAPI.price(currency, fiat);
+    }
+
+    /**
+     * Replace , (comma) by . (dot) and uppercase text so it can be parsed correctly
+     * @param data
+     */
+    public static convertAmountCurrency(data: string): string {
+        if (typeof data === "undefined" || data.trim() === "") {
+            data = "";
         }
+        return data.replace(/[,]/g, ".").toUpperCase();
+    }
 
-        fiat = fiat.toLowerCase();
-        switch (fiat) {
-            case "usd":
-            case "eur":
-            case "bch":
-            case "btc":
-                break;
-            default:
-                fiat = "usd";
+    /**
+     * Correctly split <amount><currency> into <amount> <currency>
+     * @param data
+     */
+    public static splitCurrencyAmountPair(data: string): AmountCurrency {
+        for (const i in acceptedCurrencies) {
+            if (typeof acceptedCurrencies[i] !== "undefined") {
+                const currency = acceptedCurrencies[i];
+                if (data.startsWith(currency) || data.endsWith(currency)) {
+                    const amount = new BigNumber(data.replace(currency, "").trim());
+                    if (amount.isNaN()) {
+                        throw TypeError("Not a valid amount currency pair: Amount missing");
+                    }
+                    return { currency, amount };
+                }
+            }
         }
-
-        // Don't query CoinGecko when we are testing
-        if (process.env.NODE_ENV === "test") {
-            return new BigNumber(1);
-        }
-
-        // Check if we have access to CoinGecko
-        if (!(await coinGeckoClient.ping())) {
-            throw new Error("Can not communicate to CoinGecko");
-        }
-
-        const simpleCurrencyTicker = await coinGeckoClient.simple.price({
-            ids: [currency],
-            vs_currencies: [fiat],
-        });
-
-        if (!simpleCurrencyTicker.hasOwnProperty("data") || !simpleCurrencyTicker.success === true) {
-            throw new Error("Can not communicate to CoinGecko: simpleCurrencyTicker");
-        }
-
-        const currencyValue = new BigNumber(simpleCurrencyTicker.data[currency][fiat]);
-        if (currencyValue.isNaN()) {
-            throw new Error(`Did not receive a valid value for ${currency}`);
-        }
-
-        return currencyValue;
+        throw TypeError("Not a valid amount currency pair");
     }
 }

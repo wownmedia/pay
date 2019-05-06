@@ -25,19 +25,16 @@ export class Currency {
         // Check if the input is correct
         currency = currency.toUpperCase().trim();
         if (!Currency.isValidCurrency(currency)) {
-            throw new Error(`${currency} is not supported.`);
+            throw TypeError(`${currency} is not supported.`);
         }
 
         if (amount.isNaN() || amount.lte(0)) {
-            throw new Error("Please enter a valid amount.");
+            throw TypeError("Please enter a valid amount.");
         }
 
         // Get exchange rate for the requested currency in the base currency.
+        // Will throw an error if it fails.
         const exchangeRate: BigNumber = await CurrencyUtils.getCurrencyTicker(currency, baseCurrency.ticker);
-
-        if (exchangeRate.isNaN()) {
-            throw new Error("Could not convert the currency/amount");
-        }
 
         return amount.div(exchangeRate).times(baseCurrency.units);
     }
@@ -50,14 +47,11 @@ export class Currency {
     public static async baseCurrencyUnitsToUSD(units: BigNumber): Promise<BigNumber> {
         // Check if input is correct
         if (units.isNaN() || units.lte(0)) {
-            throw new Error("Please enter a valid amount.");
+            throw TypeError("Please enter a valid amount.");
         }
 
+        // Will throw an error if it fails.
         const exchangeRate: BigNumber = await CurrencyUtils.getCurrencyTicker("USD", baseCurrency.ticker);
-
-        if (exchangeRate.isNaN()) {
-            throw new Error("Could not convert the currency/amount");
-        }
 
         return exchangeRate.times(units.div(baseCurrency.units));
     }
@@ -77,39 +71,24 @@ export class Currency {
      * @param data
      */
     public static isValidCurrencyInput(data: string): boolean {
-        try {
-            data = Currency.convertAmountCurrency(data);
+        data = CurrencyUtils.convertAmountCurrency(data);
 
-            // Check if we only have a valid currency or valid positive amount
-            if (acceptedCurrencies.indexOf(data) !== -1 || Currency.isNumericalInput(data)) {
-                return true;
-            }
+        // Check if we only have a valid currency or valid positive amount
+        if (acceptedCurrencies.indexOf(data) !== -1 || Currency.isNumericalInput(data)) {
+            return true;
+        }
 
-            // Check if we have a combination of a valid currency and an amount
-            for (const i in acceptedCurrencies) {
-                if (typeof acceptedCurrencies[i] !== "undefined") {
-                    const currency = acceptedCurrencies[i];
-                    if (data.startsWith(currency) || data.endsWith(currency)) {
-                        data = data.replace(currency, "").trim();
-                        return Currency.isNumericalInput(data);
-                    }
+        // Check if we have a combination of a valid currency and an amount
+        for (const i in acceptedCurrencies) {
+            if (typeof acceptedCurrencies[i] !== "undefined") {
+                const currency = acceptedCurrencies[i];
+                if (data.startsWith(currency) || data.endsWith(currency)) {
+                    data = data.replace(currency, "").trim();
+                    return Currency.isNumericalInput(data);
                 }
             }
-            return false;
-        } catch (e) {
-            return false;
         }
-    }
-
-    /**
-     * Replace , (comma) by . (dot) and uppercase text so it can be parsed correctly
-     * @param data
-     */
-    public static convertAmountCurrency(data: string): string {
-        if (typeof data === "undefined") {
-            throw TypeError("Amount/User is undefined");
-        }
-        return data.replace(/[,]/g, ".").toUpperCase();
+        return false;
     }
 
     /**
@@ -117,10 +96,6 @@ export class Currency {
      * @param data
      */
     public static isNumericalInput(data: string): boolean {
-        if (typeof data === "undefined") {
-            throw TypeError("Input is undefined");
-        }
-
         data = data.replace(/[,]/g, ".");
         const numerical: BigNumber = new BigNumber(data);
         return !numerical.isNaN() && numerical.lte(Number.MAX_SAFE_INTEGER) && numerical.gt(0);
@@ -141,6 +116,9 @@ export class Currency {
             case "€":
                 symbol = "EUR";
                 break;
+            case "£":
+                symbol = "GBP";
+                break;
         }
         return symbol;
     }
@@ -157,7 +135,7 @@ export class Currency {
         }
 
         // Make sure input is formatted correctly
-        data = Currency.convertAmountCurrency(data);
+        data = CurrencyUtils.convertAmountCurrency(data);
 
         // Check if data is only a number: in that case we have a value in the base currency
         if (Currency.isNumericalInput(data)) {
@@ -165,18 +143,6 @@ export class Currency {
             return { currency: baseCurrency.ticker, amount };
         }
 
-        for (const i in acceptedCurrencies) {
-            if (typeof acceptedCurrencies[i] !== "undefined") {
-                const currency = acceptedCurrencies[i];
-                if (data.startsWith(currency) || data.endsWith(currency)) {
-                    const amount = new BigNumber(data.replace(currency, "").trim());
-                    if (amount.isNaN()) {
-                        throw TypeError("Not a valid amount currency pair: Amount missing");
-                    }
-                    return { currency, amount };
-                }
-            }
-        }
-        throw TypeError("Not a valid amount currency pair");
+        return CurrencyUtils.splitCurrencyAmountPair(data);
     }
 }
