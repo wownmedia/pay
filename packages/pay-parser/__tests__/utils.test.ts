@@ -1,9 +1,9 @@
-import { Command, Transfer } from "@cryptology.hk/pay-commands";
-import { AmountCurrency } from "@cryptology.hk/pay-currency";
-import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { ParserUtils } from "../dist/utils";
+import { Command, Transfer } from "../../pay-commands/src";
+import { AmountCurrency } from "../../pay-currency/src";
+import { Username } from "../../pay-user/src/";
+import { ParserUtils } from "../src/utils";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
 const amount = new BigNumber(10);
@@ -450,6 +450,35 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.currency).toEqual("USD");
                 expect(result.amount).toEqual(amount);
             });
+
+            it("for a TIP in a wall of text", async () => {
+                const bla = "bla";
+                const tipValue = "10";
+                const currency = "USD";
+                const mentionedUser: string = "u/arktippr";
+                let input: string[] = [bla, bla, bla, tipValue, currency, mentionedUser, bla, bla, bla];
+                let mentionIndex: number = input.indexOf(mentionedUser);
+                let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+                input = [bla, bla, bla, tipValue, mentionedUser, bla, bla, bla];
+                mentionIndex = input.indexOf(mentionedUser);
+                result = await ParserUtils.parseTip(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+        });
+
+        it("should return null for a badly formatted mention", async () => {
+            const mentionedUser: string = "u/arktippr";
+            const input: string[] = [mentionedUser];
+            const mentionIndex: number = input.indexOf(mentionedUser);
+            const result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
+            expect(result).toBeNull();
         });
     });
 
@@ -642,6 +671,19 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeNull();
         });
 
+        it("should return {command} for a command that is valid, but has no need for additional argument", async () => {
+            const command: string = "HELP";
+            const platform: string = "reddit";
+            let commandArguments: string[] = [command];
+            let result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command"]);
+            expect(result.command).toEqual(command);
+            commandArguments = [command, "bla"];
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command"]);
+            expect(result.command).toEqual(command);
+        });
+
         it("should correctly return a command when inputted without arguments", async () => {
             let command: string = "SEND";
             const platform: string = "reddit";
@@ -740,6 +782,13 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeTrue();
             address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
             result = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeFalse();
+        });
+
+        it("should return false on other addresses", async () => {
+            const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            const token: string = "NOTSUPPORTED";
+            const result = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
     });
@@ -981,6 +1030,20 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.transfers[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
                 expect(result.transfers[0].command).toEqual("TIP");
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
+            });
+
+            it("for a REWARD without valid users", async () => {
+                const bodyParts: string[] = [command, mentionedUser, "10", "baduser1"];
+                const mentionBody: string = "REWARD u/arktippr ~ 10 baduser1";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command = await ParserUtils.parseMentionCommand(
+                    command,
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result).toBeNull();
             });
         });
 

@@ -1,10 +1,9 @@
-import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
-import { config } from "@cryptology.hk/pay-config";
-import { AmountCurrency, Currency } from "@cryptology.hk/pay-currency";
-import { logger } from "@cryptology.hk/pay-logger";
-import { User, Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
+import { Command, Commands, Transfer } from "../../pay-commands/src";
+import { config } from "../../pay-config/src";
+import { AmountCurrency, Currency } from "../../pay-currency/src";
+import { User, Username } from "../../pay-user/src";
 
 const USERNAME_PLATFORM_SEPERATOR = config.getUsernamePlatformSeperator();
 
@@ -186,19 +185,15 @@ export class ParserUtils {
      * @param platform
      */
     public static async checkCommand(command: string, commandArguments: string[], platform: string): Promise<Command> {
-        try {
-            command = command.toUpperCase();
-            if (!Commands.isValidCommand(command)) {
-                return null;
-            }
-
-            if (Commands.hasArguments(command)) {
-                return await ParserUtils.parseCommand(command, commandArguments, platform);
-            }
-            return { command };
-        } catch (e) {
+        command = command.toUpperCase();
+        if (!Commands.isValidCommand(command)) {
             return null;
         }
+
+        if (Commands.hasArguments(command)) {
+            return await ParserUtils.parseCommand(command, commandArguments, platform);
+        }
+        return { command };
     }
 
     /**
@@ -208,39 +203,34 @@ export class ParserUtils {
      * @param platform
      */
     public static async parseCommand(command: string, commandArguments: string[], platform: string): Promise<Command> {
-        try {
-            command = command.toUpperCase();
-            if (!Commands.isValidCommand(command)) {
-                return null;
-            }
-
-            // Determine which are the optional arguments for this command
-            const commandIndex = ParserUtils.commandIndex(command, commandArguments);
-            const arg1: string = commandArguments[commandIndex + 1];
-
-            // We have a request for HELP on the command
-            if (typeof arg1 === "undefined") {
-                return { command };
-            }
-
-            const arg2: string =
-                typeof commandArguments[commandIndex + 2] !== "undefined" ? commandArguments[commandIndex + 2] : "";
-            const arg3: string =
-                typeof commandArguments[commandIndex + 3] !== "undefined" ? commandArguments[commandIndex + 3] : "";
-
-            switch (command) {
-                case "SEND":
-                    return await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
-                case "STICKERS":
-                    return await ParserUtils.parseSTICKERS(arg1, platform);
-                case "WITHDRAW":
-                    return await ParserUtils.parseWITHDRAW(arg1, arg2, arg3);
-                default:
-                    return null;
-            }
-        } catch (e) {
-            logger.warn(e.message);
+        command = command.toUpperCase();
+        if (!Commands.isValidCommand(command)) {
             return null;
+        }
+
+        // Determine which are the optional arguments for this command
+        const commandIndex = ParserUtils.commandIndex(command, commandArguments);
+        const arg1: string = commandArguments[commandIndex + 1];
+
+        // We have a request for HELP on the command
+        if (typeof arg1 === "undefined") {
+            return { command };
+        }
+
+        const arg2: string =
+            typeof commandArguments[commandIndex + 2] !== "undefined" ? commandArguments[commandIndex + 2] : "";
+        const arg3: string =
+            typeof commandArguments[commandIndex + 3] !== "undefined" ? commandArguments[commandIndex + 3] : "";
+
+        switch (command) {
+            case "SEND":
+                return await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
+            case "STICKERS":
+                return await ParserUtils.parseSTICKERS(arg1, platform);
+            case "WITHDRAW":
+                return await ParserUtils.parseWITHDRAW(arg1, arg2, arg3);
+            default:
+                return { command };
         }
     }
 
@@ -315,24 +305,20 @@ export class ParserUtils {
      */
     public static async parseSEND(arg1: string, arg2: string, arg3: string, platform: string): Promise<Command> {
         const command = "SEND";
-        try {
-            const user: Username = ParserUtils.parseUsername(arg1, platform);
-            if (await ParserUtils.isValidUser(user)) {
-                const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
-                if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
-                    const transfer: Transfer = {
-                        user,
-                        command: "SEND",
-                        arkToshiValue: amountCurrency.arkToshiValue,
-                        check: amountCurrency,
-                    };
-                    return { command, transfers: [transfer] };
-                }
+        const user: Username = ParserUtils.parseUsername(arg1, platform);
+        if (await ParserUtils.isValidUser(user)) {
+            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
+            if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                const transfer: Transfer = {
+                    user,
+                    command: "SEND",
+                    arkToshiValue: amountCurrency.arkToshiValue,
+                    check: amountCurrency,
+                };
+                return { command, transfers: [transfer] };
             }
-            return { command };
-        } catch (e) {
-            return { command };
         }
+        return { command };
     }
 
     /**
@@ -342,15 +328,11 @@ export class ParserUtils {
      */
     public static async parseSTICKERS(arg1: string, platform: string): Promise<Command> {
         const command = "STICKERS";
-        try {
-            const user: Username = ParserUtils.parseUsername(arg1, platform);
-            if ((await ParserUtils.isValidUser(user)) === false) {
-                return { command };
-            }
-            return { command, user };
-        } catch (e) {
+        const user: Username = ParserUtils.parseUsername(arg1, platform);
+        if ((await ParserUtils.isValidUser(user)) === false) {
             return { command };
         }
+        return { command, user };
     }
 
     /**
@@ -363,24 +345,21 @@ export class ParserUtils {
     public static async parseWITHDRAW(arg1: string, arg2: string, arg3: string, token?: string): Promise<Command> {
         const command = "WITHDRAW";
         token = typeof token !== "undefined" ? token : "ARK";
-        try {
-            if (await ParserUtils.isValidAddress(arg1, token)) {
-                const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
-                const arkToshiValue =
-                    amountCurrency !== null && amountCurrency.arkToshiValue.gt(0) ? amountCurrency.arkToshiValue : null;
 
-                const transfer: Transfer = {
-                    address: arg1,
-                    command: "WITHDRAW",
-                    arkToshiValue,
-                    check: amountCurrency,
-                };
-                return { command, transfers: [transfer] };
-            }
-            return { command };
-        } catch (e) {
-            return { command };
+        if (await ParserUtils.isValidAddress(arg1, token)) {
+            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
+            const arkToshiValue =
+                amountCurrency !== null && amountCurrency.arkToshiValue.gt(0) ? amountCurrency.arkToshiValue : null;
+
+            const transfer: Transfer = {
+                address: arg1,
+                command: "WITHDRAW",
+                arkToshiValue,
+                check: amountCurrency,
+            };
+            return { command, transfers: [transfer] };
         }
+        return { command };
     }
 
     /**
@@ -405,7 +384,7 @@ export class ParserUtils {
 
             case "REWARD":
                 const transfers: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
-                return transfers.length > 0 ? { command, transfers, smallFooter } : null;
+                return transfers ? { command, transfers, smallFooter } : null;
 
             default:
                 // Check if we received a TIP command
@@ -435,32 +414,34 @@ export class ParserUtils {
 
         for (const item in bodyParts) {
             if (typeof bodyParts[item] !== "undefined") {
-                const user: Username = ParserUtils.parseUsername(bodyParts[item], platform);
-                if (await ParserUtils.isValidUser(user)) {
-                    const index: number = parseInt(item, 10);
-                    const command: string = index >= 1 ? bodyParts[index - 1].toUpperCase() : "";
+                const index: number = parseInt(item, 10);
+                if (typeof bodyParts[index - 1] !== "undefined") {
+                    const user: Username = ParserUtils.parseUsername(bodyParts[item], platform);
+                    if (await ParserUtils.isValidUser(user)) {
+                        const command: string = bodyParts[index - 1].toUpperCase();
 
-                    if (command === "STICKERS") {
-                        const transfer: Transfer = {
-                            user,
-                            command: "STICKERS",
-                        };
-                        requestedRewards.push(transfer);
-                    } else {
-                        const rightInput: string = index >= 1 ? bodyParts[index - 1].toUpperCase() : "";
-                        const leftInput: string =
-                            index >= 2 && ParserUtils.isValidLeftInput(bodyParts[index - 2], rightInput)
-                                ? bodyParts[index - 2].toUpperCase()
-                                : "";
-                        const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
-                        if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                        if (command === "STICKERS") {
                             const transfer: Transfer = {
                                 user,
-                                command: "TIP",
-                                arkToshiValue: amountCurrency.arkToshiValue,
-                                check: amountCurrency,
+                                command: "STICKERS",
                             };
                             requestedRewards.push(transfer);
+                        } else {
+                            const rightInput: string = bodyParts[index - 1].toUpperCase();
+                            const leftInput: string =
+                                index >= 2 && ParserUtils.isValidLeftInput(bodyParts[index - 2], rightInput)
+                                    ? bodyParts[index - 2].toUpperCase()
+                                    : "";
+                            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
+                            if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                                const transfer: Transfer = {
+                                    user,
+                                    command: "TIP",
+                                    arkToshiValue: amountCurrency.arkToshiValue,
+                                    check: amountCurrency,
+                                };
+                                requestedRewards.push(transfer);
+                            }
                         }
                     }
                 }

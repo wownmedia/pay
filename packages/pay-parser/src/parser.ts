@@ -1,6 +1,5 @@
 // @ts-ignore
 import { Command, Commands } from "@cryptology.hk/pay-commands";
-import { logger } from "@cryptology.hk/pay-logger";
 import { ParserUtils } from "./utils";
 
 /**
@@ -54,28 +53,23 @@ export class Parser {
             return null;
         }
 
-        try {
-            const commandsToExecute = [];
-            // Split up the mention so we can parse it for commands
-            const commandBodyParts: string[] = ParserUtils.splitMessageToParts(directMessageBody, true);
+        const commandsToExecute = [];
+        // Split up the mention so we can parse it for commands
+        const commandBodyParts: string[] = ParserUtils.splitMessageToParts(directMessageBody, true);
 
-            // We allow multiple commands per PM.
-            // Process Commands
-            for (const item in commandBodyParts) {
-                if (commandBodyParts[item] && Commands.isValidCommand(commandBodyParts[item])) {
-                    const command = commandBodyParts[item].toUpperCase();
-                    const index = parseInt(item, 10);
-                    const argumentsBody = commandBodyParts.slice(index, index + 4);
-                    const commandToDo = await ParserUtils.checkCommand(command, argumentsBody, platform);
-                    if (commandToDo !== null) {
-                        commandsToExecute.push(commandToDo);
-                    }
+        // We allow multiple commands per PM.
+        // Process Commands
+        for (const item in commandBodyParts) {
+            if (commandBodyParts[item] && Commands.isValidCommand(commandBodyParts[item])) {
+                const command = commandBodyParts[item].toUpperCase();
+                const index = parseInt(item, 10);
+                const argumentsBody = commandBodyParts.slice(index, index + 4);
+                const commandToDo = await ParserUtils.checkCommand(command, argumentsBody, platform);
+                if (commandToDo !== null) {
+                    commandsToExecute.push(commandToDo);
                 }
             }
-            return commandsToExecute.length ? commandsToExecute : null;
-        } catch (e) {
-            logger.warn(e.message);
-            return null;
         }
+        return commandsToExecute.length ? commandsToExecute : null;
     }
 }

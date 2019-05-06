@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
 import { Command } from "../../pay-commands";
-import { Parser } from "../dist";
+import { Parser } from "../src";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
 describe("pay-Parser: Parser()", () => {
@@ -523,6 +523,12 @@ describe("pay-Parser: Parser()", () => {
 
         it("should return NULL on input that contains no commands", async () => {
             const messageBody: string = "whatever is here does not matter";
+            const result = await Parser.parseDirectMessage(messageBody, platform);
+            expect(result).toBeNull();
+        });
+
+        it("should return NULL on empty input", async () => {
+            const messageBody: string = "";
             const result = await Parser.parseDirectMessage(messageBody, platform);
             expect(result).toBeNull();
         });
