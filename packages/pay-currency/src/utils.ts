@@ -1,9 +1,14 @@
 import BigNumber from "bignumber.js";
 BigNumber.config({ DECIMAL_PLACES: 8, ROUNDING_MODE: BigNumber.ROUND_DOWN });
-import { config } from "@cryptology.hk/pay-config";
 import { CoinGeckoAPI } from "./coinGecko";
 import { AmountCurrency } from "./currency";
-const acceptedCurrencies: string[] = config.getCurrencies();
+
+// Load Configuration from file
+import { config } from "@cryptology.hk/pay-config";
+const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
+// @ts-ignore
+const configuration = config.get("pay-currency");
+const acceptedCurrencies: string[] = configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
 
 // Use a CurrencyUtils class to be able to add these methods to Unit testing without exposing them to the module
 export class CurrencyUtils {

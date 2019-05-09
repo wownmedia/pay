@@ -5,6 +5,7 @@ import { User, Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
 
+// @ts-ignore
 const configuration = config.get("pay-parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";
 

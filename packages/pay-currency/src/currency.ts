@@ -1,9 +1,16 @@
-import { BaseCurrency, config } from "@cryptology.hk/pay-config";
 import BigNumber from "bignumber.js";
-import { CurrencyUtils } from "./utils";
 
-const acceptedCurrencies: string[] = config.getCurrencies();
-const baseCurrency: BaseCurrency = config.getBaseCurrency();
+import { BaseCurrency, config } from "@cryptology.hk/pay-config";
+const ARKTOSHI = new BigNumber(Math.pow(10, 8));
+const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
+const configuration = config.get("pay-currency");
+const acceptedCurrencies: string[] = configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
+const baseCurrency: BaseCurrency = {
+    ticker: configuration.baseCurrency ? configuration.baseCurrency : "ARK",
+    units: ARKTOSHI,
+};
+
+import { CurrencyUtils } from "./utils";
 
 /**
  * Parsed amount/currency pair and it's value in Arktoshi

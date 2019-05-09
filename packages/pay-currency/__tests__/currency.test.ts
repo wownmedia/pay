@@ -1,11 +1,17 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
+
+// Mock Config
+import { config } from "../../pay-config/src/";
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({}));
+
 import { AmountCurrency, Currency } from "../src";
 import { CurrencyUtils } from "../src/utils";
 
 const arktoshi = Math.pow(10, 8);
 
-describe("pay-currence: Currency()", () => {
+describe("pay-currency: Currency()", () => {
     describe("isValidCurrency()", () => {
         it("should return false on a non-valid currency", () => {
             const data = "badCurrency";

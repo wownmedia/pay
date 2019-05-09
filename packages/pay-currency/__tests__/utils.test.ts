@@ -1,5 +1,11 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
+
+// Mock Config
+import { config } from "../../pay-config/src/";
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({}));
+
 import { AmountCurrency } from "../src";
 import { CoinGeckoAPI } from "../src/coinGecko";
 import { CurrencyUtils } from "../src/utils";

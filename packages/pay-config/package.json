@@ -1,9 +1,9 @@
 {
-    "name": "@cryptology.hk/pay-parser",
-    "version": "1.0.8",
+    "name": "@cryptology.hk/pay-config",
+    "version": "1.0.1",
     "author": "Marc Schot",
     "license": "MIT",
-    "description": "Parse text for ARK pay commands",
+    "description": "Configuration manager ARK pay",
     "main": "dist/index",
     "types": "dist/index",
     "files": [
@@ -23,7 +23,7 @@
         "docs": "../../node_modules/typedoc/bin/typedoc src --out docs",
         "lint": "../../node_modules/tslint/bin/tslint -c ../../tslint.json 'src/**/*.ts' '__tests__/**/*.ts' --fix",
         "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
-        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --no-cache --forceExit",
+        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
         "test:debug": "cross-env CORE_ENV=test node --inspect-brk ../../node_modules/.bin/jest --runInBand",
         "test:watch": "cross-env CORE_ENV=test jest --runInBand --watch",
         "test:watch:all": "cross-env CORE_ENV=test jest --runInBand --watchAll",
@@ -42,9 +42,6 @@
         "bignumber.js": "^8.1.1",
         "joi": "^14.3.1",
         "@cryptology.hk/pay-logger": "^1.0.1",
-        "@cryptology.hk/pay-currency": "^1.0.5",
-        "@cryptology.hk/pay-user": "^1.0.0",
-        "@cryptology.hk/pay-commands": "^1.0.0",
-        "@cryptology.hk/pay-config": "^1.0.1"
+        "find-config": "^1.0.0"
     }
 }
