@@ -1,11 +1,12 @@
+import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
+import { config } from "@cryptology.hk/pay-config";
+import { AmountCurrency, Currency } from "@cryptology.hk/pay-currency";
+import { User, Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
-import { Command, Commands, Transfer } from "../../pay-commands/src";
-import { config } from "../../pay-config/src";
-import { AmountCurrency, Currency } from "../../pay-currency/src";
-import { User, Username } from "../../pay-user/src";
 
-const USERNAME_PLATFORM_SEPERATOR = config.getUsernamePlatformSeperator();
+const configuration = config.get("pay-parser");
+const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";
 
 // Use a ParserUtils class to be able to add these methods to Unit testing without exposing them to the module
 export class ParserUtils {

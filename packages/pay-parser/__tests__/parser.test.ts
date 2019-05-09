@@ -1,6 +1,12 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
 import { Command } from "../../pay-commands";
+
+// Mock Config
+import { config } from "../../pay-config/src/";
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({}));
+
 import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { Parser } from "../src";
 

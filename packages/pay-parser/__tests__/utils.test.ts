@@ -4,6 +4,12 @@ import { Command, Transfer } from "../../pay-commands/src";
 import { AmountCurrency } from "../../pay-currency/src";
 import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { Username } from "../../pay-user/src/";
+
+// Mock Config
+import { config } from "../../pay-config/src/";
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({ seperator: "@" }));
+
 import { ParserUtils } from "../src/utils";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
