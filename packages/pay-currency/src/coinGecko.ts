@@ -27,7 +27,9 @@ export class CoinGeckoAPI {
         const simpleCurrencyTicker = await this.getSimplePrice(currency, fiat);
 
         if (!simpleCurrencyTicker.hasOwnProperty("data") || !simpleCurrencyTicker.success === true) {
-            throw new Error("Can not communicate to CoinGecko: simpleCurrencyTicker");
+            throw new Error(
+                `Can not communicate to CoinGecko: simpleCurrencyTicker: ${JSON.stringify(simpleCurrencyTicker)}`,
+            );
         }
 
         const currencyValue = new BigNumber(simpleCurrencyTicker.data[currency][fiat]);

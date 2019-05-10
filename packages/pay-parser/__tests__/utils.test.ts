@@ -2,14 +2,12 @@ import BigNumber from "bignumber.js";
 import "jest-extended";
 import { Command, Transfer } from "../../pay-commands/src";
 import { AmountCurrency } from "../../pay-currency/src";
-import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { Username } from "../../pay-user/src/";
 
-// Mock Config
-import { config } from "../../pay-config/src/";
-const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({ seperator: "@" }));
-
+import { CoinGeckoAPI } from "../../pay-currency/src/coinGecko";
+const mock = jest.spyOn(CoinGeckoAPI, "price");
+mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { ParserUtils } from "../src/utils";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
@@ -121,12 +119,10 @@ describe("pay-Parser: ParserUtils()", () => {
 
         describe("should correctly parse and valuate valid ammountCurrency input", () => {
             const currency = "USD";
-            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
-            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
 
             it("for an Integer value + a currency (10USD)", async () => {
                 const input: string = "10USD";
-                let amountCurrency = await ParserUtils.parseAmount(input);
+                let amountCurrency: AmountCurrency = await ParserUtils.parseAmount(input);
                 expect(amountCurrency).toBeObject();
                 expect(amountCurrency).toContainKeys(["amount", "currency", "arkToshiValue"]);
                 expect(amountCurrency.currency).toEqual(currency);
@@ -729,14 +725,14 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toContainAllKeys(["command", "transfers"]);
             expect(result.command).toEqual(command);
             expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+            expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
             arg2 = "10USD";
             commandArguments = [command, arg1, arg2];
             result = await ParserUtils.parseCommand(command, commandArguments, platform);
             expect(result).toContainAllKeys(["command", "transfers"]);
             expect(result.command).toEqual(command);
             expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+            expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
         });
 
         it("should correctly parse a WITHDRAW command with valid arguments", async () => {
@@ -775,7 +771,7 @@ describe("pay-Parser: ParserUtils()", () => {
             const arg1: string = "user1";
             const commandArguments: string[] = [command, arg1];
             const result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "user"]);
+            expect(result).toContainAllKeys(["command", "receiver"]);
         });
     });
 
@@ -842,7 +838,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result).toContainAllKeys(["command", "transfers"]);
                 expect(result.command).toEqual("SEND");
                 expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].check.currency).toEqual("USD");
@@ -857,7 +853,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result).toContainAllKeys(["command", "transfers"]);
                 expect(result.command).toEqual("SEND");
                 expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["user", "command", "arkToshiValue", "check"]);
+                expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].check.currency).toEqual("USD");
@@ -880,7 +876,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 const platform: string = "reddit";
                 const arg1: string = "user1";
                 const result: Command = await ParserUtils.parseSTICKERS(arg1, platform);
-                expect(result).toContainAllKeys(["command", "user"]);
+                expect(result).toContainAllKeys(["command", "receiver"]);
                 expect(result.command).toEqual("STICKERS");
             });
         });
@@ -1008,7 +1004,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual(command);
                 expect(result.smallFooter).toBeFalse();
                 expect(result.transfers).toBeArrayOfSize(3);
-                expect(result.transfers[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
+                expect(result.transfers[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
                 expect(result.transfers[0].command).toEqual("TIP");
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             });
@@ -1042,7 +1038,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual(command);
                 expect(result.smallFooter).toBeTrue();
                 expect(result.transfers).toBeArrayOfSize(3);
-                expect(result.transfers[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
+                expect(result.transfers[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
                 expect(result.transfers[0].command).toEqual("TIP");
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             });
@@ -1124,22 +1120,22 @@ describe("pay-Parser: ParserUtils()", () => {
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
             expect(result).toBeArrayOfSize(3);
-            expect(result[0]).toContainAllKeys(["user", "arkToshiValue", "check", "command"]);
+            expect(result[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
             expect(result[0].command).toEqual("TIP");
             expect(result[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-            expect(result[0].user).toContainAllKeys(["username", "platform"]);
+            expect(result[0].receiver).toContainAllKeys(["username", "platform"]);
             expect(result[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
-            expect(result[0].user.username).toEqual("user1");
-            expect(result[0].user.platform).toEqual(platform);
+            expect(result[0].receiver.username).toEqual("user1");
+            expect(result[0].receiver.platform).toEqual(platform);
             expect(result[0].check.currency).toEqual("ARK");
             expect(result[0].check.amount).toEqual(amount);
             expect(result[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
-            expect(result[1].user.username).toEqual("user2");
-            expect(result[1].user.platform).toEqual("twitter");
+            expect(result[1].receiver.username).toEqual("user2");
+            expect(result[1].receiver.platform).toEqual("twitter");
             expect(result[1].check.currency).toEqual("USD");
             expect(result[1].check.amount).toEqual(new BigNumber(20));
-            expect(result[2].user.username).toEqual("user4");
-            expect(result[2].user.platform).toEqual(platform);
+            expect(result[2].receiver.username).toEqual("user4");
+            expect(result[2].receiver.platform).toEqual(platform);
             expect(result[2].check.currency).toEqual("EUR");
             expect(result[2].check.amount).toEqual(new BigNumber(4));
         });

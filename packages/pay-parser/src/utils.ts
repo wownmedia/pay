@@ -26,20 +26,12 @@ export class ParserUtils {
     public static async parseAmount(leftInput: string, rightInput?: string): Promise<AmountCurrency> {
         let amountCurrency: AmountCurrency;
         try {
-            // In case we have input like "SEND 10" or "SEND 10USD"
-            if (typeof rightInput === "undefined" || rightInput === "") {
-                amountCurrency = Currency.parseAmountCurrency(leftInput);
+            if (!rightInput) {
+                rightInput = "";
             }
 
-            // In case we have input like "10 u/arktippr" or "10USD u/arktippr"
-            else if (typeof leftInput === "undefined" || leftInput === "") {
-                amountCurrency = Currency.parseAmountCurrency(rightInput);
-            }
-
-            // In case we have input like "SEND 10 USD" or "10 USD u/arktippr" or "SEND USD 10" or "USD 10 u/arktippr"
-            else {
-                amountCurrency = Currency.parseAmountCurrency(rightInput + leftInput);
-            }
+            const toParse: string = rightInput + leftInput;
+            amountCurrency = Currency.parseAmountCurrency(toParse);
 
             // Convert currency to its current Arktoshi value
             amountCurrency.currency = Currency.currencySymbolsToName(amountCurrency.currency);
@@ -307,12 +299,12 @@ export class ParserUtils {
      */
     public static async parseSEND(arg1: string, arg2: string, arg3: string, platform: string): Promise<Command> {
         const command = "SEND";
-        const user: Username = ParserUtils.parseUsername(arg1, platform);
-        if (await ParserUtils.isValidUser(user)) {
+        const receiver: Username = ParserUtils.parseUsername(arg1, platform);
+        if (await ParserUtils.isValidUser(receiver)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                 const transfer: Transfer = {
-                    user,
+                    receiver,
                     command: "SEND",
                     arkToshiValue: amountCurrency.arkToshiValue,
                     check: amountCurrency,
@@ -330,11 +322,11 @@ export class ParserUtils {
      */
     public static async parseSTICKERS(arg1: string, platform: string): Promise<Command> {
         const command = "STICKERS";
-        const user: Username = ParserUtils.parseUsername(arg1, platform);
-        if ((await ParserUtils.isValidUser(user)) === false) {
+        const receiver: Username = ParserUtils.parseUsername(arg1, platform);
+        if ((await ParserUtils.isValidUser(receiver)) === false) {
             return { command };
         }
-        return { command, user };
+        return { command, receiver };
     }
 
     /**
@@ -418,13 +410,13 @@ export class ParserUtils {
             if (typeof bodyParts[item] !== "undefined") {
                 const index: number = parseInt(item, 10);
                 if (typeof bodyParts[index - 1] !== "undefined") {
-                    const user: Username = ParserUtils.parseUsername(bodyParts[item], platform);
-                    if (await ParserUtils.isValidUser(user)) {
+                    const receiver: Username = ParserUtils.parseUsername(bodyParts[item], platform);
+                    if (await ParserUtils.isValidUser(receiver)) {
                         const command: string = bodyParts[index - 1].toUpperCase();
 
                         if (command === "STICKERS") {
                             const transfer: Transfer = {
-                                user,
+                                receiver,
                                 command: "STICKERS",
                             };
                             requestedRewards.push(transfer);
@@ -437,7 +429,7 @@ export class ParserUtils {
                             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
                             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                                 const transfer: Transfer = {
-                                    user,
+                                    receiver,
                                     command: "TIP",
                                     arkToshiValue: amountCurrency.arkToshiValue,
                                     check: amountCurrency,

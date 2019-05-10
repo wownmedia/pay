@@ -4,6 +4,8 @@ import findConfig from "find-config";
 import os from "os";
 
 let homeDir = os.homedir();
+
+// Load a config file from __test__ directories in case we are testing
 if (process.env.NODE_ENV === "test") {
     homeDir = __dirname.replace("src", "__tests__");
 }
@@ -21,7 +23,7 @@ export class Config {
         try {
             this.configuration = require(configFile);
         } catch (e) {
-            logger.error("Bad configuration: " + e.message);
+            logger.warn("pay-config: Bad configuration: " + e.message);
         }
     }
 
@@ -30,13 +32,10 @@ export class Config {
      * @param subConfig
      */
     public get(subConfig: string): any {
-        logger.info(homeDir);
         try {
             const config = this.configuration[subConfig];
-            logger.info(`config loaded: ${JSON.stringify(config)}`);
             return config ? config : {};
         } catch (e) {
-            logger.warn("Could not read configuration!");
             return {};
         }
     }

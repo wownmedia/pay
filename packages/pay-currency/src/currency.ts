@@ -4,7 +4,7 @@ import { BaseCurrency, config } from "@cryptology.hk/pay-config";
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
 const configuration = config.get("pay-currency");
-const acceptedCurrencies: string[] = configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
+const acceptedCurrencies: string[] = CURRENCIES; // configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
 const baseCurrency: BaseCurrency = {
     ticker: configuration.baseCurrency ? configuration.baseCurrency : "ARK",
     units: ARKTOSHI,

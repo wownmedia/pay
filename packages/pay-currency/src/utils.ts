@@ -6,7 +6,6 @@ import { AmountCurrency } from "./currency";
 // Load Configuration from file
 import { config } from "@cryptology.hk/pay-config";
 const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
-// @ts-ignore
 const configuration = config.get("pay-currency");
 const acceptedCurrencies: string[] = configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
 
