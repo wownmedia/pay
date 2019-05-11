@@ -11,7 +11,6 @@ describe("pay-currency: CoinGeckoAPI()", () => {
     describe("getSimplePrice", () => {
         it("Should be a function()", async () => {
             expect(CoinGeckoAPI.getSimplePrice).toBeFunction();
-            expect(await CoinGeckoAPI.getSimplePrice("ark", "usd")).toBeFalse();
         });
     });
 });
