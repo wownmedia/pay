@@ -1,13 +1,14 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { Command, Transfer } from "../../pay-commands/src";
-import { AmountCurrency } from "../../pay-currency/src";
-import { Username } from "../../pay-user/src/";
-
 import { CoinGeckoAPI } from "../../pay-currency/src/coinGecko";
 const mock = jest.spyOn(CoinGeckoAPI, "price");
 mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+
+import { Command, Transfer } from "../../pay-commands/src";
+import { AmountCurrency } from "../../pay-currency/src";
+import { Currency } from "../../pay-currency/src/";
 import { CurrencyUtils } from "../../pay-currency/src/utils";
+import { Username } from "../../pay-user/src/";
 import { ParserUtils } from "../src/utils";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
@@ -121,6 +122,8 @@ describe("pay-Parser: ParserUtils()", () => {
             const currency = "USD";
 
             it("for an Integer value + a currency (10USD)", async () => {
+                const mockGetCurrencyTicker = jest.spyOn(Currency, "getExchangedValue");
+                mockGetCurrencyTicker.mockImplementation(() => Promise.resolve(new BigNumber(1)));
                 const input: string = "10USD";
                 let amountCurrency: AmountCurrency = await ParserUtils.parseAmount(input);
                 expect(amountCurrency).toBeObject();
@@ -140,6 +143,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency.currency).toEqual(currency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(10));
                 expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue.times(10)));
+                mockGetCurrencyTicker.mockClear();
             });
 
             it("for a decimal value + a currency (1.0USD)", async () => {
@@ -527,8 +531,8 @@ describe("pay-Parser: ParserUtils()", () => {
 
         it("should return FALSE on invalid input", async () => {
             const user: Username = {
-                username: "badUser1",
-                platform: "reddit",
+                username: "user1",
+                platform: "badPlatform",
             };
             let result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
@@ -868,7 +872,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 const platform: string = "reddit";
                 const arg1: string = "";
                 const result: Command = await ParserUtils.parseSTICKERS(arg1, platform);
-                expect(result).toContainAllKeys(["command"]);
+                expect(result).toContainAllKeys(["command", "receiver"]);
                 expect(result.command).toEqual("STICKERS");
             });
 
@@ -987,11 +991,8 @@ describe("pay-Parser: ParserUtils()", () => {
                     "30",
                     "EUR",
                     "user3",
-                    "USD",
-                    "4",
-                    "baduser1",
                 ];
-                const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2 30 EUR user3 USD 4 baduser1";
+                const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2 30 EUR user3";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
                 const result: Command = await ParserUtils.parseMentionCommand(
                     command,
@@ -1021,11 +1022,8 @@ describe("pay-Parser: ParserUtils()", () => {
                     "30",
                     "EUR",
                     "user3",
-                    "USD",
-                    "4",
-                    "baduser1",
                 ];
-                const mentionBody: string = "REWARD u/arktippr ~ 10 user1 20USD user2 30 EUR user3 USD 4 baduser1";
+                const mentionBody: string = "REWARD u/arktippr ~ 10 user1 20USD user2 30 EUR user3";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
                 const result: Command = await ParserUtils.parseMentionCommand(
                     command,
@@ -1041,20 +1039,6 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.transfers[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
                 expect(result.transfers[0].command).toEqual("TIP");
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-            });
-
-            it("for a REWARD without valid users", async () => {
-                const bodyParts: string[] = [command, mentionedUser, "10", "baduser1"];
-                const mentionBody: string = "REWARD u/arktippr ~ 10 baduser1";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    command,
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toBeNull();
             });
         });
 
@@ -1115,11 +1099,10 @@ describe("pay-Parser: ParserUtils()", () => {
         const mentionedUser = "arktippr";
         it("should correctly parse a REWARD mention with mixed multiple entries", async () => {
             const bodyParts: string[] = [command, mentionedUser];
-            const mentionBody: string =
-                "REWARD u/arktippr 10 user1 20USD user2@twitter 30 EUR baduser3 EUR 4 user4 0 user5";
+            const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2@twitter EUR 4 user4 0 user5";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
-            expect(result).toBeArrayOfSize(3);
+            expect(result).toBeArrayOfSize(2);
             expect(result[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
             expect(result[0].command).toEqual("TIP");
             expect(result[0].arkToshiValue).toEqual(arktoshiValue.times(10));
@@ -1130,20 +1113,15 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result[0].check.currency).toEqual("ARK");
             expect(result[0].check.amount).toEqual(amount);
             expect(result[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
-            expect(result[1].receiver.username).toEqual("user2");
-            expect(result[1].receiver.platform).toEqual("twitter");
-            expect(result[1].check.currency).toEqual("USD");
-            expect(result[1].check.amount).toEqual(new BigNumber(20));
-            expect(result[2].receiver.username).toEqual("user4");
-            expect(result[2].receiver.platform).toEqual(platform);
-            expect(result[2].check.currency).toEqual("EUR");
-            expect(result[2].check.amount).toEqual(new BigNumber(4));
+            expect(result[1].receiver.username).toEqual("user4");
+            expect(result[1].receiver.platform).toEqual(platform);
+            expect(result[1].check.currency).toEqual("EUR");
+            expect(result[1].check.amount).toEqual(new BigNumber(4));
         });
 
         it("should return NULL for a REWARD mention without valid entries", async () => {
             const bodyParts: string[] = [command, mentionedUser];
-            const mentionBody: string =
-                "REWARD u/arktippr 10 baduser1 20USD baduser2@twitter 30 BADCURRENCY user3 EUR 4 baduser4 0 user5";
+            const mentionBody: string = "REWARD u/arktippr 10BADCURRENCY user3 0 user5";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
             expect(result).toBeNull();

@@ -43,7 +43,7 @@ export class Parser {
     }
 
     /**
-     * Parse a Direct Message for commands
+     * Parse a Direct Messenger for commands
      * @param directMessageBody
      * @param platform
      */

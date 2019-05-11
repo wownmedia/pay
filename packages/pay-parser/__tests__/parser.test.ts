@@ -8,9 +8,12 @@ const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({}));
 
 import { CoinGeckoAPI } from "../../pay-currency/src/coinGecko";
-const mock = jest.spyOn(CoinGeckoAPI, "price");
-mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+const mockPrice = jest.spyOn(CoinGeckoAPI, "price");
+mockPrice.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+import { Currency } from "../../pay-currency/src/";
 import { CurrencyUtils } from "../../pay-currency/src/utils";
+const mockGetCurrencyTicker = jest.spyOn(Currency, "getExchangedValue");
+mockGetCurrencyTicker.mockImplementation(() => Promise.resolve(new BigNumber(1)));
 import { Parser } from "../src";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
@@ -86,8 +89,6 @@ describe("pay-Parser: Parser()", () => {
         });
 
         describe("should return a valid Command for a TIP mention", () => {
-            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
-            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
             it("for: 10 USD u/arktippr", async () => {
                 const inputText: string = "10 USD u/arktippr";
                 const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
@@ -251,17 +252,6 @@ describe("pay-Parser: Parser()", () => {
                 expect(result).toBeNull();
                 badInput = "10nocurrency u/arktippr";
                 result = await Parser.parseMention(badInput, mentionUser, platform);
-                expect(result).toBeNull();
-            });
-
-            it("for badly formatted REWARD commands", async () => {
-                let inputText: string = "REWARD u/arktippr \
-                    10 badUser1";
-                let result: Command = await Parser.parseMention(inputText, mentionUser, platform);
-                expect(result).toBeNull();
-                inputText = "REWARD u/arktippr \
-                    STICKERS badUser1";
-                result = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toBeNull();
             });
 
@@ -491,41 +481,33 @@ describe("pay-Parser: Parser()", () => {
                     "REWARD u/arktippr \
                     10 user1 \
                     20USD @user2@twitter \
-                    EUR30 user3 \
-                    40 USD u/user4 \
                     STICKERS user5@reddit\
+                    40 USD u/user4 \
                     EUR 50 user6";
                 const result: Command = await Parser.parseMention(inputText, mentionUser, platform);
                 expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
                 expect(result.command).toEqual("REWARD");
                 expect(result.smallFooter).toBeFalse();
-                expect(result.transfers).toBeArrayOfSize(6);
+                expect(result.transfers).toBeArrayOfSize(4);
                 expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
                 expect(result.transfers[0].receiver).toContainAllKeys(["username", "platform"]);
                 expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfers[0].command).toEqual("TIP");
-                expect(result.transfers[4].command).toEqual("STICKERS");
+                expect(result.transfers[1].command).toEqual("STICKERS");
                 expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].check.currency).toEqual("ARK");
-                expect(result.transfers[1].check.currency).toEqual("USD");
-                expect(result.transfers[2].check.currency).toEqual("EUR");
-                expect(result.transfers[3].check.currency).toEqual("USD");
-                expect(result.transfers[5].check.currency).toEqual("EUR");
+                expect(result.transfers[2].check.currency).toEqual("USD");
+                expect(result.transfers[3].check.currency).toEqual("EUR");
                 expect(result.transfers[0].check.amount).toEqual(new BigNumber(10));
-                expect(result.transfers[1].check.amount).toEqual(new BigNumber(20));
-                expect(result.transfers[2].check.amount).toEqual(new BigNumber(30));
-                expect(result.transfers[3].check.amount).toEqual(new BigNumber(40));
-                expect(result.transfers[5].check.amount).toEqual(new BigNumber(50));
+                expect(result.transfers[2].check.amount).toEqual(new BigNumber(40));
+                expect(result.transfers[3].check.amount).toEqual(new BigNumber(50));
                 expect(result.transfers[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfers[0].receiver.username).toEqual("user1");
-                expect(result.transfers[1].receiver.username).toEqual("user2");
-                expect(result.transfers[2].receiver.username).toEqual("user3");
-                expect(result.transfers[3].receiver.username).toEqual("user4");
-                expect(result.transfers[4].receiver.username).toEqual("user5");
-                expect(result.transfers[5].receiver.username).toEqual("user6");
+                expect(result.transfers[1].receiver.username).toEqual("user5");
+                expect(result.transfers[2].receiver.username).toEqual("user4");
+                expect(result.transfers[3].receiver.username).toEqual("user6");
                 expect(result.transfers[0].receiver.platform).toEqual(platform);
-                expect(result.transfers[1].receiver.platform).toEqual("twitter");
-                expect(result.transfers[4].receiver.platform).toEqual("reddit");
+                expect(result.transfers[1].receiver.platform).toEqual("reddit");
             });
         });
     });

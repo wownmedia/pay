@@ -1,7 +1,7 @@
 import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
 import { config } from "@cryptology.hk/pay-config";
 import { AmountCurrency, Currency } from "@cryptology.hk/pay-currency";
-import { User, Username } from "@cryptology.hk/pay-user";
+import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
 
@@ -26,11 +26,11 @@ export class ParserUtils {
     public static async parseAmount(leftInput: string, rightInput?: string): Promise<AmountCurrency> {
         let amountCurrency: AmountCurrency;
         try {
-            if (!rightInput) {
+            if (typeof rightInput === "undefined") {
                 rightInput = "";
             }
 
-            const toParse: string = rightInput + leftInput;
+            const toParse: string = rightInput.trim() + leftInput.trim();
             amountCurrency = Currency.parseAmountCurrency(toParse);
 
             // Convert currency to its current Arktoshi value
@@ -105,12 +105,15 @@ export class ParserUtils {
      */
     public static async isValidUser(user: Username): Promise<boolean> {
         // A user can never be a currency or a number
-        if (Currency.isValidCurrency(user.username) || !new BigNumber(user.username).isNaN()) {
-            return false;
-        }
+        return !(
+            Currency.isValidCurrency(user.username) ||
+            !new BigNumber(user.username).isNaN() ||
+            !this.isValidPlatform(user.platform)
+        );
+    }
 
-        const checkValidUser = new User(user.username, user.platform);
-        return await checkValidUser.isValidUser();
+    public static isValidPlatform(platform: string): boolean {
+        return platform === "reddit";
     }
 
     /**
