@@ -14,6 +14,36 @@ const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     seperator: "@",
     baseCurrency: "ark",
+    ark: {
+        networkVersion: 23,
+        minValue: 2000000,
+        transactionFee: 300,
+        vote: {
+            voteFee: 157,
+            delegate: "cryptology",
+            fillWalletFromSeed: "a very secret seed",
+            fillWalletValue: 20000,
+            fillVendorField: "Welcome to ARK Pay",
+        },
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
+    dark: {
+        networkVersion: 30,
+        minValue: 2000000,
+        transactionFee: 300,
+        vote: false,
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
 }));
 
 // Mock CurrencyUtils.getCurrencyTicker();
@@ -385,7 +415,21 @@ describe("pay-Parser: ParserUtils()", () => {
 
         it("should return null on mentions without commands", async () => {
             const bodyParts: string[] = ["anything", "really", mentionedUser, smallFooter];
-            const mentionBody: string = "10 USD u/arktippr ~";
+            const mentionBody: string = "anything really u/arktippr ~";
+            const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+            const result: Command[] = await ParserUtils.parseMentionCommand(
+                "",
+                bodyParts,
+                mentionBody,
+                mentionIndex,
+                platform,
+            );
+            expect(result).toBeNull();
+        });
+
+        it("should return null on REWARD mentions without commands", async () => {
+            const bodyParts: string[] = ["REWARD", mentionedUser, smallFooter];
+            const mentionBody: string = "REWARD u/arktippr ~";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Command[] = await ParserUtils.parseMentionCommand(
                 "",
@@ -1122,6 +1166,37 @@ describe("pay-Parser: ParserUtils()", () => {
         });
     });
 
+    describe("parseDEPOSIT()", () => {
+        describe("should correctly parse a DEPOSIT command", () => {
+            it("with valid arguments", async () => {
+                const platform: string = "reddit";
+                const arg1: string = "ARK";
+                const result: Command = await ParserUtils.parseDEPOSIT(arg1, platform);
+                expect(result).toContainAllKeys(["command", "token"]);
+                expect(result.command).toEqual("DEPOSIT");
+                expect(result.token).toEqual("ARK");
+            });
+
+            it("with valid arguments", async () => {
+                const platform: string = "reddit";
+                const arg1: string = "DARK";
+                const result: Command = await ParserUtils.parseDEPOSIT(arg1, platform);
+                expect(result).toContainAllKeys(["command", "token"]);
+                expect(result.command).toEqual("DEPOSIT");
+                expect(result.token).toEqual("DARK");
+            });
+
+            it("without valid arguments", async () => {
+                const platform: string = "reddit";
+                const arg1: string = "";
+                const result: Command = await ParserUtils.parseDEPOSIT(arg1, platform);
+                expect(result).toContainAllKeys(["command", "token"]);
+                expect(result.command).toEqual("DEPOSIT");
+                expect(result.token).toEqual("ARK");
+            });
+        });
+    });
+
     describe("parseWITHDRAW()", () => {
         describe("should correctly parse a WITHDRAW command", () => {
             it("without valid arguments", async () => {
@@ -1204,6 +1279,14 @@ describe("pay-Parser: ParserUtils()", () => {
         it("should return NULL for a REWARD mention without valid entries", async () => {
             const bodyParts: string[] = [command, mentionedUser];
             const mentionBody: string = "REWARD u/arktippr 10BADCURRENCY user3 0 user5";
+            const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+            const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
+            expect(result).toBeNull();
+        });
+
+        it("should return NULL for a REWARD mention without any entries", async () => {
+            const bodyParts: string[] = [command, mentionedUser];
+            const mentionBody: string = "REWARD u/arktippr";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
             expect(result).toBeNull();

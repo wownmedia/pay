@@ -88,7 +88,7 @@ export class ParserUtils {
                         commands.push(rewardCommand);
                     }
                 }
-                return commands.length > 0 ? commands : null;
+                return commands;
 
             default:
                 // Check if we received a TIP command
