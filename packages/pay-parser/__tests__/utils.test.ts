@@ -1,20 +1,506 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
+const arktoshiValue = new BigNumber(Math.pow(10, 8));
+const amount = new BigNumber(10);
+
+// Mock CoinGecko().price()
 import { CoinGeckoAPI } from "../../pay-currency/src/coinGecko";
-const mock = jest.spyOn(CoinGeckoAPI, "price");
-mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+const mockCoinGeckoAPI = jest.spyOn(CoinGeckoAPI, "price");
+mockCoinGeckoAPI.mockImplementation(() => Promise.resolve(new BigNumber(1)));
+
+// Mock Config
+import { config } from "@cryptology.hk/pay-config";
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({
+    seperator: "@",
+    baseCurrency: "ark",
+}));
+
+// Mock CurrencyUtils.getCurrencyTicker();
+import { CurrencyUtils } from "../../pay-currency/src/utils";
+const mockCurrencyUtils = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
+mockCurrencyUtils.mockImplementation(() => Promise.resolve(new BigNumber(1)));
 
 import { Command, Transfer } from "../../pay-commands/src";
 import { AmountCurrency } from "../../pay-currency/src";
 import { Currency } from "../../pay-currency/src/";
-import { CurrencyUtils } from "../../pay-currency/src/utils";
 import { Username } from "../../pay-user/src/";
 import { ParserUtils } from "../src/utils";
 
-const arktoshiValue = new BigNumber(Math.pow(10, 8));
-const amount = new BigNumber(10);
-
 describe("pay-Parser: ParserUtils()", () => {
+    describe("isValidUser()", () => {
+        it("should return TRUE on valid input", async () => {
+            const user: Username = {
+                username: "user1",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeTrue();
+        });
+
+        it("should return FALSE on invalid input", async () => {
+            const user: Username = {
+                username: "user1",
+                platform: "badPlatform",
+            };
+            let result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+            user.platform = "badPlatform";
+            result = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+            user.username = "10";
+            result = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+            user.username = "USD";
+            result = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+    });
+
+    describe("parseTipValue()", () => {
+        describe("should correctly parse a TIP in a mention", () => {
+            it("for numerical input (10 u/arktippr)", async () => {
+                const tipValue: string = "10";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for numerical input (somethingButNoCurrency 10 u/arktippr)", async () => {
+                const tipValue: string = "10";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = ["somethingButNoCurrency", tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for double numerical input (10 10 u/arktippr)", async () => {
+                const tipValue: string = "10";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [tipValue, tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for single argument input (10USD u/arktippr)", async () => {
+                const tipValue: string = "10USD";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for single argument input (USD10 u/arktippr)", async () => {
+                const tipValue: string = "USD10";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for single argument input (something USD10 u/arktippr)", async () => {
+                const tipValue: string = "USD10";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = ["something", tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for single argument input (USD10 USD10 u/arktippr)", async () => {
+                const tipValue: string = "USD10";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [tipValue, tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for double argument input (10 USD u/arktippr)", async () => {
+                const tipValue = "10";
+                const currency = "USD";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [tipValue, currency, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for double argument input (USD 10 u/arktippr", async () => {
+                const tipValue = "10";
+                const currency = "USD";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = [currency, tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for double argument input (something USD 10 u/arktippr", async () => {
+                const tipValue = "10";
+                const currency = "USD";
+                const mentionedUser: string = "u/arktippr";
+                const input: string[] = ["something", currency, tipValue, mentionedUser];
+                const mentionIndex: number = input.indexOf(mentionedUser);
+                const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+            it("for a TIP in a wall of text", async () => {
+                const bla = "bla";
+                const tipValue = "10";
+                const currency = "USD";
+                const mentionedUser: string = "u/arktippr";
+                let input: string[] = [bla, bla, bla, tipValue, currency, mentionedUser, bla, bla, bla];
+                let mentionIndex: number = input.indexOf(mentionedUser);
+                let result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+                input = [bla, bla, bla, tipValue, mentionedUser, bla, bla, bla];
+                mentionIndex = input.indexOf(mentionedUser);
+                result = await ParserUtils.parseTipValue(input, mentionIndex);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+        });
+        it("should return null for a badly formatted mention", async () => {
+            const mentionedUser: string = "u/arktippr";
+            const input: string[] = [mentionedUser];
+            const mentionIndex: number = input.indexOf(mentionedUser);
+            const result: AmountCurrency = await ParserUtils.parseTipValue(input, mentionIndex);
+            expect(result).toBeNull();
+        });
+    });
+
+    describe("parseMentionCommand()", () => {
+        const platform: string = "reddit";
+        const smallFooter = "~";
+        const mentionedUser = "arktippr";
+        describe("should correctly parse a STICKERS mention", () => {
+            const command: string = "STICKERS";
+            it("for STICKERS without small footer argument: STICKERS u/arktippr", async () => {
+                const bodyParts: string[] = [command, mentionedUser];
+                const mentionBody: string = "STICKERS u/arktippr";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command[] = await ParserUtils.parseMentionCommand(
+                    command,
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter"]);
+                expect(result[0].command).toEqual(command);
+                expect(result[0].smallFooter).toBeFalse();
+            });
+
+            it("for STICKERS with small footer argument: STICKERS u/arktippr ~", async () => {
+                const bodyParts: string[] = [command, mentionedUser, smallFooter];
+                const mentionBody: string = "STICKERS u/arktippr ~";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command[] = await ParserUtils.parseMentionCommand(
+                    command,
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter"]);
+                expect(result[0].command).toEqual(command);
+                expect(result[0].smallFooter).toBeTrue();
+            });
+        });
+
+        describe("should correctly parse a REWARD mention", () => {
+            const command: string = "REWARD";
+            it("for REWARD without small footer argument", async () => {
+                const bodyParts: string[] = [
+                    command,
+                    mentionedUser,
+                    "10",
+                    "user1",
+                    "20USD",
+                    "user2",
+                    "30",
+                    "EUR",
+                    "user3",
+                    "STICKERS",
+                    "user4",
+                ];
+                const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2 30 EUR user3 STICKERS user4";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command[] = await ParserUtils.parseMentionCommand(
+                    command,
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result).toBeArrayOfSize(4);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[1]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[2]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[3]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[0].command).toEqual(command);
+                expect(result[1].command).toEqual(command);
+                expect(result[2].command).toEqual(command);
+                expect(result[3].command).toEqual(command);
+                expect(result[0].smallFooter).toBeFalse();
+                expect(result[1].smallFooter).toBeFalse();
+                expect(result[2].smallFooter).toBeFalse();
+                expect(result[3].smallFooter).toBeFalse();
+                expect(result[0].transfer).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
+                expect(result[1].transfer).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
+                expect(result[2].transfer).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
+                expect(result[3].transfer).toContainAllKeys(["receiver", "command"]);
+                expect(result[0].transfer.command).toEqual("TIP");
+                expect(result[1].transfer.command).toEqual("TIP");
+                expect(result[2].transfer.command).toEqual("TIP");
+                expect(result[3].transfer.command).toEqual("STICKERS");
+                expect(result[0].transfer.receiver.username).toEqual("user1");
+                expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result[1].transfer.receiver.username).toEqual("user2");
+                expect(result[1].transfer.arkToshiValue).toEqual(arktoshiValue.times(20));
+                expect(result[2].transfer.receiver.username).toEqual("user3");
+                expect(result[2].transfer.arkToshiValue).toEqual(arktoshiValue.times(30));
+                expect(result[3].transfer.receiver.username).toEqual("user4");
+            });
+
+            it("for REWARD with small footer argument", async () => {
+                const bodyParts: string[] = [
+                    command,
+                    mentionedUser,
+                    smallFooter,
+                    "10",
+                    "user1",
+                    "20USD",
+                    "user2",
+                    "30",
+                    "EUR",
+                    "user3",
+                ];
+                const mentionBody: string = "REWARD u/arktippr ~ 10 user1 20USD user2 30 EUR user3";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command[] = await ParserUtils.parseMentionCommand(
+                    command,
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result).toBeArrayOfSize(3);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[1]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[2]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[0].command).toEqual(command);
+                expect(result[1].command).toEqual(command);
+                expect(result[2].command).toEqual(command);
+                expect(result[0].smallFooter).toBeTrue();
+                expect(result[1].smallFooter).toBeTrue();
+                expect(result[2].smallFooter).toBeTrue();
+                expect(result[0].transfer).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
+                expect(result[1].transfer).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
+                expect(result[2].transfer).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
+                expect(result[0].transfer.command).toEqual("TIP");
+                expect(result[0].transfer.receiver.username).toEqual("user1");
+                expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result[1].transfer.command).toEqual("TIP");
+                expect(result[1].transfer.receiver.username).toEqual("user2");
+                expect(result[1].transfer.arkToshiValue).toEqual(arktoshiValue.times(20));
+                expect(result[2].transfer.command).toEqual("TIP");
+                expect(result[2].transfer.receiver.username).toEqual("user3");
+                expect(result[2].transfer.arkToshiValue).toEqual(arktoshiValue.times(30));
+            });
+        });
+
+        describe("should correctly parse a TIP mention", () => {
+            it("for a TIP without small footer argument", async () => {
+                const bodyParts: string[] = ["10", "USD", mentionedUser];
+                const mentionBody: string = "10 USD u/arktippr";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command[] = await ParserUtils.parseMentionCommand(
+                    "",
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[0].transfer).toContainAllKeys(["command", "check", "receiver", "arkToshiValue"]);
+                expect(result[0].command).toEqual("TIP");
+                expect(result[0].smallFooter).toBeFalse();
+                expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+            });
+
+            it("for a TIP with small footer argument", async () => {
+                const bodyParts: string[] = ["10", "USD", mentionedUser, smallFooter];
+                const mentionBody: string = "10 USD u/arktippr ~";
+                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const result: Command[] = await ParserUtils.parseMentionCommand(
+                    "",
+                    bodyParts,
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                );
+                expect(result).toBeArrayOfSize(1);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "smallFooter"]);
+                expect(result[0].transfer).toContainAllKeys(["command", "check", "receiver", "arkToshiValue"]);
+                expect(result[0].command).toEqual("TIP");
+                expect(result[0].smallFooter).toBeTrue();
+                expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+            });
+        });
+
+        it("should return null on mentions without commands", async () => {
+            const bodyParts: string[] = ["anything", "really", mentionedUser, smallFooter];
+            const mentionBody: string = "10 USD u/arktippr ~";
+            const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+            const result: Command[] = await ParserUtils.parseMentionCommand(
+                "",
+                bodyParts,
+                mentionBody,
+                mentionIndex,
+                platform,
+            );
+            expect(result).toBeNull();
+        });
+    });
+
+    describe("parseCommand()", () => {
+        it("should return null for a command that is invalid", async () => {
+            const command: string = "BADONE";
+            const platform: string = "reddit";
+            const commandArguments: string[] = [command];
+            const result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toBeNull();
+        });
+
+        it("should return {command} for a command that is valid, but has no need for additional argument", async () => {
+            const command: string = "HELP";
+            const platform: string = "reddit";
+            let commandArguments: string[] = [command];
+            let result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command"]);
+            expect(result.command).toEqual(command);
+            commandArguments = [command, "bla"];
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command"]);
+            expect(result.command).toEqual(command);
+        });
+
+        it("should correctly return a command when inputted without arguments", async () => {
+            let command: string = "SEND";
+            const platform: string = "reddit";
+            let commandArguments: string[] = [command];
+            let result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command"]);
+            expect(result.command).toEqual(command);
+            command = "WITHDRAW";
+            commandArguments = [command];
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "token"]);
+            expect(result.command).toEqual(command);
+            command = "STICKERS";
+            commandArguments = [command];
+            const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
+            mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(false));
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command"]);
+            expect(result.command).toEqual(command);
+            mockParserUtilsisValidUser.mockClear();
+        });
+
+        it("should correctly parse a SEND command with valid arguments", async () => {
+            const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
+            mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(true));
+            const platform: string = "reddit";
+            const command: string = "SEND";
+            const arg1: string = "user1";
+            let arg2: string = "10";
+            const arg3: string = "USD";
+            let commandArguments: string[] = [command, arg1, arg2, arg3];
+            let result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "transfer"]);
+            expect(result.command).toEqual(command);
+            expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
+            arg2 = "10USD";
+            commandArguments = [command, arg1, arg2];
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "transfer"]);
+            expect(result.command).toEqual(command);
+            expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
+            mockParserUtilsisValidUser.mockClear();
+        });
+
+        it("should correctly parse a WITHDRAW command with valid arguments", async () => {
+            const platform: string = "reddit";
+            const command = "WITHDRAW";
+            const arg1 = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            let arg2: string = "10";
+            const arg3: string = "USD";
+            let commandArguments: string[] = [command, arg1, arg2, arg3];
+            let result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "transfer"]);
+            expect(result.command).toEqual(command);
+            expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+            expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+            arg2 = "10USD";
+            commandArguments = [command, arg1, arg2];
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "transfer"]);
+            expect(result.command).toEqual(command);
+            expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+            expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+            commandArguments = [command, arg1];
+            result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "transfer"]);
+            expect(result.command).toEqual(command);
+            expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+            expect(result.transfer.arkToshiValue).toBeNull();
+        });
+
+        it("should correctly parse a STICKERS command with valid arguments", async () => {
+            const platform: string = "reddit";
+            const command = "STICKERS";
+            const arg1: string = "user1";
+            const commandArguments: string[] = [command, arg1];
+            const result = await ParserUtils.parseCommand(command, commandArguments, platform);
+            expect(result).toContainAllKeys(["command", "commandReplyTo"]);
+        });
+    });
+
     describe("parseAmount()", () => {
         describe("should return null on bad input", () => {
             const currency = "USD";
@@ -377,126 +863,6 @@ describe("pay-Parser: ParserUtils()", () => {
         });
     });
 
-    describe("parseTip()", () => {
-        describe("should correctly parse a TIP in a mention", () => {
-            const mock = jest.spyOn(CurrencyUtils, "getCurrencyTicker");
-            mock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
-            it("for numerical input (10 u/arktippr)", async () => {
-                const tipValue: string = "10";
-                const mentionedUser: string = "u/arktippr";
-                let input: string[] = [tipValue, mentionedUser];
-                let mentionIndex: number = input.indexOf(mentionedUser);
-                let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("ARK");
-                expect(result.amount).toEqual(amount);
-                input = ["something", tipValue, mentionedUser];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("ARK");
-                expect(result.amount).toEqual(amount);
-                input = [tipValue, tipValue, mentionedUser];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("ARK");
-                expect(result.amount).toEqual(amount);
-            });
-
-            it("for single argument input (10USD u/arktippr | USD10 u/arktippr)", async () => {
-                let tipValue: string = "10USD";
-                const mentionedUser: string = "u/arktippr";
-                let input: string[] = [tipValue, mentionedUser];
-                let mentionIndex: number = input.indexOf(mentionedUser);
-                let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                tipValue = "USD10";
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                input = ["something", tipValue, mentionedUser];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                input = [tipValue, tipValue, mentionedUser];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-            });
-
-            it("for double argument input (10 USD u/arktippr | USD 10 u/arktippr", async () => {
-                const tipValue = "10";
-                const currency = "USD";
-                const mentionedUser: string = "u/arktippr";
-                let input: string[] = [tipValue, currency, mentionedUser];
-                let mentionIndex: number = input.indexOf(mentionedUser);
-                let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                input = [currency, tipValue, mentionedUser];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                input = ["something", currency, tipValue, mentionedUser];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-            });
-
-            it("for a TIP in a wall of text", async () => {
-                const bla = "bla";
-                const tipValue = "10";
-                const currency = "USD";
-                const mentionedUser: string = "u/arktippr";
-                let input: string[] = [bla, bla, bla, tipValue, currency, mentionedUser, bla, bla, bla];
-                let mentionIndex: number = input.indexOf(mentionedUser);
-                let result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                input = [bla, bla, bla, tipValue, mentionedUser, bla, bla, bla];
-                mentionIndex = input.indexOf(mentionedUser);
-                result = await ParserUtils.parseTip(input, mentionIndex);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("ARK");
-                expect(result.amount).toEqual(amount);
-            });
-        });
-
-        it("should return null for a badly formatted mention", async () => {
-            const mentionedUser: string = "u/arktippr";
-            const input: string[] = [mentionedUser];
-            const mentionIndex: number = input.indexOf(mentionedUser);
-            const result: AmountCurrency = await ParserUtils.parseTip(input, mentionIndex);
-            expect(result).toBeNull();
-        });
-    });
-
     describe("isValidLeftInput()", () => {
         it("should return TRUE on valid input", () => {
             let leftInput: string = "10";
@@ -515,35 +881,6 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeFalse();
             leftInput = "10";
             result = ParserUtils.isValidLeftInput(leftInput, rightInput);
-            expect(result).toBeFalse();
-        });
-    });
-
-    describe("isValidUser()", () => {
-        it("should return TRUE on valid input", async () => {
-            const user: Username = {
-                username: "user1",
-                platform: "reddit",
-            };
-            const result: boolean = await ParserUtils.isValidUser(user);
-            expect(result).toBeTrue();
-        });
-
-        it("should return FALSE on invalid input", async () => {
-            const user: Username = {
-                username: "user1",
-                platform: "badPlatform",
-            };
-            let result: boolean = await ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.platform = "badPlatform";
-            result = await ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.username = "10";
-            result = await ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.username = "USD";
-            result = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
         });
     });
@@ -652,7 +989,7 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result.command).toEqual(command);
             command = "DEPOSIT";
             result = await ParserUtils.checkCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command"]);
+            expect(result).toContainAllKeys(["command", "token"]);
             expect(result.command).toEqual(command);
             command = "TIP";
             result = await ParserUtils.checkCommand(command, commandArguments, platform);
@@ -674,108 +1011,6 @@ describe("pay-Parser: ParserUtils()", () => {
             const commandArguments: string[] = [];
             const result: Command = await ParserUtils.checkCommand(command, commandArguments, platform);
             expect(result).toBeNull();
-        });
-    });
-
-    describe("parseCommand()", () => {
-        it("should return null for a command that is invalid", async () => {
-            const command: string = "BADONE";
-            const platform: string = "reddit";
-            const commandArguments: string[] = [command];
-            const result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toBeNull();
-        });
-
-        it("should return {command} for a command that is valid, but has no need for additional argument", async () => {
-            const command: string = "HELP";
-            const platform: string = "reddit";
-            let commandArguments: string[] = [command];
-            let result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command"]);
-            expect(result.command).toEqual(command);
-            commandArguments = [command, "bla"];
-            result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command"]);
-            expect(result.command).toEqual(command);
-        });
-
-        it("should correctly return a command when inputted without arguments", async () => {
-            let command: string = "SEND";
-            const platform: string = "reddit";
-            let commandArguments: string[] = [command];
-            let result: Command = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command"]);
-            expect(result.command).toEqual(command);
-            command = "WITHDRAW";
-            commandArguments = [command];
-            result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command"]);
-            expect(result.command).toEqual(command);
-            command = "STICKERS";
-            commandArguments = [command];
-            result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command"]);
-            expect(result.command).toEqual(command);
-        });
-
-        it("should correctly parse a SEND command with valid arguments", async () => {
-            const platform: string = "reddit";
-            const command: string = "SEND";
-            const arg1: string = "user1";
-            let arg2: string = "10";
-            const arg3: string = "USD";
-            let commandArguments: string[] = [command, arg1, arg2, arg3];
-            let result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "transfers"]);
-            expect(result.command).toEqual(command);
-            expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
-            arg2 = "10USD";
-            commandArguments = [command, arg1, arg2];
-            result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "transfers"]);
-            expect(result.command).toEqual(command);
-            expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
-        });
-
-        it("should correctly parse a WITHDRAW command with valid arguments", async () => {
-            const platform: string = "reddit";
-            const command = "WITHDRAW";
-            const arg1 = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            let arg2: string = "10";
-            const arg3: string = "USD";
-            let commandArguments: string[] = [command, arg1, arg2, arg3];
-            let result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "transfers"]);
-            expect(result.command).toEqual(command);
-            expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-            expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-            arg2 = "10USD";
-            commandArguments = [command, arg1, arg2];
-            result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "transfers"]);
-            expect(result.command).toEqual(command);
-            expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-            expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-            commandArguments = [command, arg1];
-            result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "transfers"]);
-            expect(result.command).toEqual(command);
-            expect(result.transfers).toBeArrayOfSize(1);
-            expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-            expect(result.transfers[0].arkToshiValue).toBeNull();
-        });
-
-        it("should correctly parse a STICKERS command with valid arguments", async () => {
-            const platform: string = "reddit";
-            const command = "STICKERS";
-            const arg1: string = "user1";
-            const commandArguments: string[] = [command, arg1];
-            const result = await ParserUtils.parseCommand(command, commandArguments, platform);
-            expect(result).toContainAllKeys(["command", "receiver"]);
         });
     });
 
@@ -839,14 +1074,13 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "";
                 const platform: string = "reddit";
                 const result: Command = await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
-                expect(result).toContainAllKeys(["command", "transfers"]);
+                expect(result).toContainAllKeys(["command", "transfer"]);
                 expect(result.command).toEqual("SEND");
-                expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
-                expect(result.transfers[0].check.currency).toEqual("USD");
-                expect(result.transfers[0].check.amount).toEqual(amount);
+                expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
+                expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
+                expect(result.transfer.check.currency).toEqual("USD");
+                expect(result.transfer.check.amount).toEqual(amount);
             });
             it("for a SEND with 3 valid arguments", async () => {
                 const arg1: string = "user1";
@@ -854,34 +1088,36 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "USD";
                 const platform: string = "reddit";
                 const result: Command = await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
-                expect(result).toContainAllKeys(["command", "transfers"]);
+                expect(result).toContainAllKeys(["command", "transfer"]);
                 expect(result.command).toEqual("SEND");
-                expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.transfers[0].check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
-                expect(result.transfers[0].check.currency).toEqual("USD");
-                expect(result.transfers[0].check.amount).toEqual(amount);
+                expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check"]);
+                expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
+                expect(result.transfer.check.currency).toEqual("USD");
+                expect(result.transfer.check.amount).toEqual(amount);
             });
         });
     });
 
     describe("parseSTICKERS()", () => {
         describe("should correctly parse a STICKERS command", () => {
-            it("without valid arguments", async () => {
-                const platform: string = "reddit";
-                const arg1: string = "";
-                const result: Command = await ParserUtils.parseSTICKERS(arg1, platform);
-                expect(result).toContainAllKeys(["command", "receiver"]);
-                expect(result.command).toEqual("STICKERS");
-            });
-
             it("with valid arguments", async () => {
                 const platform: string = "reddit";
                 const arg1: string = "user1";
                 const result: Command = await ParserUtils.parseSTICKERS(arg1, platform);
-                expect(result).toContainAllKeys(["command", "receiver"]);
+                expect(result).toContainAllKeys(["command", "commandReplyTo"]);
                 expect(result.command).toEqual("STICKERS");
+            });
+
+            it("without valid arguments", async () => {
+                const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
+                mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(false));
+                const platform: string = "reddit";
+                const arg1: string = "";
+                const result: Command = await ParserUtils.parseSTICKERS(arg1, platform);
+                expect(result).toContainAllKeys(["command"]);
+                expect(result.command).toEqual("STICKERS");
+                mockParserUtilsisValidUser.mockClear();
             });
         });
     });
@@ -894,7 +1130,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "";
                 const token: string = "ARK";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, token);
-                expect(result).toContainAllKeys(["command"]);
+                expect(result).toContainAllKeys(["command", "token"]);
                 expect(result.command).toEqual("WITHDRAW");
             });
 
@@ -904,11 +1140,10 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "";
                 const token: string = "ARK";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, token);
-                expect(result).toContainAllKeys(["command", "transfers"]);
+                expect(result).toContainAllKeys(["command", "transfer"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toBeNull();
+                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result.transfer.arkToshiValue).toBeNull();
             });
 
             it("with 2 valid arguments", async () => {
@@ -917,11 +1152,10 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "";
                 const token: string = "ARK";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, token);
-                expect(result).toContainAllKeys(["command", "transfers"]);
+                expect(result).toContainAllKeys(["command", "transfer"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
             it("with 3 valid arguments", async () => {
@@ -930,166 +1164,11 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "USD";
                 const token: string = "ARK";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, token);
-                expect(result).toContainAllKeys(["command", "transfers"]);
+                expect(result).toContainAllKeys(["command", "transfer"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfers).toBeArrayOfSize(1);
-                expect(result.transfers[0]).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check"]);
+                expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
-        });
-    });
-
-    describe("parseMentionCommand()", () => {
-        const platform: string = "reddit";
-        const smallFooter = "~";
-        const mentionedUser = "arktippr";
-        describe("should correctly parse a STICKERS mention", () => {
-            const command: string = "STICKERS";
-            it("for STICKERS without small footer argument", async () => {
-                const bodyParts: string[] = [command, mentionedUser];
-                const mentionBody: string = "STICKERS u/arktippr";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    command,
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toContainAllKeys(["command", "smallFooter"]);
-                expect(result.command).toEqual(command);
-                expect(result.smallFooter).toBeFalse();
-            });
-
-            it("for STICKERS with small footer argument", async () => {
-                const bodyParts: string[] = [command, mentionedUser, smallFooter];
-                const mentionBody: string = "STICKERS u/arktippr ~";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    command,
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toContainAllKeys(["command", "smallFooter"]);
-                expect(result.command).toEqual(command);
-                expect(result.smallFooter).toBeTrue();
-            });
-        });
-
-        describe("should correctly parse a REWARD mention", () => {
-            const command: string = "REWARD";
-            it("for REWARD without small footer argument", async () => {
-                const bodyParts: string[] = [
-                    command,
-                    mentionedUser,
-                    "10",
-                    "user1",
-                    "20USD",
-                    "user2",
-                    "30",
-                    "EUR",
-                    "user3",
-                ];
-                const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2 30 EUR user3";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    command,
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
-                expect(result.command).toEqual(command);
-                expect(result.smallFooter).toBeFalse();
-                expect(result.transfers).toBeArrayOfSize(3);
-                expect(result.transfers[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
-                expect(result.transfers[0].command).toEqual("TIP");
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-            });
-
-            it("for REWARD with small footer argument", async () => {
-                const bodyParts: string[] = [
-                    command,
-                    mentionedUser,
-                    smallFooter,
-                    "10",
-                    "user1",
-                    "20USD",
-                    "user2",
-                    "30",
-                    "EUR",
-                    "user3",
-                ];
-                const mentionBody: string = "REWARD u/arktippr ~ 10 user1 20USD user2 30 EUR user3";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    command,
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toContainAllKeys(["command", "transfers", "smallFooter"]);
-                expect(result.command).toEqual(command);
-                expect(result.smallFooter).toBeTrue();
-                expect(result.transfers).toBeArrayOfSize(3);
-                expect(result.transfers[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
-                expect(result.transfers[0].command).toEqual("TIP");
-                expect(result.transfers[0].arkToshiValue).toEqual(arktoshiValue.times(10));
-            });
-        });
-
-        describe("should correctly parse a TIP mention", () => {
-            it("for a TIP without small footer argument", async () => {
-                const bodyParts: string[] = ["10", "USD", mentionedUser];
-                const mentionBody: string = "10 USD u/arktippr";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    "",
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toContainAllKeys(["command", "check", "smallFooter", "arkToshiValue"]);
-                expect(result.command).toEqual("TIP");
-                expect(result.smallFooter).toBeFalse();
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-            });
-
-            it("for a TIP with small footer argument", async () => {
-                const bodyParts: string[] = ["10", "USD", mentionedUser, smallFooter];
-                const mentionBody: string = "10 USD u/arktippr ~";
-                const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-                const result: Command = await ParserUtils.parseMentionCommand(
-                    "",
-                    bodyParts,
-                    mentionBody,
-                    mentionIndex,
-                    platform,
-                );
-                expect(result).toContainAllKeys(["command", "check", "smallFooter", "arkToshiValue"]);
-                expect(result.command).toEqual("TIP");
-                expect(result.smallFooter).toBeTrue();
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-            });
-        });
-
-        it("should return null on mentions without commands", async () => {
-            const bodyParts: string[] = ["anything", "really", mentionedUser, smallFooter];
-            const mentionBody: string = "10 USD u/arktippr ~";
-            const mentionIndex: number = bodyParts.indexOf(mentionedUser);
-            const result: Command = await ParserUtils.parseMentionCommand(
-                "",
-                bodyParts,
-                mentionBody,
-                mentionIndex,
-                platform,
-            );
-            expect(result).toBeNull();
         });
     });
 
@@ -1098,11 +1177,13 @@ describe("pay-Parser: ParserUtils()", () => {
         const platform: string = "reddit";
         const mentionedUser = "arktippr";
         it("should correctly parse a REWARD mention with mixed multiple entries", async () => {
+            const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
+            mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(true));
             const bodyParts: string[] = [command, mentionedUser];
-            const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2@twitter EUR 4 user4 0 user5";
+            const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2@reddit EUR 4 user4 0 user5";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
-            expect(result).toBeArrayOfSize(2);
+            expect(result).toBeArrayOfSize(3);
             expect(result[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command"]);
             expect(result[0].command).toEqual("TIP");
             expect(result[0].arkToshiValue).toEqual(arktoshiValue.times(10));
@@ -1113,10 +1194,11 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result[0].check.currency).toEqual("ARK");
             expect(result[0].check.amount).toEqual(amount);
             expect(result[0].check.arkToshiValue).toEqual(arktoshiValue.times(10));
-            expect(result[1].receiver.username).toEqual("user4");
+            expect(result[1].receiver.username).toEqual("user2");
             expect(result[1].receiver.platform).toEqual(platform);
-            expect(result[1].check.currency).toEqual("EUR");
-            expect(result[1].check.amount).toEqual(new BigNumber(4));
+            expect(result[1].check.currency).toEqual("USD");
+            expect(result[1].check.amount).toEqual(new BigNumber(20));
+            mockParserUtilsisValidUser.mockClear();
         });
 
         it("should return NULL for a REWARD mention without valid entries", async () => {
@@ -1128,3 +1210,7 @@ describe("pay-Parser: ParserUtils()", () => {
         });
     });
 });
+
+mockCoinGeckoAPI.mockClear();
+mockCurrencyUtils.mockClear();
+configMock.mockClear();

@@ -12,7 +12,7 @@ export class Parser {
      * @param arkPayUser The user that was mentioned e.g. u/arktippr or @arktippr
      * @param platform The plaform where this was mentioned e.g. reddit or twitter
      */
-    public static async parseMention(mentionBody: string, arkPayUser: string, platform: string): Promise<Command> {
+    public static async parseMention(mentionBody: string, arkPayUser: string, platform: string): Promise<Command[]> {
         // We need something to work with
         if (
             typeof mentionBody === "undefined" ||

@@ -1,16 +1,177 @@
 import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
-import { config } from "@cryptology.hk/pay-config";
+import { BaseCurrency, config } from "@cryptology.hk/pay-config";
 import { AmountCurrency, Currency } from "@cryptology.hk/pay-currency";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
 
-// @ts-ignore
-const configuration = config.get("pay-parser");
+const configuration = config.get("parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";
+const baseCurrencyConfig = config.get("parser");
+const ARKTOSHI = new BigNumber(Math.pow(10, 8));
+const baseCurrency: BaseCurrency = {
+    ticker: baseCurrencyConfig.baseCurrency ? baseCurrencyConfig.baseCurrency.toUpperCase() : "ARK",
+    units: ARKTOSHI,
+};
+const arkEcosystemConfig = config.get("arkEcosystem");
 
 // Use a ParserUtils class to be able to add these methods to Unit testing without exposing them to the module
 export class ParserUtils {
+    /**
+     * @dev     Parse a TIP mention command to get it's value in ArkToshi
+     * @param   bodyParts
+     * @param   mentionIndex
+     *
+     * Accepted Input:
+     * <amount> u/arktippr => <amount> ARK
+     * cool post <amount> u/arktippr => <amount> ARK
+     * give you a 10 <amount> u/arktippr => <amount> ARK
+     * <amount><currency> u/arktippr => <amount> <currency>
+     * <currency><amount> u/arktippr => <amount> <currency>
+     * cool post <amount><currency> u/arktippr => <amount> <currency>
+     * cool post <currency><amount> u/arktippr => <amount> <currency>
+     * give you a 10 <amount><currency> u/arktippr => <amount> <currency>
+     * give you a 10 <currency><amount> u/arktippr => <amount> <currency>
+     * <amount> <currency> u/arktippr => <amount> <currency>
+     * <currency> <amount> u/arktippr => <amount> <currency>
+     * cool post <amount> <currency> u/arktippr => <amount> <currency>
+     * cool post <currency> <amount> u/arktippr => <amount> <currency>
+     * give you a 10 <amount> <currency> u/arktippr => <amount> <currency>
+     * give you a 10 <currency> <amount> u/arktippr => <amount> <currency>
+     */
+    public static async parseTipValue(bodyParts: string[], mentionIndex: number): Promise<AmountCurrency> {
+        let leftInput: string = mentionIndex >= 2 ? bodyParts[mentionIndex - 2].toUpperCase() : "";
+        const rightInput: string = mentionIndex >= 1 ? bodyParts[mentionIndex - 1].toUpperCase() : "";
+
+        // We could have a valid input (numerical or combined currency/value) preceded by random text.
+        if (!ParserUtils.isValidLeftInput(leftInput, rightInput)) {
+            leftInput = "";
+        }
+        const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
+
+        if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+            return amountCurrency;
+        }
+        return null;
+    }
+
+    /**
+     * @dev Parse a mention command
+     * @param command
+     * @param bodyParts
+     * @param mentionBody
+     * @param mentionIndex
+     * @param platform
+     */
+    public static async parseMentionCommand(
+        command: string,
+        bodyParts: string[],
+        mentionBody: string,
+        mentionIndex: number,
+        platform: string,
+    ): Promise<Command[]> {
+        const smallFooter: boolean = bodyParts[mentionIndex + 1] === "~";
+        switch (command) {
+            case "STICKERS":
+                return [{ command, smallFooter }];
+
+            case "REWARD":
+                const transfers: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
+                const commands: Command[] = [];
+                for (const item in transfers) {
+                    if (transfers[item]) {
+                        const rewardCommand: Command = {
+                            command,
+                            transfer: transfers[item],
+                            smallFooter,
+                        };
+                        commands.push(rewardCommand);
+                    }
+                }
+                return commands.length > 0 ? commands : null;
+
+            default:
+                // Check if we received a TIP command
+                const amountCurrency: AmountCurrency = await ParserUtils.parseTipValue(bodyParts, mentionIndex);
+                if (amountCurrency !== null) {
+                    const transfer: Transfer = {
+                        receiver: null,
+                        command: "TIP",
+                        arkToshiValue: amountCurrency.arkToshiValue,
+                        check: amountCurrency,
+                    };
+                    return [
+                        {
+                            command: "TIP",
+                            transfer,
+                            smallFooter,
+                        },
+                    ];
+                }
+        }
+        return null;
+    }
+
+    /**
+     * @dev Parse a command
+     * @param command
+     * @param commandArguments
+     * @param platform
+     */
+    public static async parseCommand(command: string, commandArguments: string[], platform: string): Promise<Command> {
+        command = command.toUpperCase();
+        if (!Commands.isValidCommand(command)) {
+            return null;
+        }
+
+        // Determine which are the optional arguments for this command
+        const commandIndex = ParserUtils.commandIndex(command, commandArguments);
+        const arg1: string =
+            typeof commandArguments[commandIndex + 1] !== "undefined" ? commandArguments[commandIndex + 1] : "";
+        const arg2: string =
+            typeof commandArguments[commandIndex + 2] !== "undefined" ? commandArguments[commandIndex + 2] : "";
+        const arg3: string =
+            typeof commandArguments[commandIndex + 3] !== "undefined" ? commandArguments[commandIndex + 3] : "";
+
+        switch (command) {
+            case "DEPOSIT":
+                return await ParserUtils.parseDEPOSIT(arg1, platform);
+            case "SEND":
+                return await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
+            case "STICKERS":
+                return await ParserUtils.parseSTICKERS(arg1, platform);
+            case "WITHDRAW":
+                return await ParserUtils.parseWITHDRAW(arg1, arg2, arg3);
+            default:
+                return { command };
+        }
+    }
+
+    /**
+     * @dev Parse a SEND command
+     * @param arg1
+     * @param arg2
+     * @param arg3
+     * @param platform
+     */
+    public static async parseSEND(arg1: string, arg2: string, arg3: string, platform: string): Promise<Command> {
+        const command = "SEND";
+        const receiver: Username = ParserUtils.parseUsername(arg1, platform);
+        if (await ParserUtils.isValidUser(receiver)) {
+            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
+            if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                const transfer: Transfer = {
+                    receiver,
+                    command,
+                    arkToshiValue: amountCurrency.arkToshiValue,
+                    check: amountCurrency,
+                };
+                return { command, transfer };
+            }
+        }
+        return { command };
+    }
+
     /**
      * Parse an amount/currency combination and return it's value in Arktoshi
      * @param leftInput
@@ -43,44 +204,6 @@ export class ParserUtils {
         } catch (e) {
             return null;
         }
-    }
-
-    /**
-     * Parse a TIP mention command
-     * @param bodyParts
-     * @param mentionIndex
-     *
-     * Accepted Input:
-     * <amount> u/arktippr => <amount> ARK
-     * cool post <amount> u/arktippr => <amount> ARK
-     * give you a 10 <amount> u/arktippr => <amount> ARK
-     * <amount><currency> u/arktippr => <amount> <currency>
-     * <currency><amount> u/arktippr => <amount> <currency>
-     * cool post <amount><currency> u/arktippr => <amount> <currency>
-     * cool post <currency><amount> u/arktippr => <amount> <currency>
-     * give you a 10 <amount><currency> u/arktippr => <amount> <currency>
-     * give you a 10 <currency><amount> u/arktippr => <amount> <currency>
-     * <amount> <currency> u/arktippr => <amount> <currency>
-     * <currency> <amount> u/arktippr => <amount> <currency>
-     * cool post <amount> <currency> u/arktippr => <amount> <currency>
-     * cool post <currency> <amount> u/arktippr => <amount> <currency>
-     * give you a 10 <amount> <currency> u/arktippr => <amount> <currency>
-     * give you a 10 <currency> <amount> u/arktippr => <amount> <currency>
-     */
-    public static async parseTip(bodyParts: string[], mentionIndex: number): Promise<AmountCurrency> {
-        let leftInput: string = mentionIndex >= 2 ? bodyParts[mentionIndex - 2].toUpperCase() : "";
-        const rightInput: string = mentionIndex >= 1 ? bodyParts[mentionIndex - 1].toUpperCase() : "";
-
-        // We could have a valid input (numerical or combined currency/value) preceded by random text.
-        if (!ParserUtils.isValidLeftInput(leftInput, rightInput)) {
-            leftInput = "";
-        }
-        const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
-
-        if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
-            return amountCurrency;
-        }
-        return null;
     }
 
     /**
@@ -194,44 +317,6 @@ export class ParserUtils {
     }
 
     /**
-     * Parse a command
-     * @param command
-     * @param commandArguments
-     * @param platform
-     */
-    public static async parseCommand(command: string, commandArguments: string[], platform: string): Promise<Command> {
-        command = command.toUpperCase();
-        if (!Commands.isValidCommand(command)) {
-            return null;
-        }
-
-        // Determine which are the optional arguments for this command
-        const commandIndex = ParserUtils.commandIndex(command, commandArguments);
-        const arg1: string = commandArguments[commandIndex + 1];
-
-        // We have a request for HELP on the command
-        if (typeof arg1 === "undefined") {
-            return { command };
-        }
-
-        const arg2: string =
-            typeof commandArguments[commandIndex + 2] !== "undefined" ? commandArguments[commandIndex + 2] : "";
-        const arg3: string =
-            typeof commandArguments[commandIndex + 3] !== "undefined" ? commandArguments[commandIndex + 3] : "";
-
-        switch (command) {
-            case "SEND":
-                return await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
-            case "STICKERS":
-                return await ParserUtils.parseSTICKERS(arg1, platform);
-            case "WITHDRAW":
-                return await ParserUtils.parseWITHDRAW(arg1, arg2, arg3);
-            default:
-                return { command };
-        }
-    }
-
-    /**
      * Check if an address is valid
      * @param address
      * @param token
@@ -294,42 +379,29 @@ export class ParserUtils {
     }
 
     /**
-     * Parse a SEND command
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     * @param platform
-     */
-    public static async parseSEND(arg1: string, arg2: string, arg3: string, platform: string): Promise<Command> {
-        const command = "SEND";
-        const receiver: Username = ParserUtils.parseUsername(arg1, platform);
-        if (await ParserUtils.isValidUser(receiver)) {
-            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
-            if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
-                const transfer: Transfer = {
-                    receiver,
-                    command: "SEND",
-                    arkToshiValue: amountCurrency.arkToshiValue,
-                    check: amountCurrency,
-                };
-                return { command, transfers: [transfer] };
-            }
-        }
-        return { command };
-    }
-
-    /**
      * Parse a STICKERS command
      * @param arg1
      * @param platform
      */
     public static async parseSTICKERS(arg1: string, platform: string): Promise<Command> {
         const command = "STICKERS";
-        const receiver: Username = ParserUtils.parseUsername(arg1, platform);
-        if ((await ParserUtils.isValidUser(receiver)) === false) {
-            return { command };
+        const commandReplyTo: Username = ParserUtils.parseUsername(arg1, platform);
+        if (await ParserUtils.isValidUser(commandReplyTo)) {
+            return { command, commandReplyTo };
         }
-        return { command, receiver };
+        return { command };
+    }
+
+    /**
+     * Parse a DEPOSIT command
+     * @param arg1
+     * @param platform
+     */
+    public static async parseDEPOSIT(arg1: string, platform: string): Promise<Command> {
+        arg1 = arg1.toLowerCase();
+        const command = "DEPOSIT";
+        const token = arkEcosystemConfig.hasOwnProperty(arg1) ? arg1.toUpperCase() : baseCurrency.ticker;
+        return { command, token };
     }
 
     /**
@@ -341,7 +413,7 @@ export class ParserUtils {
      */
     public static async parseWITHDRAW(arg1: string, arg2: string, arg3: string, token?: string): Promise<Command> {
         const command = "WITHDRAW";
-        token = typeof token !== "undefined" ? token : "ARK";
+        token = typeof token !== "undefined" ? token : baseCurrency.ticker;
 
         if (await ParserUtils.isValidAddress(arg1, token)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
@@ -354,48 +426,9 @@ export class ParserUtils {
                 arkToshiValue,
                 check: amountCurrency,
             };
-            return { command, transfers: [transfer] };
+            return { command, transfer };
         }
-        return { command };
-    }
-
-    /**
-     * Parse a mention command
-     * @param command
-     * @param bodyParts
-     * @param mentionBody
-     * @param mentionIndex
-     * @param platform
-     */
-    public static async parseMentionCommand(
-        command: string,
-        bodyParts: string[],
-        mentionBody: string,
-        mentionIndex: number,
-        platform: string,
-    ): Promise<Command> {
-        const smallFooter: boolean = bodyParts[mentionIndex + 1] === "~";
-        switch (command) {
-            case "STICKERS":
-                return { command, smallFooter };
-
-            case "REWARD":
-                const transfers: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
-                return transfers ? { command, transfers, smallFooter } : null;
-
-            default:
-                // Check if we received a TIP command
-                const amountCurrency: AmountCurrency = await ParserUtils.parseTip(bodyParts, mentionIndex);
-                if (amountCurrency !== null) {
-                    return {
-                        command: "TIP",
-                        arkToshiValue: amountCurrency.arkToshiValue,
-                        check: amountCurrency,
-                        smallFooter,
-                    };
-                }
-        }
-        return null;
+        return { command, token };
     }
 
     /**
