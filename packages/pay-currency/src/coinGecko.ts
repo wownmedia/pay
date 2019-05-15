@@ -24,20 +24,17 @@ export class CoinGeckoAPI {
                 fiat = "usd";
         }
 
-        const currencyValue = await this.getSimplePrice(currency, fiat);
-        return currencyValue;
+        return await this.getSimplePrice(currency, fiat);
     }
 
     /**
-     * Interface to the CoinGecko API
+     * @dev Interface to the CoinGecko API
      * @param currency
      * @param fiat
+     *
+     * Didn't manage to mock the getter for simple.price in testing, so no coverage for this method.
      */
     public static async getSimplePrice(currency: string, fiat: string): Promise<BigNumber> {
-        if (process.env.NODE_ENV === "test") {
-            return new BigNumber(1);
-        }
-
         const simpleCurrencyTicker = await coinGeckoClient.simple.price({
             ids: [currency],
             vs_currencies: [fiat],

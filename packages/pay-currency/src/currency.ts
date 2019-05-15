@@ -1,12 +1,18 @@
 import BigNumber from "bignumber.js";
 
-import { BaseCurrency, config } from "@cryptology.hk/pay-config";
+import { config } from "@cryptology.hk/pay-config";
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
 const configuration = config.get("pay-currency");
 const acceptedCurrencies: string[] = CURRENCIES; // configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
+
+export interface BaseCurrency {
+    ticker: string;
+    units: BigNumber;
+}
+
 const baseCurrency: BaseCurrency = {
-    ticker: configuration.baseCurrency ? configuration.baseCurrency : "ARK",
+    ticker: configuration.baseCurrency ? configuration.baseCurrency.toUpperCase() : "ARK",
     units: ARKTOSHI,
 };
 

@@ -43,7 +43,7 @@
         "joi": "^14.3.1",
         "@cryptology.hk/pay-config": "^1.1.0",
         "@cryptology.hk/pay-logger": "^1.0.1",
-        "@cryptology.hk/pay-currency": "^1.0.9",
+        "@cryptology.hk/pay-currency": "^1.1.0",
         "@cryptology.hk/pay-user": "^1.0.0",
         "@cryptology.hk/pay-commands": "^1.0.0"
     }
