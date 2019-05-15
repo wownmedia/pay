@@ -1,6 +1,6 @@
 import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
-import { BaseCurrency, config } from "@cryptology.hk/pay-config";
-import { AmountCurrency, Currency } from "@cryptology.hk/pay-currency";
+import { config } from "@cryptology.hk/pay-config";
+import { AmountCurrency, BaseCurrency, Currency } from "@cryptology.hk/pay-currency";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";

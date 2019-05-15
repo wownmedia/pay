@@ -1,5 +1,49 @@
 {
     "pay-config": {
         "test": "cryptology"
+    },
+
+    "database": {
+        "dbUser": "arkpay",
+        "dbPassword": "password",
+        "host": "localhost",
+        "database": "arkpay",
+        "port": 5432
+    },
+
+    "user": {},
+
+    "secureStorage": {
+        "encryptionKey": "935bff586aeb4244452802e4cf87eaca"
+    },
+
+    "currency": {
+        "tokens": [
+            {
+                "ark": {
+                    "minValue": 2000000,
+                    "voteFee": 157,
+                    "transactionFee": 300,
+                    "nodes": [
+                        {
+                            "host": "217.160.169.226",
+                            "port": 4003
+                        }
+                    ]
+                },
+
+                "dark": {
+                    "minValue": 2000000,
+                    "voteFee": 157,
+                    "transactionFee": 300,
+                    "nodes": [
+                        {
+                            "host": "82.223.100.85",
+                            "port": 4033
+                        }
+                    ]
+                }
+            }
+        ]
     }
 }

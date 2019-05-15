@@ -1,28 +1,24 @@
 import { logger } from "@cryptology.hk/pay-logger";
-import BigNumber from "bignumber.js";
 import findConfig from "find-config";
 import os from "os";
 
-let homeDir = os.homedir();
-
-// Load a config file from __test__ directories in case we are testing
-if (process.env.NODE_ENV === "test") {
-    homeDir = __dirname.replace("src", "__tests__");
-}
-const configFile = findConfig("pay-config.json", { dir: `${homeDir}/.config/ark-pay/` });
-
-export interface BaseCurrency {
-    ticker: string;
-    units: BigNumber;
-}
-
 export class Config {
+    public static getConfigFile() {
+        // Load a config file from __test__ directories in case we are testing
+        let homeDir = os.homedir();
+        if (process.env.NODE_ENV === "test") {
+            homeDir = __dirname.replace("src", "__tests__");
+        }
+        return findConfig("pay-config.json", { dir: `${homeDir}/.config/ark-pay/` });
+    }
     private readonly configuration: any;
 
     constructor() {
         try {
+            const configFile = Config.getConfigFile();
             this.configuration = require(configFile);
         } catch (e) {
+            this.configuration = {};
             logger.warn("pay-config: Bad configuration: " + e.message);
         }
     }
@@ -32,12 +28,8 @@ export class Config {
      * @param subConfig
      */
     public get(subConfig: string): any {
-        try {
-            const config = this.configuration[subConfig];
-            return config ? config : {};
-        } catch (e) {
-            return {};
-        }
+        const config = this.configuration[subConfig];
+        return config ? config : {};
     }
 }
 
