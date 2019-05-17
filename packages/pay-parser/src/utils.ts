@@ -62,6 +62,8 @@ export class ParserUtils {
      * @param mentionBody
      * @param mentionIndex
      * @param platform
+     * @param commandSender
+     * @param commandReplyTo
      */
     public static async parseMentionCommand(
         command: string,
@@ -69,18 +71,27 @@ export class ParserUtils {
         mentionBody: string,
         mentionIndex: number,
         platform: string,
+        commandSender: Username,
+        commandReplyTo: Username,
     ): Promise<Command[]> {
         const smallFooter: boolean = bodyParts[mentionIndex + 1] === "~";
         switch (command) {
             case "STICKERS":
-                return [{ command, smallFooter }];
+                return [{ command, smallFooter, commandSender, commandReplyTo }];
 
             case "REWARD":
-                const transfers: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform);
+                const transfers: Transfer[] = await ParserUtils.parseReward(
+                    mentionBody,
+                    mentionIndex,
+                    platform,
+                    commandSender,
+                );
                 const commands: Command[] = [];
                 for (const item in transfers) {
                     if (transfers[item]) {
                         const rewardCommand: Command = {
+                            commandReplyTo: transfers[item].receiver,
+                            commandSender,
                             command,
                             transfer: transfers[item],
                             smallFooter,
@@ -95,7 +106,8 @@ export class ParserUtils {
                 const amountCurrency: AmountCurrency = await ParserUtils.parseTipValue(bodyParts, mentionIndex);
                 if (amountCurrency !== null) {
                     const transfer: Transfer = {
-                        receiver: null,
+                        sender: commandSender,
+                        receiver: commandReplyTo,
                         command: "TIP",
                         arkToshiValue: amountCurrency.arkToshiValue,
                         check: amountCurrency,
@@ -105,6 +117,8 @@ export class ParserUtils {
                             command: "TIP",
                             transfer,
                             smallFooter,
+                            commandSender,
+                            commandReplyTo,
                         },
                     ];
                 }
@@ -118,7 +132,12 @@ export class ParserUtils {
      * @param commandArguments
      * @param platform
      */
-    public static async parseCommand(command: string, commandArguments: string[], platform: string): Promise<Command> {
+    public static async parseCommand(
+        command: string,
+        commandArguments: string[],
+        platform: string,
+        commandSender: Username,
+    ): Promise<Command> {
         command = command.toUpperCase();
         if (!Commands.isValidCommand(command)) {
             return null;
@@ -132,18 +151,23 @@ export class ParserUtils {
             typeof commandArguments[commandIndex + 2] !== "undefined" ? commandArguments[commandIndex + 2] : "";
         const arg3: string =
             typeof commandArguments[commandIndex + 3] !== "undefined" ? commandArguments[commandIndex + 3] : "";
+        const arg4: string =
+            typeof commandArguments[commandIndex + 4] !== "undefined" ? commandArguments[commandIndex + 4] : "";
 
         switch (command) {
+            case "BALANCE":
+                return await ParserUtils.parseBALANCE(arg1, platform, commandSender);
+            case "ADDRESS":
             case "DEPOSIT":
-                return await ParserUtils.parseDEPOSIT(arg1, platform);
+                return await ParserUtils.parseDEPOSIT(arg1, platform, commandSender);
             case "SEND":
-                return await ParserUtils.parseSEND(arg1, arg2, arg3, platform);
+                return await ParserUtils.parseSEND(arg1, arg2, arg3, platform, commandSender);
             case "STICKERS":
-                return await ParserUtils.parseSTICKERS(arg1, platform);
+                return await ParserUtils.parseSTICKERS(arg1, platform, commandSender);
             case "WITHDRAW":
-                return await ParserUtils.parseWITHDRAW(arg1, arg2, arg3);
+                return await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, arg4, commandSender);
             default:
-                return { command };
+                return { command, commandSender };
         }
     }
 
@@ -154,22 +178,29 @@ export class ParserUtils {
      * @param arg3
      * @param platform
      */
-    public static async parseSEND(arg1: string, arg2: string, arg3: string, platform: string): Promise<Command> {
+    public static async parseSEND(
+        arg1: string,
+        arg2: string,
+        arg3: string,
+        platform: string,
+        commandSender: Username,
+    ): Promise<Command> {
         const command = "SEND";
         const receiver: Username = ParserUtils.parseUsername(arg1, platform);
         if (await ParserUtils.isValidUser(receiver)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                 const transfer: Transfer = {
+                    sender: commandSender,
                     receiver,
                     command,
                     arkToshiValue: amountCurrency.arkToshiValue,
                     check: amountCurrency,
                 };
-                return { command, transfer };
+                return { command, transfer, commandSender, commandReplyTo: receiver };
             }
         }
-        return { command };
+        return { command, commandSender };
     }
 
     /**
@@ -231,7 +262,8 @@ export class ParserUtils {
         return !(
             Currency.isValidCurrency(user.username) ||
             !new BigNumber(user.username).isNaN() ||
-            !this.isValidPlatform(user.platform)
+            !this.isValidPlatform(user.platform) ||
+            user.username === ""
         );
     }
 
@@ -303,17 +335,23 @@ export class ParserUtils {
      * @param command
      * @param commandArguments
      * @param platform
+     * @param commandSender
      */
-    public static async checkCommand(command: string, commandArguments: string[], platform: string): Promise<Command> {
+    public static async checkCommand(
+        command: string,
+        commandArguments: string[],
+        platform: string,
+        commandSender: Username,
+    ): Promise<Command> {
         command = command.toUpperCase();
         if (!Commands.isValidCommand(command)) {
             return null;
         }
 
         if (Commands.hasArguments(command)) {
-            return await ParserUtils.parseCommand(command, commandArguments, platform);
+            return await ParserUtils.parseCommand(command, commandArguments, platform, commandSender);
         }
-        return { command };
+        return { command, commandSender };
     }
 
     /**
@@ -382,53 +420,88 @@ export class ParserUtils {
      * Parse a STICKERS command
      * @param arg1
      * @param platform
+     * @param commandSender
      */
-    public static async parseSTICKERS(arg1: string, platform: string): Promise<Command> {
+    public static async parseSTICKERS(arg1: string, platform: string, commandSender: Username): Promise<Command> {
         const command = "STICKERS";
         const commandReplyTo: Username = ParserUtils.parseUsername(arg1, platform);
         if (await ParserUtils.isValidUser(commandReplyTo)) {
-            return { command, commandReplyTo };
+            return { command, commandReplyTo, commandSender };
         }
-        return { command };
+        return { command, commandSender };
     }
 
     /**
      * Parse a DEPOSIT command
      * @param arg1
      * @param platform
+     * @param commandSender
      */
-    public static async parseDEPOSIT(arg1: string, platform: string): Promise<Command> {
+    public static async parseDEPOSIT(arg1: string, platform: string, commandSender: Username): Promise<Command> {
         arg1 = arg1.toLowerCase();
-        const command = "DEPOSIT";
-        const token = arkEcosystemConfig.hasOwnProperty(arg1) ? arg1.toUpperCase() : baseCurrency.ticker;
-        return { command, token };
+        const command: string = "DEPOSIT";
+        const token: string = arkEcosystemConfig.hasOwnProperty(arg1) ? arg1.toUpperCase() : baseCurrency.ticker;
+        return { command, token, commandSender };
     }
 
     /**
-     * Parse a WITHDRAW command
+     * Parse a BALANCE command
      * @param arg1
-     * @param arg2
-     * @param arg3
-     * @param token
+     * @param platform
+     * @param commandSender
      */
-    public static async parseWITHDRAW(arg1: string, arg2: string, arg3: string, token?: string): Promise<Command> {
-        const command = "WITHDRAW";
-        token = typeof token !== "undefined" ? token : baseCurrency.ticker;
+    public static async parseBALANCE(arg1: string, platform: string, commandSender: Username): Promise<Command> {
+        arg1 = arg1.toLowerCase();
+        const command: string = "BALANCE";
+        const token: string = arkEcosystemConfig.hasOwnProperty(arg1) ? arg1.toUpperCase() : baseCurrency.ticker;
+        return { command, token, commandSender };
+    }
 
-        if (await ParserUtils.isValidAddress(arg1, token)) {
-            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
+    /**
+     * @dev Parse a WITHDRAW command:
+     * Parse a WITHDRAW command to determine which currency and which value to withdraw to what address
+     *
+     * @param arg1  Either the currency (e.g. ARK or DARK), or the Address to withdraw to (base currency ARK will be implied)
+     * @param arg2  Either the address to withdraw to, or the first part of the currency/amount pair (e.g. 10, USD, 10USD)
+     * @param arg3  Either the first, or the second part of the currency/amount pair.
+     * @param arg4  Either empty or the second part of the currency/amount pair
+     * @param commandSender The user/platform who is sending the command.
+     * @returns a Promise with a parsed command
+     */
+    public static async parseWITHDRAW(
+        arg1: string,
+        arg2: string,
+        arg3: string,
+        arg4: string,
+        commandSender: Username,
+    ): Promise<Command> {
+        const command: string = "WITHDRAW";
+        let token: string = baseCurrency.ticker;
+        let address: string = arg1;
+        let currency: string = arg2;
+        let amount: string = arg3;
+        if (arkEcosystemConfig.hasOwnProperty(arg1.toLowerCase())) {
+            token = arg1.toUpperCase();
+            address = arg2;
+            currency = arg3;
+            amount = arg4;
+        }
+
+        if (await ParserUtils.isValidAddress(address, token)) {
+            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(currency, amount);
             const arkToshiValue =
                 amountCurrency !== null && amountCurrency.arkToshiValue.gt(0) ? amountCurrency.arkToshiValue : null;
 
             const transfer: Transfer = {
-                address: arg1,
-                command: "WITHDRAW",
+                sender: commandSender,
+                address,
+                command,
                 arkToshiValue,
                 check: amountCurrency,
             };
-            return { command, transfer };
+            return { command, transfer, commandSender };
         }
-        return { command, token };
+        return { command, token, commandSender };
     }
 
     /**
@@ -437,7 +510,12 @@ export class ParserUtils {
      * @param mentionIndex
      * @param platform
      */
-    public static async parseReward(mentionBody: string, mentionIndex: number, platform: string): Promise<Transfer[]> {
+    public static async parseReward(
+        mentionBody: string,
+        mentionIndex: number,
+        platform: string,
+        commandSender: Username,
+    ): Promise<Transfer[]> {
         const requestedRewards: Transfer[] = [];
         let bodyParts: string[] = ParserUtils.splitMessageToParts(mentionBody, true);
         bodyParts = bodyParts.slice(mentionIndex + 1);
@@ -452,6 +530,7 @@ export class ParserUtils {
 
                         if (command === "STICKERS") {
                             const transfer: Transfer = {
+                                sender: commandSender,
                                 receiver,
                                 command: "STICKERS",
                             };
@@ -465,6 +544,7 @@ export class ParserUtils {
                             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
                             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                                 const transfer: Transfer = {
+                                    sender: commandSender,
                                     receiver,
                                     command: "TIP",
                                     arkToshiValue: amountCurrency.arkToshiValue,

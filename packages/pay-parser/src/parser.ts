@@ -1,5 +1,5 @@
-// @ts-ignore
 import { Command, Commands } from "@cryptology.hk/pay-commands";
+import { Username } from "@cryptology.hk/pay-user";
 import { ParserUtils } from "./utils";
 
 /**
@@ -11,8 +11,16 @@ export class Parser {
      * @param mentionBody
      * @param arkPayUser The user that was mentioned e.g. u/arktippr or @arktippr
      * @param platform The plaform where this was mentioned e.g. reddit or twitter
+     * @param sender
+     * @param receiver
      */
-    public static async parseMention(mentionBody: string, arkPayUser: string, platform: string): Promise<Command[]> {
+    public static async parseMention(
+        mentionBody: string,
+        arkPayUser: string,
+        platform: string,
+        sender: Username,
+        receiver: Username,
+    ): Promise<Command[]> {
         // We need something to work with
         if (
             typeof mentionBody === "undefined" ||
@@ -36,6 +44,8 @@ export class Parser {
                 mentionBody,
                 mentionIndex,
                 platform,
+                sender,
+                receiver,
             );
         } catch (e) {
             return null;
@@ -46,8 +56,13 @@ export class Parser {
      * Parse a Direct Messenger for commands
      * @param directMessageBody
      * @param platform
+     * @param sender
      */
-    public static async parseDirectMessage(directMessageBody: string, platform: string): Promise<Command[]> {
+    public static async parseDirectMessage(
+        directMessageBody: string,
+        platform: string,
+        sender: Username,
+    ): Promise<Command[]> {
         // We need something to work with
         if (typeof directMessageBody === "undefined" || directMessageBody === "") {
             return null;
@@ -61,10 +76,10 @@ export class Parser {
         // Process Commands
         for (const item in commandBodyParts) {
             if (commandBodyParts[item] && Commands.isValidCommand(commandBodyParts[item])) {
-                const command = commandBodyParts[item].toUpperCase();
-                const index = parseInt(item, 10);
-                const argumentsBody = commandBodyParts.slice(index, index + 4);
-                const commandToDo = await ParserUtils.checkCommand(command, argumentsBody, platform);
+                const command: string = commandBodyParts[item].toUpperCase();
+                const index: number = parseInt(item, 10);
+                const argumentsBody: string[] = commandBodyParts.slice(index, index + 5);
+                const commandToDo: Command = await ParserUtils.checkCommand(command, argumentsBody, platform, sender);
                 if (commandToDo !== null) {
                     commandsToExecute.push(commandToDo);
                 }
