@@ -38,6 +38,37 @@ export class Storage {
     }
 
     public static async setWallet(username: string, platform: string, token: string, wallet: Wallet): Promise<boolean> {
-        return true; // todo
+        token = token.toLowerCase();
+        platform = platform.toLowerCase();
+
+        // todo rename users table to ark
+        if (token === "ark") {
+            token = "users";
+        }
+
+        const sql: string = `INSERT INTO ${token}(username, address, seed, platform) VALUES($1, $2, $3, $4) RETURNING *`;
+        const values = [username, wallet.address, wallet.encryptedSeed, platform];
+
+        const res = await payDatabase.query(sql, values);
+        if (typeof res.rows[0] === "undefined") {
+            throw new Error(`Could not create user ${username}`);
+        }
+        return true;
+    }
+
+    public static async checkSubmission(submissionId: string): Promise<boolean> {
+        const query: string = "SELECT * FROM submissions WHERE submission = $1 LIMIT 1";
+        const result = await payDatabase.query(query, [submissionId]);
+        const submission = result.rows[0];
+        return typeof submission !== "undefined";
+    }
+
+    public static async addSubmission(submissionId: string): Promise<boolean> {
+        const sql = "INSERT INTO submissions(submission) VALUES($1) RETURNING *";
+        const values = [submissionId];
+
+        await payDatabase.query(sql, values);
+        logger.info(`New submission ${submissionId} has been added to the database.`);
+        return true;
     }
 }

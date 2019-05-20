@@ -1,9 +1,6 @@
-// import { logger } from "@cryptology.hk/pay-logger";
 import { AmountCurrency } from "@cryptology.hk/pay-currency";
-import { logger } from "@cryptology.hk/pay-logger";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
-import { Balance, Deposit, Help, Send, Stickers, Tip, Withdraw } from "./commands";
 
 export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP"];
 
@@ -17,6 +14,7 @@ export interface Command {
     transfer?: Transfer;
     smallFooter?: boolean;
     token?: string;
+    id?: string;
 }
 
 export interface Transfer {
@@ -27,16 +25,6 @@ export interface Transfer {
     arkToshiValue?: BigNumber;
     token?: string;
     check?: AmountCurrency;
-}
-
-export interface CommandResult {
-    command: string;
-    success: boolean;
-    sender: Username;
-    transaction?: Transaction;
-    message?: string;
-    receiverMessage?: string;
-    commentReply?: string;
 }
 
 export interface Transaction {

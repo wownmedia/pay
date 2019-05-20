@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+const {redditListener} = require("../dist");
+
+async function start() {
+    await redditListener.listener();
+}
+
+start();

@@ -1,15 +1,16 @@
 import { logger } from "@cryptology.hk/pay-logger";
-import { Reply } from "@cryptology.hk/pay-messenger";
-import { User, Username } from "@cryptology.hk/pay-user";
+import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
+import { User } from "@cryptology.hk/pay-user";
 import { Command } from "../";
-import { BaseCommand } from "./baseCommand";
 
-export class Deposit extends BaseCommand {
+export class Deposit {
     public static async getDeposit(command: Command): Promise<Reply> {
-        return null;
-    }
-
-    protected static async __getWallet(user: Username, token: string): Promise<string> {
-        return await User.getWalletAddress(user, token);
+        try {
+            const address: string = await User.getWalletAddress(command.commandSender, command.token);
+            return Messenger.depositMessage(address, command.token, command.commandSender.platform);
+        } catch (e) {
+            logger.error(e.message);
+            return Messenger.errorMessage();
+        }
     }
 }

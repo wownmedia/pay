@@ -5,6 +5,7 @@ const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
 const configuration = config.get("pay-currency");
 const acceptedCurrencies: string[] = CURRENCIES; // configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
+const arkEcosystemConfig = config.get("arkEcosystem");
 
 export interface BaseCurrency {
     ticker: string;
@@ -16,6 +17,7 @@ const baseCurrency: BaseCurrency = {
     units: ARKTOSHI,
 };
 
+import { logger } from "@cryptology.hk/pay-logger";
 import { CurrencyUtils } from "./utils";
 
 /**
@@ -56,15 +58,20 @@ export class Currency {
      * Get the US$ value of a value in units of the base currency (e.g. Arktoshi)
      * e.g. 2000000000 Arktoshi => US$10
      * @param units
+     * @param token
      */
-    public static async baseCurrencyUnitsToUSD(units: BigNumber): Promise<BigNumber> {
+    public static async baseCurrencyUnitsToUSD(units: BigNumber, token?: string): Promise<BigNumber> {
+        if (!token) {
+            token = baseCurrency.ticker;
+        }
+
         // Check if input is correct
         if (units.isNaN() || units.lte(0)) {
             throw TypeError("Please enter a valid amount.");
         }
 
         // Will throw an error if it fails.
-        const exchangeRate: BigNumber = await CurrencyUtils.getCurrencyTicker("USD", baseCurrency.ticker);
+        const exchangeRate: BigNumber = await CurrencyUtils.getCurrencyTicker("USD", token);
 
         return exchangeRate.times(units.div(baseCurrency.units));
     }
@@ -74,6 +81,11 @@ export class Currency {
      * @param currency
      */
     public static isValidCurrency(currency: string): boolean {
+        currency = currency.toLowerCase();
+        if (arkEcosystemConfig.hasOwnProperty(currency)) {
+            return true;
+        }
+
         currency = currency.toUpperCase();
         return acceptedCurrencies.indexOf(currency) !== -1;
     }
@@ -91,13 +103,30 @@ export class Currency {
             return true;
         }
 
+        // check if we have a configured ArkEcosystem currency
+        for (const i in arkEcosystemConfig) {
+            if (arkEcosystemConfig.hasOwnProperty(i)) {
+                logger.info(`ecosystem: ${i}`);
+                const currency: string = i.toString().toUpperCase();
+                if (data.startsWith(currency) || data.endsWith(currency)) {
+                    const checkValidArkEcosystem: string = data.replace(currency, "").trim();
+                    if (Currency.isNumericalInput(checkValidArkEcosystem)) {
+                        logger.info(`HAS ECOSYSTEM CURRENCY: ${currency}`);
+                        return true;
+                    }
+                }
+            }
+        }
+
         // Check if we have a combination of a valid currency and an amount
         for (const i in acceptedCurrencies) {
             if (typeof acceptedCurrencies[i] !== "undefined") {
                 const currency = acceptedCurrencies[i];
                 if (data.startsWith(currency) || data.endsWith(currency)) {
-                    data = data.replace(currency, "").trim();
-                    return Currency.isNumericalInput(data);
+                    const checkValidCurrency = data.replace(currency, "").trim();
+                    if (Currency.isNumericalInput(checkValidCurrency)) {
+                        return true;
+                    }
                 }
             }
         }

@@ -73,11 +73,12 @@ export class ParserUtils {
         platform: string,
         commandSender: Username,
         commandReplyTo: Username,
+        id: string,
     ): Promise<Command[]> {
         const smallFooter: boolean = bodyParts[mentionIndex + 1] === "~";
         switch (command) {
             case "STICKERS":
-                return [{ command, smallFooter, commandSender, commandReplyTo }];
+                return [{ command, smallFooter, commandSender, commandReplyTo, id }];
 
             case "REWARD":
                 const transfers: Transfer[] = await ParserUtils.parseReward(
@@ -95,6 +96,7 @@ export class ParserUtils {
                             command,
                             transfer: transfers[item],
                             smallFooter,
+                            id,
                         };
                         commands.push(rewardCommand);
                     }
@@ -110,6 +112,7 @@ export class ParserUtils {
                         receiver: commandReplyTo,
                         command: "TIP",
                         arkToshiValue: amountCurrency.arkToshiValue,
+                        token: amountCurrency.currency,
                         check: amountCurrency,
                     };
                     return [
@@ -119,6 +122,7 @@ export class ParserUtils {
                             smallFooter,
                             commandSender,
                             commandReplyTo,
+                            id,
                         },
                     ];
                 }
@@ -131,6 +135,7 @@ export class ParserUtils {
      * @param command
      * @param commandArguments
      * @param platform
+     * @param commandSender
      */
     public static async parseCommand(
         command: string,
@@ -177,6 +182,7 @@ export class ParserUtils {
      * @param arg2
      * @param arg3
      * @param platform
+     * @param commandSender
      */
     public static async parseSEND(
         arg1: string,
@@ -195,6 +201,7 @@ export class ParserUtils {
                     receiver,
                     command,
                     arkToshiValue: amountCurrency.arkToshiValue,
+                    token: amountCurrency.currency,
                     check: amountCurrency,
                 };
                 return { command, transfer, commandSender, commandReplyTo: receiver };
@@ -509,6 +516,7 @@ export class ParserUtils {
      * @param mentionBody
      * @param mentionIndex
      * @param platform
+     * @param commandSender
      */
     public static async parseReward(
         mentionBody: string,
@@ -548,6 +556,7 @@ export class ParserUtils {
                                     receiver,
                                     command: "TIP",
                                     arkToshiValue: amountCurrency.arkToshiValue,
+                                    token: amountCurrency.currency,
                                     check: amountCurrency,
                                 };
                                 requestedRewards.push(transfer);

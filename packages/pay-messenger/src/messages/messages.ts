@@ -154,6 +154,12 @@ export class Messages {
         const message = this.replaceAll(_STICKERS_CODE_MESSAGE, "#sender#", sender);
         return message.replace("#stickerCode#", stickerCode);
     }
+
+    public static balanceMessage(balance: string, token: string, usdValue: string): string {
+        const balanceMessage = Messages.replaceAll(_BALANCE_MESSAGE, "#token#", token);
+        return balanceMessage.replace("#balance#", balance).replace("#usdValue#", usdValue);
+    }
+
     protected static replaceAll(target: string, search: string, replacement: string): string {
         return target.split(search).join(replacement);
     }
@@ -173,6 +179,11 @@ const _SUMMONED_COMMENT =
     "I do enjoy a zero before a decimal if that's the issue!";
 
 const _ERROR_MESSAGE = "\n\n " + "Sorry, something went wrong executing your command. Please try again later.\n\n ";
+
+const _BALANCE_MESSAGE =
+    "\n\n " +
+    "Your ArkTippr wallet balance is: #balance# #token# ($#usdValue# USD).\n\n " +
+    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply WITHDRAW #token#.\n\n ";
 
 const _MINIMAL_TRANSACTION_VALUE =
     "\n\n " +

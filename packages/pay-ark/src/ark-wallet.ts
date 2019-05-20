@@ -20,6 +20,12 @@ const walletSchema = Joi.object().keys({
         .required(),
 });
 
+export interface WalletBalance {
+    address: string;
+    balance: BigNumber;
+    success: boolean;
+}
+
 export interface ArkEcosystemWallet {
     address: string;
     encryptedSeed: string;
@@ -120,7 +126,6 @@ export class ArkWallet {
 
         const transactions: any[] = [];
         transactions.push(transaction);
-
         return await Network.broadcastTransactions(transactions, token);
     }
 }

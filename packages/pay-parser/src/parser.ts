@@ -13,6 +13,7 @@ export class Parser {
      * @param platform The plaform where this was mentioned e.g. reddit or twitter
      * @param sender
      * @param receiver
+     * @param id
      */
     public static async parseMention(
         mentionBody: string,
@@ -20,6 +21,7 @@ export class Parser {
         platform: string,
         sender: Username,
         receiver: Username,
+        id: string,
     ): Promise<Command[]> {
         // We need something to work with
         if (
@@ -46,6 +48,7 @@ export class Parser {
                 platform,
                 sender,
                 receiver,
+                id,
             );
         } catch (e) {
             return null;

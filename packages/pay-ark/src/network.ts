@@ -57,8 +57,9 @@ export class Network {
                         },
                     );
                     results.push({ node: nodes[item], response: response.data });
+                    logger.info(`Posted transaction to ${node}`);
                 } catch (e) {
-                    logger.error(e);
+                    logger.error(e.message);
                 }
             }
         }
@@ -67,16 +68,24 @@ export class Network {
 
     public static async getFromAPI(request: string, token: string, params?: Parameters): Promise<ApiResponse> {
         const nodes: Node[] = this.__loadNodes(token);
-        const node = `http://${nodes[0].host}:${nodes[0].port}`;
-        const response = await axios.get(`${node}${request}`, {
-            params,
-            headers: { "API-Version": 2 },
-        });
+        for (const item in nodes) {
+            if (nodes[item]) {
+                const node = `http://${nodes[item].host}:${nodes[item].port}`;
+                try {
+                    const response = await axios.get(`${node}${request}`, {
+                        params,
+                        headers: { "API-Version": 2 },
+                    });
 
-        if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
-            return response.data;
+                    if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
+                        logger.info(`Retrieved data from ${node}`);
+                        return response.data;
+                    }
+                } catch (e) {
+                    logger.error(e.message);
+                }
+            }
         }
-
         return null;
     }
 

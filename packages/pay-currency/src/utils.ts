@@ -5,8 +5,10 @@ import { AmountCurrency } from "./currency";
 
 // Load Configuration from file
 import { config } from "@cryptology.hk/pay-config";
+import { logger } from "@cryptology.hk/pay-logger";
 const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
 const configuration = config.get("pay-currency");
+const arkEcosystemConfig = config.get("arkEcosystem");
 const acceptedCurrencies: string[] = configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
 
 // Use a CurrencyUtils class to be able to add these methods to Unit testing without exposing them to the module
@@ -18,7 +20,7 @@ export class CurrencyUtils {
      */
     public static async getCurrencyTicker(currency: string, baseCurrency: string): Promise<BigNumber> {
         // Check if we have no conversion to make
-        if (currency === baseCurrency) {
+        if (currency === baseCurrency || arkEcosystemConfig.hasOwnProperty(currency.toLowerCase())) {
             return new BigNumber(1);
         }
 
@@ -53,6 +55,21 @@ export class CurrencyUtils {
      * @param data
      */
     public static splitCurrencyAmountPair(data: string): AmountCurrency {
+        for (const i in arkEcosystemConfig) {
+            if (arkEcosystemConfig.hasOwnProperty(i)) {
+                logger.info(`ecosystem SPLIT: ${i}`);
+                const currency: string = i.toString().toUpperCase();
+                if (data.startsWith(currency) || data.endsWith(currency)) {
+                    const checkValidArkEcosystem: string = data.replace(currency, "").trim();
+                    const amount = new BigNumber(checkValidArkEcosystem);
+                    if (!amount.isNaN()) {
+                        logger.info(`SPLIT: ${currency} ${amount}`);
+                        return { currency, amount };
+                    }
+                }
+            }
+        }
+
         for (const i in acceptedCurrencies) {
             if (typeof acceptedCurrencies[i] !== "undefined") {
                 const currency = acceptedCurrencies[i];

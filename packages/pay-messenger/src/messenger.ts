@@ -1,6 +1,10 @@
+import { config } from "@cryptology.hk/pay-config";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import { Messages } from "./messages";
+
+const ARKTOSHI = new BigNumber(Math.pow(10, 8));
+const platforms = config.get("platforms");
 
 export interface Reply {
     directMessageSender?: string;
@@ -43,42 +47,62 @@ export class Messenger {
         return { directMessageSender };
     }
 
+    public static balanceMessage(balance: BigNumber, usdValue: BigNumber, token: string): Reply {
+        token = token.toUpperCase();
+        const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
+        const amount: string = this.__formatBalance(balance, currencySymbol);
+        const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
+        const directMessageSender: string = Messages.balanceMessage(amount, token, usdValueConverted);
+        return { directMessageSender };
+    }
+
     public static transferMessage(
         sender: Username,
         receiver: Username,
         transactionId: string,
-        amount: BigNumber,
+        arkToshiValue: BigNumber,
         usdValue: BigNumber,
         token: string,
         address: string,
         smallFooter: boolean,
     ): Reply {
         token = token.toUpperCase();
+        const receiverUsernamePrefix = platforms.hasOwnProperty(receiver.platform)
+            ? platforms[receiver.platform].usernamePrefix
+            : "";
+        const senderUsernamePrefix = platforms.hasOwnProperty(sender.platform)
+            ? platforms[sender.platform].usernamePrefix
+            : "";
+        const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
+        const amount: string = this.__formatBalance(arkToshiValue, currencySymbol);
+        const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const footer: string = Messages.getFooter(smallFooter);
-        const directMessageSender: string = Messages.transferMessage(
-            receiver.username,
+        let directMessageSender: string = Messages.transferMessage(
+            receiverUsernamePrefix + receiver.username,
             receiver.platform,
             transactionId,
-            amount.toString(),
-            usdValue.toString(),
+            amount,
+            usdValueConverted,
             token,
         );
-        const directMessageReceiver: string = Messages.transferReceiverMessage(
-            sender.username,
+        let directMessageReceiver: string = Messages.transferReceiverMessage(
+            senderUsernamePrefix + sender.username,
             sender.platform,
             transactionId,
-            amount.toString(),
-            usdValue.toString(),
+            amount,
+            usdValueConverted,
             token,
             address,
         );
         let replyComment: string = Messages.transferCommentReply(
-            receiver.username,
+            receiverUsernamePrefix + receiver.username,
             transactionId,
-            amount.toString(),
-            usdValue.toString(),
+            amount,
+            usdValueConverted,
             token,
         );
+        directMessageSender = directMessageSender + footer;
+        directMessageReceiver = directMessageReceiver + footer;
         replyComment = replyComment + footer;
         return { directMessageSender, replyComment, directMessageReceiver };
     }
@@ -93,17 +117,39 @@ export class Messenger {
         stickerCode: string,
         smallFooter: boolean,
     ): Reply {
+        const receiverUsernamePrefix = platforms.hasOwnProperty(receiver.platform)
+            ? platforms[receiver.platform].usernamePrefix
+            : "";
+        const formattedAmount: string = this.__formatBalance(amount, "Ѧ");
+        const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const footer: string = Messages.getFooter(smallFooter);
         const directMessageSender: string = Messages.stickersMessage(
-            receiver.username,
+            receiverUsernamePrefix + receiver.username,
             transactionId,
-            amount.toString(),
-            usdValue.toString(),
+            formattedAmount,
+            usdValueConverted,
         );
         const directMessageReceiver: string = Messages.stickersReceiverMessage(sender.username, stickerCode);
         const directMessageMerchant: string = Messages.stickersMerchantReply(stickerCode, transactionId);
         let replyComment: string = Messages.stickersCommentReply(receiver.username, transactionId);
         replyComment = replyComment + footer;
         return { directMessageSender, replyComment, directMessageReceiver, directMessageMerchant };
+    }
+
+    /**
+     * @dev  Format inputted balance to a string
+     * @param {BigNumber} amount The amount in Arktoshi
+     * @param currencySymbol
+     * @returns  String with amount
+     */
+    protected static __formatBalance(amount: BigNumber, currencySymbol?: string): string {
+        const balance = amount
+            .div(ARKTOSHI)
+            .toFixed(8)
+            .replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
+        if (!currencySymbol) {
+            currencySymbol = "";
+        }
+        return `${currencySymbol}${balance}`;
     }
 }

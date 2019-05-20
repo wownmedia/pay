@@ -1,14 +1,18 @@
 {
-    "name": "@cryptology.hk/pay-parser",
-    "version": "1.1.5",
+    "name": "@cryptology.hk/pay-reddit",
+    "version": "1.0.0",
     "author": "Marc Schot",
     "license": "MIT",
-    "description": "Parse text for ARK pay commands",
+    "description": "Interface with the Reddit platform for ARK Pay.",
     "main": "dist/index",
     "types": "dist/index",
     "files": [
-        "dist"
+        "dist",
+        "bin"
     ],
+    "bin": {
+        "reddit-listener": "./bin/reddit-listener"
+    },
     "scripts": {
         "publish:alpha": "npm publish --tag alpha",
         "publish:beta": "npm publish --tag beta",
@@ -23,7 +27,7 @@
         "docs": "../../node_modules/typedoc/bin/typedoc src --out docs",
         "lint": "../../node_modules/tslint/bin/tslint -c ../../tslint.json 'src/**/*.ts' '__tests__/**/*.ts' --fix",
         "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
-        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --no-cache --forceExit",
+        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
         "test:debug": "cross-env CORE_ENV=test node --inspect-brk ../../node_modules/.bin/jest --runInBand",
         "test:watch": "cross-env CORE_ENV=test jest --runInBand --watch",
         "test:watch:all": "cross-env CORE_ENV=test jest --runInBand --watchAll",
@@ -39,12 +43,16 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
+        "@cryptology.hk/pay-parser": ">=1.1.5",
+        "@cryptology.hk/pay-config": ">=1.1.0",
+        "@cryptology.hk/pay-currency": "^1.1.0",
+        "@cryptology.hk/pay-logger": "^1.0.1",
+        "@cryptology.hk/pay-commands": "^1.0.0",
+        "@cryptology.hk/pay-messenger": "^1.0.1",
+        "@cryptology.hk/pay-ark": "^1.0.1",
+        "@cryptology.hk/pay-storage": "^1.0.1",
         "bignumber.js": "^8.1.1",
         "joi": "^14.3.1",
-        "@cryptology.hk/pay-config": "^1.1.0",
-        "@cryptology.hk/pay-logger": "^1.0.1",
-        "@cryptology.hk/pay-currency": "^1.1.0",
-        "@cryptology.hk/pay-user": "^1.0.0",
-        "@cryptology.hk/pay-commands": "^1.0.1"
+        "snoowrap": "^1.15.2"
     }
 }
