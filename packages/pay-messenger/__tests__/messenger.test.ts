@@ -4,6 +4,9 @@ import "jest-extended";
 import { config } from "@cryptology.hk/pay-config";
 const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
+    reddit: {
+        usernamePrefix: "u/",
+    },
     ark: {
         networkVersion: 23,
         minValue: 2000000,
@@ -121,6 +124,48 @@ describe("pay-messenger: Messenger()", () => {
         });
     });
 
+    describe("balanceMessage()", () => {
+        it("should generate a message to reply to a sender of a command", () => {
+            const balance: BigNumber = new BigNumber(1);
+            const usdValue: BigNumber = new BigNumber(2);
+            const token = "DARK";
+            const result: Reply = Messenger.balanceMessage(balance, usdValue, token);
+            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result.directMessageSender).toBeString();
+        });
+
+        it("should generate a message to reply to a sender of a command for ARK", () => {
+            const balance: BigNumber = new BigNumber(1);
+            const usdValue: BigNumber = new BigNumber(2);
+            const token = "ARK";
+            const result: Reply = Messenger.balanceMessage(balance, usdValue, token);
+            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result.directMessageSender).toBeString();
+        });
+    });
+
+    describe("withdrawMessage()", () => {
+        it("should generate a message to reply to a sender of a command", () => {
+            const balance: BigNumber = new BigNumber(1);
+            const usdValue: BigNumber = new BigNumber(2);
+            const transactionId = "xxx";
+            const token = "DARK";
+            const result: Reply = Messenger.withdrawMessage(balance, usdValue, transactionId, token);
+            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result.directMessageSender).toBeString();
+        });
+
+        it("should generate a message to reply to a sender of a command for ARK", () => {
+            const balance: BigNumber = new BigNumber(1);
+            const usdValue: BigNumber = new BigNumber(2);
+            const transactionId = "xxx";
+            const token = "ARK";
+            const result: Reply = Messenger.withdrawMessage(balance, usdValue, transactionId, token);
+            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result.directMessageSender).toBeString();
+        });
+    });
+
     describe("depositMessage()", () => {
         it("should generate a message to reply to a sender of a command", () => {
             const platform: string = "Reddit";
@@ -135,6 +180,31 @@ describe("pay-messenger: Messenger()", () => {
         it("should generate a message to reply to a comment, a receiver and a sender of a command", () => {
             const sender: Username = { username: "sender", platform: "reddit" };
             const receiver: Username = { username: "receiver", platform: "reddit" };
+            const transactionId: string = "12345";
+            const usdValue: BigNumber = new BigNumber(1);
+            const amount: BigNumber = new BigNumber(2);
+            const token: string = "DARK";
+            const address = "abcd";
+            const smallFooter: boolean = false;
+            const result: Reply = Messenger.transferMessage(
+                sender,
+                receiver,
+                transactionId,
+                amount,
+                usdValue,
+                token,
+                address,
+                smallFooter,
+            );
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "directMessageReceiver"]);
+            expect(result.directMessageSender).toBeString();
+            expect(result.replyComment).toBeString();
+            expect(result.directMessageReceiver).toBeString();
+        });
+
+        it("should generate a message to reply to a comment, a receiver and a sender of a command for ARK", () => {
+            const sender: Username = { username: "sender", platform: "reddit" };
+            const receiver: Username = { username: "receiver", platform: "twitter" };
             const transactionId: string = "12345";
             const usdValue: BigNumber = new BigNumber(1);
             const amount: BigNumber = new BigNumber(2);
@@ -160,7 +230,7 @@ describe("pay-messenger: Messenger()", () => {
 
     describe("transferMessage()", () => {
         it("should generate a message to reply to a comment with a small footer, a receiver and a sender of a command", () => {
-            const sender: Username = { username: "sender", platform: "reddit" };
+            const sender: Username = { username: "sender", platform: "twitter" };
             const receiver: Username = { username: "receiver", platform: "reddit" };
             const transactionId: string = "12345";
             const usdValue: BigNumber = new BigNumber(1);
@@ -187,8 +257,38 @@ describe("pay-messenger: Messenger()", () => {
 
     describe("stickersMessage()", () => {
         it("should generate a message to reply to a comment, a receiver and a sender of a command", () => {
-            const sender: Username = { username: "sender", platform: "reddit" };
+            const sender: Username = { username: "sender", platform: "twitter" };
             const receiver: Username = { username: "receiver", platform: "reddit" };
+            const transactionId: string = "12345";
+            const usdValue: BigNumber = new BigNumber(1);
+            const amount: BigNumber = new BigNumber(2);
+            const token: string = "DARK";
+            const address = "abcd";
+            const smallFooter: boolean = false;
+            const result: Reply = Messenger.stickersMessage(
+                sender,
+                receiver,
+                transactionId,
+                amount,
+                usdValue,
+                token,
+                address,
+                smallFooter,
+            );
+            expect(result).toContainAllKeys([
+                "directMessageSender",
+                "replyComment",
+                "directMessageReceiver",
+                "directMessageMerchant",
+            ]);
+            expect(result.directMessageSender).toBeString();
+            expect(result.directMessageMerchant).toBeString();
+            expect(result.replyComment).toBeString();
+            expect(result.directMessageReceiver).toBeString();
+        });
+        it("should generate a message to reply to a comment, a receiver and a sender of a command for ARK", () => {
+            const sender: Username = { username: "sender", platform: "reddit" };
+            const receiver: Username = { username: "receiver", platform: "twitter" };
             const transactionId: string = "12345";
             const usdValue: BigNumber = new BigNumber(1);
             const amount: BigNumber = new BigNumber(2);
