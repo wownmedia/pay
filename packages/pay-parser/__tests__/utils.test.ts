@@ -17,13 +17,6 @@ configMock.mockImplementation(() => ({
         networkVersion: 23,
         minValue: 2000000,
         transactionFee: 300,
-        vote: {
-            voteFee: 157,
-            delegate: "cryptology",
-            fillWalletFromSeed: "a very secret seed",
-            fillWalletValue: 20000,
-            fillVendorField: "Welcome to ARK Pay",
-        },
         nodes: [
             {
                 host: "localhost",
@@ -35,7 +28,6 @@ configMock.mockImplementation(() => ({
         networkVersion: 30,
         minValue: 2000000,
         transactionFee: 300,
-        vote: false,
         nodes: [
             {
                 host: "localhost",

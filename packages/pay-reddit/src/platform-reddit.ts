@@ -1,12 +1,12 @@
-import { Command } from "@cryptology.hk/pay-commands";
+import { Command, Commands } from "@cryptology.hk/pay-commands";
 import { config } from "@cryptology.hk/pay-config";
 import { logger } from "@cryptology.hk/pay-logger";
-import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
+import { Reply } from "@cryptology.hk/pay-messenger";
+import { Parser } from "@cryptology.hk/pay-parser";
 import { Storage } from "@cryptology.hk/pay-storage";
 import { Username } from "@cryptology.hk/pay-user";
 import os from "os";
 import Snoowrap from "snoowrap";
-import { RedditCommands } from "./reddit-commands";
 
 export interface RedditConfig {
     admin: string;
@@ -36,6 +36,30 @@ interface Author {
 const merchantsConfig = config.get("merchants");
 
 export class PlatformReddit {
+    public static async prepareCommand(
+        item: RedditMessage,
+        sender: Username,
+        receiver: Username,
+        arkPayUser: string,
+    ): Promise<Command[]> {
+        try {
+            // Do we have a mention or a direct message
+            if (item.hasOwnProperty("was_comment") && item.was_comment) {
+                const id: string = item.name;
+                const parentId: string = item.parent_id;
+                // Mention
+                logger.info(`Reddit Mention received: ${id} replying to ${parentId}`);
+                return await Parser.parseMention(item.body, arkPayUser, "reddit", sender, receiver, parentId);
+            } else {
+                // Direct Messenger
+                logger.info(`Reddit Direct Message received: ${item.id}`);
+                return await Parser.parseDirectMessage(item.body, "reddit", sender);
+            }
+        } catch (e) {
+            logger.error(e.messenger);
+        }
+        return [];
+    }
     /**
      * Load settings from the configuration file
      */
@@ -159,7 +183,7 @@ export class PlatformReddit {
                         if (commands[commandIndex]) {
                             try {
                                 const command: Command = commands[commandIndex];
-                                const reply: Reply = await RedditCommands.executeCommand(command);
+                                const reply: Reply = await Commands.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
                                 if (reply.hasOwnProperty("directMessageSender")) {
                                     await this.sendDirectMessage(
@@ -266,7 +290,7 @@ export class PlatformReddit {
                 platform: "reddit",
             };
 
-            return await RedditCommands.prepareCommand(item, sender, receiver, this.redditConfig.username);
+            return await PlatformReddit.prepareCommand(item, sender, receiver, this.redditConfig.username);
         } catch (e) {
             logger.error(e.message);
             return [];
