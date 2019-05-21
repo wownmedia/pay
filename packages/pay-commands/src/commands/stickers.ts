@@ -21,7 +21,7 @@ export class Stickers extends Send {
             const token: string = this.__getStickersToken();
 
             // Check if the Sender has sufficient balance
-            const senderBalance: WalletBalance = await this.__senderHasBalance(sender, token, price);
+            const senderBalance: WalletBalance = await Send.__senderHasBalance(sender, token, price);
             if (!senderBalance.success) {
                 return Messenger.senderLowBalance(senderBalance.balance, price, token, senderBalance.address);
             }

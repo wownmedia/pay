@@ -8,6 +8,7 @@ const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     seperator: "@",
     baseCurrency: "ark",
+    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
     ark: {
         networkVersion: 23,
         minValue: 2000000,

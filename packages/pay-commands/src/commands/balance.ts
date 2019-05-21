@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
 export class Balance {
     public static async getBalance(user: Username, token: string): Promise<Reply> {
         try {
-            const wallet = await User.getWalletAddress(user, token);
+            const wallet: string = await User.getWalletAddress(user, token);
             const balance: BigNumber = await ArkWallet.getBalance(wallet, token);
             const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(balance, token);
             return Messenger.balanceMessage(balance, usdValue, token);

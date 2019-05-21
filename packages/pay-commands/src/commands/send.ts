@@ -43,7 +43,6 @@ export class Send {
         smallFooter: boolean = false,
     ): Promise<Reply> {
         try {
-            logger.info(`VendorField: ${vendorField}`);
             // Check if not sending to self
             if (this.__sendingToSelf(transfer.sender, transfer.receiver)) {
                 return Messenger.errorMessage();
@@ -142,16 +141,16 @@ export class Send {
 
     protected static __sendingToSelf(sender: Username, receiver: Username): boolean {
         // Check the Users
-        const { error } = Joi.validate({ sender, receiver }, usernameSchema);
-        if (error) {
-            throw TypeError(error);
-        }
+        Joi.assert({ sender, receiver }, usernameSchema);
         return sender.username === receiver.username && sender.platform === receiver.platform;
     }
 
     protected static __amountLargerThanMinimum(amount: BigNumber, token: string): boolean {
         token = token.toLowerCase();
-        if (typeof arkEcosystemConfig[token] === "undefined" || arkEcosystemConfig[token].minValue === "undefined") {
+        if (
+            typeof arkEcosystemConfig[token] === "undefined" ||
+            typeof arkEcosystemConfig[token].minValue === "undefined"
+        ) {
             throw TypeError(`Could not find ${token.toUpperCase()} in the configuration`);
         }
 
@@ -159,7 +158,6 @@ export class Send {
         if (minValue.isNaN()) {
             throw TypeError(`Bad minValue for ${token.toUpperCase()} in the configuration`);
         }
-        logger.info(`MinValue: ${minValue} Amount: ${amount} token: ${token} `);
         return minValue.lte(amount);
     }
 
@@ -172,7 +170,7 @@ export class Send {
 
         if (
             typeof arkEcosystemConfig[token] === "undefined" ||
-            arkEcosystemConfig[token].transactionFee === "undefined"
+            typeof arkEcosystemConfig[token].transactionFee === "undefined"
         ) {
             throw TypeError(`Could not find ${token.toUpperCase()} in the configuration`);
         }

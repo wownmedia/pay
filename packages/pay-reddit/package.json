@@ -50,7 +50,7 @@
         "@cryptology.hk/pay-currency": "^2.0.0",
         "@cryptology.hk/pay-user": "^2.0.0",
         "@cryptology.hk/pay-messenger": "^2.0.0",
-        "@cryptology.hk/pay-commands": "^1.0.0",
+        "@cryptology.hk/pay-commands": "^2.0.0",
         "@cryptology.hk/pay-parser": ">=1.1.5",
         "bignumber.js": "^8.1.1",
         "joi": "^14.3.1",
