@@ -663,6 +663,24 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@cryptology.hk/pay-config@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cryptology.hk/pay-config/-/pay-config-1.1.0.tgz#3a453986f3de8f3a50862fa986734924c483a026"
+  integrity sha512-eZnyY6wxWoJS8MOsBJNtE+kfxoL2ZtnESR4M7Z4TdLcVLaxqXbG+OmorvkMnP0mTRbbGsc0YVJcaurY4yK7QgQ==
+  dependencies:
+    "@cryptology.hk/pay-logger" "^1.0.1"
+    bignumber.js "^8.1.1"
+    find-config "^1.0.0"
+    joi "^14.3.1"
+
+"@cryptology.hk/pay-logger@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cryptology.hk/pay-logger/-/pay-logger-1.0.1.tgz#ab7e6e4e147646a5cda2c2902deed22b849194b9"
+  integrity sha512-pXijJiMegFXD/V4iCKlvacyRmzgi6Ql6DAWhWgXYB3Y2cXapDeuoUXs3MTF2Ye3OnnxQ8kP/fi5AO9D98QMY+w==
+  dependencies:
+    pino "^5.12.2"
+    pino-pretty "^2.6.0"
+
 "@faustbrian/dato@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@faustbrian/dato/-/dato-0.2.0.tgz#80149f37504d658fada9c270187f10cc7578a12f"
