@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-logger",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "description": "Logger Manager for ARK Pay",
     "main": "dist/index",
     "author": "Marc Schot",
