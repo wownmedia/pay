@@ -1,6 +1,6 @@
 import { ArkEcosystemWallet, ArkWallet } from "@cryptology.hk/pay-ark";
 import { logger } from "@cryptology.hk/pay-logger";
-import { SecureStorage, Storage, Wallet } from "@cryptology.hk/pay-storage";
+import { Storage, Wallet } from "@cryptology.hk/pay-storage";
 
 export interface Username {
     username: string;
@@ -36,16 +36,5 @@ export class User {
             logger.error(e.message);
         }
         throw new Error(`Could not create a/an ${token} wallet for ${JSON.stringify(user)}`);
-    }
-    private username: string;
-    private platform: string;
-
-    constructor(username: string, platform: string) {
-        this.username = username;
-        this.platform = platform;
-    }
-
-    public async isValidUser(): Promise<boolean> {
-        return this.username.startsWith("user") && (this.platform === "reddit" || this.platform === "twitter");
     }
 }
