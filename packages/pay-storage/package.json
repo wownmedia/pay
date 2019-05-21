@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-storage",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "author": "Marc Schot",
     "license": "MIT",
     "description": "Storage interface ARK pay",
@@ -39,8 +39,8 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-config": "^1.1.0",
-        "@cryptology.hk/pay-logger": "^1.0.1",
+        "@cryptology.hk/pay-config": "^2.0.0",
+        "@cryptology.hk/pay-logger": "^2.0.0",
         "pg": "^7.11.0"
     }
 }
