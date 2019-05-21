@@ -1,10 +1,9 @@
-import BigNumber from "bignumber.js";
-
 import { config } from "@cryptology.hk/pay-config";
+import BigNumber from "bignumber.js";
+import { CurrencyUtils } from "./utils";
+
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
-const CURRENCIES = ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"];
-const configuration = config.get("pay-currency");
-const acceptedCurrencies: string[] = CURRENCIES; // configuration.acceptedCurrencies ? configuration.acceptedCurrencies : CURRENCIES;
+const configuration = config.get("currency");
 const arkEcosystemConfig = config.get("arkEcosystem");
 
 export interface BaseCurrency {
@@ -16,9 +15,9 @@ const baseCurrency: BaseCurrency = {
     ticker: configuration.baseCurrency ? configuration.baseCurrency.toUpperCase() : "ARK",
     units: ARKTOSHI,
 };
-
-import { logger } from "@cryptology.hk/pay-logger";
-import { CurrencyUtils } from "./utils";
+const acceptedCurrencies: string[] = configuration.acceptedCurrencies
+    ? configuration.acceptedCurrencies
+    : [baseCurrency.ticker];
 
 /**
  * Parsed amount/currency pair and it's value in Arktoshi
@@ -106,12 +105,10 @@ export class Currency {
         // check if we have a configured ArkEcosystem currency
         for (const i in arkEcosystemConfig) {
             if (arkEcosystemConfig.hasOwnProperty(i)) {
-                logger.info(`ecosystem: ${i}`);
                 const currency: string = i.toString().toUpperCase();
                 if (data.startsWith(currency) || data.endsWith(currency)) {
                     const checkValidArkEcosystem: string = data.replace(currency, "").trim();
                     if (Currency.isNumericalInput(checkValidArkEcosystem)) {
-                        logger.info(`HAS ECOSYSTEM CURRENCY: ${currency}`);
                         return true;
                     }
                 }

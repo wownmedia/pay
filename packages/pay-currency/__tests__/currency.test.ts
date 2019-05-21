@@ -1,5 +1,37 @@
+import { config } from "@cryptology.hk/pay-config";
 import BigNumber from "bignumber.js";
 import "jest-extended";
+
+// Mock Config
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({
+    seperator: "@",
+    baseCurrency: "ark",
+    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
+    ark: {
+        networkVersion: 23,
+        minValue: 2000000,
+        transactionFee: 300,
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
+    dark: {
+        networkVersion: 30,
+        minValue: 2000000,
+        transactionFee: 300,
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
+}));
+
 import { AmountCurrency, Currency } from "../src";
 import { CurrencyUtils } from "../src/utils";
 
@@ -232,6 +264,26 @@ describe("pay-currency: Currency()", () => {
             const symbol: string = "£";
             const result = Currency.currencySymbolsToName(symbol);
             expect(result).toEqual("GBP");
+        });
+    });
+
+    describe("isValidCurrencyInput()", () => {
+        it("should correctly accept an ecosystem currency", () => {
+            const data: string = "1DARK";
+            const result: boolean = Currency.isValidCurrencyInput(data);
+            expect(result).toBeTrue();
+        });
+
+        it("should correctly accept an accepted fiat currency", () => {
+            const data: string = "1USD";
+            const result: boolean = Currency.isValidCurrencyInput(data);
+            expect(result).toBeTrue();
+        });
+
+        it("should reject a bad currency", () => {
+            const data: string = "1BAD";
+            const result: boolean = Currency.isValidCurrencyInput(data);
+            expect(result).toBeFalse();
         });
     });
 });

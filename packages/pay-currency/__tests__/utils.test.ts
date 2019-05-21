@@ -1,5 +1,36 @@
+import { config } from "@cryptology.hk/pay-config";
 import BigNumber from "bignumber.js";
 import "jest-extended";
+
+// Mock Config
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({
+    seperator: "@",
+    baseCurrency: "ark",
+    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
+    ark: {
+        networkVersion: 23,
+        minValue: 2000000,
+        transactionFee: 300,
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
+    dark: {
+        networkVersion: 30,
+        minValue: 2000000,
+        transactionFee: 300,
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
+}));
 
 import { AmountCurrency } from "../src";
 import { CoinGeckoAPI } from "../src/coinGecko";
@@ -112,6 +143,14 @@ describe("pay-currency: CurrencyUtils()", () => {
             expect(() => {
                 CurrencyUtils.splitCurrencyAmountPair(badInput);
             }).toThrowError(TypeError);
+        });
+
+        it("should correctly accept an ecosystem currency", () => {
+            const data: string = "1DARK";
+            const result = CurrencyUtils.splitCurrencyAmountPair(data);
+            expect(result).toContainAllKeys(["currency", "amount"]);
+            expect(result.currency).toEqual("DARK");
+            expect(result.amount).toEqual(new BigNumber(1));
         });
     });
 });
