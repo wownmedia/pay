@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-ark",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "author": "Marc Schot",
     "license": "MIT",
     "description": "ARK Blockchain interface ARK pay",
@@ -39,9 +39,9 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-config": "^1.1.0",
-        "@cryptology.hk/pay-logger": "^1.0.1",
-        "@cryptology.hk/pay-storage": "^1.0.0",
+        "@cryptology.hk/pay-config": "^2.0.0",
+        "@cryptology.hk/pay-logger": "^2.0.0",
+        "@cryptology.hk/pay-storage": "^2.0.0",
         "axios": "^0.18.0",
         "bignumber.js": "^8.1.1",
         "joi": "^14.3.1",

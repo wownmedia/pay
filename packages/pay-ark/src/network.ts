@@ -1,7 +1,6 @@
 import { config } from "@cryptology.hk/pay-config";
 import { logger } from "@cryptology.hk/pay-logger";
 import axios from "axios";
-import BigNumber from "bignumber.js";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 
@@ -16,7 +15,7 @@ export interface Parameters {
 
 export interface ApiResponse {
     data: APITransaction;
-    errors: any;
+    error?: string;
 }
 
 export interface APITransaction {

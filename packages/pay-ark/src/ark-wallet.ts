@@ -1,12 +1,12 @@
 import { crypto } from "@arkecosystem/crypto";
 import { config } from "@cryptology.hk/pay-config";
-import { logger } from "@cryptology.hk/pay-logger";
 import { SecureStorage } from "@cryptology.hk/pay-storage";
 import BigNumber from "bignumber.js";
 import { generateMnemonic } from "bip39";
 import Joi from "joi";
 import { ApiResponse, APITransaction, Network, TransactionResponse } from "./network";
 import { ArkTransaction } from "./transaction";
+
 const arkEcosystemConfig = config.get("arkEcosystem");
 
 const encryptedSeedFormat = new RegExp(/^[a-z\d]{32}[:](?:[a-z\d]{32})+$/);
@@ -44,10 +44,7 @@ export class ArkWallet {
         const address: string = crypto.getAddress(publicKey, networkVersion);
 
         // Check the wallet
-        const { error } = Joi.validate({ address, encryptedSeed }, walletSchema);
-        if (error) {
-            throw TypeError(error);
-        }
+        Joi.assert({ address, encryptedSeed }, walletSchema);
 
         return {
             encryptedSeed,
@@ -93,13 +90,13 @@ export class ArkWallet {
 
     public static async getBalance(wallet: string, token: string): Promise<BigNumber> {
         const response: ApiResponse = await Network.getFromAPI(`/api/v2/wallets/${wallet}`, token);
-        if (!response.hasOwnProperty("data")) {
+        if (!response.hasOwnProperty("data") || response.error) {
             throw new Error("Failed to retrieve wallet status from node.");
         }
         const retrievedWallet: APITransaction = response.data;
         const balance = new BigNumber(retrievedWallet.balance);
 
-        if (balance.isNaN()) {
+        if (balance.isNaN() || balance.lt(0)) {
             throw new Error(`Could not retrieve a correct balance for ${wallet}`);
         }
         return balance;

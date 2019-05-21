@@ -10,13 +10,6 @@ configMock.mockImplementation(() => ({
         networkVersion: 23,
         minValue: 2000000,
         transactionFee: 300,
-        vote: {
-            voteFee: 157,
-            delegate: "cryptology",
-            fillWalletFromSeed: "a very secret seed",
-            fillWalletValue: 20000,
-            fillVendorField: "Welcome to ARK Pay",
-        },
         nodes: [
             {
                 host: "localhost",
@@ -28,13 +21,16 @@ configMock.mockImplementation(() => ({
         networkVersion: 30,
         minValue: 2000000,
         transactionFee: 300,
-        vote: false,
         nodes: [
             {
                 host: "localhost",
                 port: 4003,
             },
         ],
+    },
+    verybad: {
+        networkVersion: "a",
+        transactionFee: "b",
     },
 }));
 
@@ -54,21 +50,6 @@ networkMock.mockImplementation(() =>
             },
         },
     ]),
-);
-const getAPIMock = jest.spyOn(Network, "getFromAPI");
-getAPIMock.mockImplementation(() =>
-    Promise.resolve({
-        data: {
-            address: "",
-            publicKey: "",
-            username: null,
-            secondPublicKey: null,
-            balance: 1,
-            isDelegate: false,
-            vote: "",
-        },
-        errors: {},
-    }),
 );
 
 import { ArkEcosystemWallet, ArkWallet } from "../src/";
@@ -114,14 +95,126 @@ describe("pay-ark: ArkWallet()", () => {
 
     describe("getBalance()", () => {
         it("should correctly retrieve a balance for a wallet on a network", async () => {
+            const getAPIMock = jest.spyOn(Network, "getFromAPI");
+            getAPIMock.mockImplementation(() =>
+                Promise.resolve({
+                    data: {
+                        address: "",
+                        publicKey: "",
+                        username: null,
+                        secondPublicKey: null,
+                        balance: 1,
+                        isDelegate: false,
+                        vote: "",
+                    },
+                    errors: {},
+                }),
+            );
             const wallet = "AFqavNP6bvyTiS4WcSFaTWnpMCHHYbiguR";
             const token: string = "ARK";
             const result = await ArkWallet.getBalance(wallet, token);
             expect(result).toEqual(new BigNumber(1));
+            getAPIMock.mockRestore();
+        });
+    });
+
+    describe("getArkEcosystemNetworkVersionForToken()", () => {
+        it("should correctly retrieve a network version for a correct token", () => {
+            const token: string = "ARK";
+            const result: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
+            expect(result).toEqual(23);
+        });
+
+        it("should throw for a bad token", () => {
+            const token: string = "BAD";
+            expect(() => {
+                ArkWallet.getArkEcosystemNetworkVersionForToken(token);
+            }).toThrow();
+        });
+
+        it("should throw for a bad networkversion", () => {
+            const token: string = "VERYBAD";
+            expect(() => {
+                ArkWallet.getArkEcosystemNetworkVersionForToken(token);
+            }).toThrow();
+        });
+    });
+
+    describe("getArkEcosystemNetworkTransactionFee()", () => {
+        it("should correctly retrieve a network version for a correct token", () => {
+            const token: string = "ARK";
+            const result: BigNumber = ArkWallet.getArkEcosystemNetworkTransactionFee(token);
+            expect(result).toEqual(new BigNumber(300));
+        });
+
+        it("should throw for a bad token", () => {
+            const token: string = "BAD";
+            expect(() => {
+                ArkWallet.getArkEcosystemNetworkTransactionFee(token);
+            }).toThrow();
+        });
+
+        it("should throw for a bad networkversion", () => {
+            const token: string = "VERYBAD";
+            expect(() => {
+                ArkWallet.getArkEcosystemNetworkTransactionFee(token);
+            }).toThrow();
+        });
+    });
+
+    describe("getBalance()", () => {
+        it("should correctly retrieve a wallet balance", async () => {
+            const getAPIMock = jest.spyOn(Network, "getFromAPI");
+            getAPIMock.mockImplementation(() =>
+                Promise.resolve({
+                    data: {
+                        address: "",
+                        publicKey: "",
+                        username: null,
+                        secondPublicKey: null,
+                        balance: 300,
+                        isDelegate: false,
+                        vote: "",
+                    },
+                }),
+            );
+            const address: string = "marc";
+            const token: string = "ARK";
+            const result: BigNumber = await ArkWallet.getBalance(address, token);
+            expect(result).toEqual(new BigNumber(300));
+            getAPIMock.mockClear();
+        });
+
+        it("should throw for a bad response", async () => {
+            const getAPIMock = jest.spyOn(Network, "getFromAPI");
+            getAPIMock.mockImplementation(() =>
+                Promise.resolve({
+                    data: {
+                        balance: 1,
+                    },
+                    error: "Forbidden",
+                }),
+            );
+            const address: string = "marc";
+            const token: string = "BAD";
+            expect(ArkWallet.getBalance(address, token)).rejects.toThrow();
+        });
+
+        it("should throw for a bad balance", async () => {
+            const getAPIMock = jest.spyOn(Network, "getFromAPI");
+            getAPIMock.mockImplementation(() =>
+                Promise.resolve({
+                    data: {
+                        balance: -1,
+                    },
+                }),
+            );
+            const address: string = "marc";
+            const token: string = "BAD";
+            expect(ArkWallet.getBalance(address, token)).rejects.toThrow();
         });
     });
 });
 
 configMock.mockClear();
 networkMock.mockClear();
-getAPIMock.mockClear();

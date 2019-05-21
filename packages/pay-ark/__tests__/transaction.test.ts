@@ -1,7 +1,7 @@
 import "jest-extended";
 
 import BigNumber from "bignumber.js";
-import { Transaction } from "../src/";
+import { ArkTransaction } from "../src/";
 
 describe("pay-ark: Transaction()", () => {
     describe("generateTransferTransaction()", () => {
@@ -12,7 +12,7 @@ describe("pay-ark: Transaction()", () => {
             const vendorField: string = "test";
             const fee: BigNumber = new BigNumber(2);
             const seed: string = "this is a top secret passphrase";
-            const result = Transaction.generateTransferTransaction(
+            const result = ArkTransaction.generateTransferTransaction(
                 networkVersion,
                 amount,
                 recipientId,
@@ -42,7 +42,7 @@ describe("pay-ark: Transaction()", () => {
             const vendorField: string = "test";
             const fee: BigNumber = new BigNumber(2);
             const seed: string = "this is a top secret passphrase";
-            const result = Transaction.generateTransferTransaction(
+            const result = ArkTransaction.generateTransferTransaction(
                 networkVersion,
                 amount,
                 recipientId,
@@ -74,7 +74,7 @@ describe("pay-ark: Transaction()", () => {
             const vendorField: string = "test";
             const fee: BigNumber = new BigNumber(2);
             const seed: string = "this is a top secret passphrase";
-            const result = Transaction.generateTransferTransaction(
+            const result = ArkTransaction.generateTransferTransaction(
                 networkVersion,
                 amount,
                 recipientId,
