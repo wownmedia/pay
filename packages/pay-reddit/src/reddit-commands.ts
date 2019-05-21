@@ -1,4 +1,5 @@
-import { Balance, Command, Commands, Deposit, Help, Send } from "@cryptology.hk/pay-commands";
+import { transfer } from "@arkecosystem/crypto/dist/transactions/types/schemas";
+import { Balance, Command, Commands, Deposit, Help, Send, Stickers, Withdraw } from "@cryptology.hk/pay-commands";
 import { logger } from "@cryptology.hk/pay-logger";
 import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
 import { Parser } from "@cryptology.hk/pay-parser";
@@ -54,18 +55,17 @@ export class RedditCommands extends Commands {
                 return await Send.transfer(command.transfer, vendorField);
             case "WITHDRAW":
                 // Check if the user requested WITHDRAW help:
-                if (!command.hasOwnProperty("commandReplyTo")) {
+                if (!command.hasOwnProperty("transfer")) {
                     return Help.getHelp(command.command);
                 }
-                break;
+                return await Withdraw.transfer(command.transfer);
             case "STICKERS":
                 // Check if the user requested STICKERS help:
                 if (!command.hasOwnProperty("commandReplyTo")) {
                     return Help.getHelp(command.command);
                 }
+                return await Stickers.send(command.commandSender, command.commandReplyTo);
         }
-
-        // logger.info(`TEMP: ${JSON.stringify(command)}`);
         return Messenger.summonedMessage();
     }
 }

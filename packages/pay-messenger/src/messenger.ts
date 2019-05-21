@@ -56,6 +56,15 @@ export class Messenger {
         return { directMessageSender };
     }
 
+    public static withdrawMessage(value: BigNumber, usdValue: BigNumber, transactionId: string, token: string): Reply {
+        token = token.toUpperCase();
+        const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
+        const amount: string = this.__formatBalance(value, currencySymbol);
+        const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
+        const directMessageSender: string = Messages.withdrawMessage(amount, token, usdValueConverted, transactionId);
+        return { directMessageSender };
+    }
+
     public static transferMessage(
         sender: Username,
         receiver: Username,

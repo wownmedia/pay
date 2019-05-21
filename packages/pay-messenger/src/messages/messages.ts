@@ -160,6 +160,17 @@ export class Messages {
         return balanceMessage.replace("#balance#", balance).replace("#usdValue#", usdValue);
     }
 
+    public static withdrawMessage(balance: string, token: string, usdValue: string, transactionId: string): string {
+        const explorer: string = this.getExplorer(token);
+        token = token.toUpperCase();
+        const withdrawMessage: string = Messages.replaceAll(_WITHDRAW_MESSAGE, "#token#", token);
+        return withdrawMessage
+            .replace("#amount#", balance)
+            .replace("#usdValue#", usdValue)
+            .replace("#transactionId#", transactionId)
+            .replace("#explorer#", explorer);
+    }
+
     protected static replaceAll(target: string, search: string, replacement: string): string {
         return target.split(search).join(replacement);
     }
@@ -179,6 +190,12 @@ const _SUMMONED_COMMENT =
     "I do enjoy a zero before a decimal if that's the issue!";
 
 const _ERROR_MESSAGE = "\n\n " + "Sorry, something went wrong executing your command. Please try again later.\n\n ";
+
+const _WITHDRAW_MESSAGE =
+    "\n\n " +
+    "You withdrew funds from your wallet successfully! \n\n " +
+    "#amount# #token# ($#usdValue# USD) was transferred out of your wallet.\n\n " +
+    "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _BALANCE_MESSAGE =
     "\n\n " +

@@ -64,6 +64,7 @@ export class ParserUtils {
      * @param platform
      * @param commandSender
      * @param commandReplyTo
+     * @param id
      */
     public static async parseMentionCommand(
         command: string,
@@ -93,7 +94,7 @@ export class ParserUtils {
                         const rewardCommand: Command = {
                             commandReplyTo: transfers[item].receiver,
                             commandSender,
-                            command,
+                            command: transfers[item].command,
                             transfer: transfers[item],
                             smallFooter,
                             id,
@@ -504,9 +505,10 @@ export class ParserUtils {
                 address,
                 command,
                 arkToshiValue,
+                token,
                 check: amountCurrency,
             };
-            return { command, transfer, commandSender };
+            return { command, token, transfer, commandSender };
         }
         return { command, token, commandSender };
     }

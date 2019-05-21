@@ -231,6 +231,7 @@ describe("pay-Parser: ParserUtils()", () => {
         describe("should correctly parse a STICKERS mention", () => {
             const command: string = "STICKERS";
             it("for STICKERS without small footer argument: STICKERS u/arktippr", async () => {
+                const id: string = "xxx";
                 const bodyParts: string[] = [command, mentionedUser];
                 const mentionBody: string = "STICKERS u/arktippr";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
@@ -242,13 +243,15 @@ describe("pay-Parser: ParserUtils()", () => {
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual(command);
                 expect(result[0].smallFooter).toBeFalse();
             });
 
             it("for STICKERS with small footer argument: STICKERS u/arktippr ~", async () => {
+                const id: string = "xxx";
                 const bodyParts: string[] = [command, mentionedUser, smallFooter];
                 const mentionBody: string = "STICKERS u/arktippr ~";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
@@ -260,8 +263,9 @@ describe("pay-Parser: ParserUtils()", () => {
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual(command);
                 expect(result[0].smallFooter).toBeTrue();
             });
@@ -283,6 +287,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "STICKERS",
                     "user4",
                 ];
+                const id: string = "xxx";
                 const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2 30 EUR user3 STICKERS user4";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
                 const result: Command[] = await ParserUtils.parseMentionCommand(
@@ -293,6 +298,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
                 expect(result).toBeArrayOfSize(4);
                 expect(result[0]).toContainAllKeys([
@@ -301,6 +307,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[1]).toContainAllKeys([
                     "command",
@@ -308,6 +315,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[2]).toContainAllKeys([
                     "command",
@@ -315,6 +323,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[3]).toContainAllKeys([
                     "command",
@@ -322,11 +331,12 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
-                expect(result[0].command).toEqual(command);
-                expect(result[1].command).toEqual(command);
-                expect(result[2].command).toEqual(command);
-                expect(result[3].command).toEqual(command);
+                expect(result[0].command).toEqual("TIP");
+                expect(result[1].command).toEqual("TIP");
+                expect(result[2].command).toEqual("TIP");
+                expect(result[3].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
                 expect(result[1].smallFooter).toBeFalse();
                 expect(result[2].smallFooter).toBeFalse();
@@ -337,6 +347,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "check",
                     "command",
                     "sender",
+                    "token",
                 ]);
                 expect(result[1].transfer).toContainAllKeys([
                     "receiver",
@@ -344,6 +355,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "check",
                     "command",
                     "sender",
+                    "token",
                 ]);
                 expect(result[2].transfer).toContainAllKeys([
                     "receiver",
@@ -351,6 +363,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "check",
                     "command",
                     "sender",
+                    "token",
                 ]);
                 expect(result[3].transfer).toContainAllKeys(["receiver", "command", "sender"]);
                 expect(result[0].transfer.command).toEqual("TIP");
@@ -379,6 +392,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "EUR",
                     "user3",
                 ];
+                const id: string = "xxx";
                 const mentionBody: string = "REWARD u/arktippr ~ 10 user1 20USD user2 30 EUR user3";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
                 const result: Command[] = await ParserUtils.parseMentionCommand(
@@ -389,6 +403,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
                 expect(result).toBeArrayOfSize(3);
                 expect(result[0]).toContainAllKeys([
@@ -397,6 +412,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[1]).toContainAllKeys([
                     "command",
@@ -404,6 +420,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[2]).toContainAllKeys([
                     "command",
@@ -411,10 +428,11 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
-                expect(result[0].command).toEqual(command);
-                expect(result[1].command).toEqual(command);
-                expect(result[2].command).toEqual(command);
+                expect(result[0].command).toEqual("TIP");
+                expect(result[1].command).toEqual("TIP");
+                expect(result[2].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
                 expect(result[1].smallFooter).toBeTrue();
                 expect(result[2].smallFooter).toBeTrue();
@@ -424,6 +442,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "check",
                     "command",
                     "sender",
+                    "token",
                 ]);
                 expect(result[1].transfer).toContainAllKeys([
                     "receiver",
@@ -431,6 +450,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "check",
                     "command",
                     "sender",
+                    "token",
                 ]);
                 expect(result[2].transfer).toContainAllKeys([
                     "receiver",
@@ -438,6 +458,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "check",
                     "command",
                     "sender",
+                    "token",
                 ]);
                 expect(result[0].transfer.command).toEqual("TIP");
                 expect(result[0].transfer.receiver.username).toEqual("user1");
@@ -456,6 +477,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 const bodyParts: string[] = ["10", "USD", mentionedUser];
                 const mentionBody: string = "10 USD u/arktippr";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const id: string = "xxx";
                 const result: Command[] = await ParserUtils.parseMentionCommand(
                     "",
                     bodyParts,
@@ -464,6 +486,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
@@ -472,6 +495,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].transfer).toContainAllKeys([
                     "command",
@@ -479,6 +503,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "receiver",
                     "arkToshiValue",
                     "sender",
+                    "token",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -489,6 +514,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 const bodyParts: string[] = ["10", "USD", mentionedUser, smallFooter];
                 const mentionBody: string = "10 USD u/arktippr ~";
                 const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+                const id: string = "xxx";
                 const result: Command[] = await ParserUtils.parseMentionCommand(
                     "",
                     bodyParts,
@@ -497,6 +523,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
@@ -505,6 +532,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].transfer).toContainAllKeys([
                     "command",
@@ -512,6 +540,7 @@ describe("pay-Parser: ParserUtils()", () => {
                     "receiver",
                     "arkToshiValue",
                     "sender",
+                    "token",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -523,6 +552,7 @@ describe("pay-Parser: ParserUtils()", () => {
             const bodyParts: string[] = ["anything", "really", mentionedUser, smallFooter];
             const mentionBody: string = "anything really u/arktippr ~";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+            const id: string = "xxx";
             const result: Command[] = await ParserUtils.parseMentionCommand(
                 "",
                 bodyParts,
@@ -531,6 +561,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 platform,
                 sender,
                 receiver,
+                id,
             );
             expect(result).toBeNull();
         });
@@ -539,6 +570,7 @@ describe("pay-Parser: ParserUtils()", () => {
             const bodyParts: string[] = ["REWARD", mentionedUser, smallFooter];
             const mentionBody: string = "REWARD u/arktippr ~";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
+            const id: string = "xxx";
             const result: Command[] = await ParserUtils.parseMentionCommand(
                 "",
                 bodyParts,
@@ -547,6 +579,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 platform,
                 sender,
                 receiver,
+                id,
             );
             expect(result).toBeNull();
         });
@@ -609,13 +642,27 @@ describe("pay-Parser: ParserUtils()", () => {
             let result = await ParserUtils.parseCommand(command, commandArguments, platform, sender);
             expect(result).toContainAllKeys(["command", "transfer", "commandSender", "commandReplyTo"]);
             expect(result.command).toEqual(command);
-            expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check", "sender"]);
+            expect(result.transfer).toContainAllKeys([
+                "receiver",
+                "command",
+                "arkToshiValue",
+                "check",
+                "sender",
+                "token",
+            ]);
             arg2 = "10USD";
             commandArguments = [command, arg1, arg2];
             result = await ParserUtils.parseCommand(command, commandArguments, platform, sender);
             expect(result).toContainAllKeys(["command", "transfer", "commandSender", "commandReplyTo"]);
             expect(result.command).toEqual(command);
-            expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check", "sender"]);
+            expect(result.transfer).toContainAllKeys([
+                "receiver",
+                "command",
+                "arkToshiValue",
+                "check",
+                "sender",
+                "token",
+            ]);
             mockParserUtilsisValidUser.mockRestore();
         });
 
@@ -627,22 +674,43 @@ describe("pay-Parser: ParserUtils()", () => {
             const arg3: string = "USD";
             let commandArguments: string[] = [command, arg1, arg2, arg3];
             let result = await ParserUtils.parseCommand(command, commandArguments, platform, sender);
-            expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+            expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
             expect(result.command).toEqual(command);
-            expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+            expect(result.transfer).toContainAllKeys([
+                "address",
+                "command",
+                "arkToshiValue",
+                "check",
+                "sender",
+                "token",
+            ]);
             expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             arg2 = "10USD";
             commandArguments = [command, arg1, arg2];
             result = await ParserUtils.parseCommand(command, commandArguments, platform, sender);
-            expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+            expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
             expect(result.command).toEqual(command);
-            expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+            expect(result.transfer).toContainAllKeys([
+                "address",
+                "command",
+                "arkToshiValue",
+                "check",
+                "sender",
+                "token",
+            ]);
             expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             commandArguments = [command, arg1];
             result = await ParserUtils.parseCommand(command, commandArguments, platform, sender);
-            expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+            expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
             expect(result.command).toEqual(command);
-            expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+            expect(result.transfer).toContainAllKeys([
+                "address",
+                "command",
+                "arkToshiValue",
+                "check",
+                "sender",
+                "token",
+            ]);
             expect(result.transfer.arkToshiValue).toBeNull();
         });
 
@@ -1225,7 +1293,14 @@ describe("pay-Parser: ParserUtils()", () => {
                 const result: Command = await ParserUtils.parseSEND(arg1, arg2, arg3, platform, sender);
                 expect(result).toContainAllKeys(["command", "transfer", "commandSender", "commandReplyTo"]);
                 expect(result.command).toEqual("SEND");
-                expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "receiver",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfer.check.currency).toEqual("USD");
@@ -1239,7 +1314,14 @@ describe("pay-Parser: ParserUtils()", () => {
                 const result: Command = await ParserUtils.parseSEND(arg1, arg2, arg3, platform, sender);
                 expect(result).toContainAllKeys(["command", "transfer", "commandSender", "commandReplyTo"]);
                 expect(result.command).toEqual("SEND");
-                expect(result.transfer).toContainAllKeys(["receiver", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "receiver",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result.transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
                 expect(result.transfer.check.currency).toEqual("USD");
@@ -1317,7 +1399,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual("WITHDRAW");
             });
 
-            it("with 1 valid argument", async () => {
+            it("with 1 valid token argument", async () => {
                 const arg1: string = "ARK";
                 const arg2: string = "";
                 const arg3: string = "";
@@ -1327,51 +1409,79 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(result.command).toEqual("WITHDRAW");
             });
 
-            it("with 1 valid argument", async () => {
+            it("with 1 valid address argument", async () => {
                 const arg1: string = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
                 const arg2: string = "";
                 const arg3: string = "";
                 const arg4: string = "";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, arg4, sender);
-                expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toBeNull();
             });
 
-            it("with 2 valid arguments", async () => {
+            it("with 2 valid arguments (address, token)", async () => {
                 const arg1: string = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
                 const arg2: string = "";
                 const arg3: string = "";
                 const arg4: string = "ARK";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg4, arg1, arg2, arg3, sender);
-                expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toBeNull();
             });
 
-            it("with 2 valid arguments", async () => {
+            it("with 2 valid arguments (address, amount)", async () => {
                 const arg1: string = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
                 const arg2: string = "10";
                 const arg3: string = "";
                 const arg4: string = "";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, arg4, sender);
-                expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
-            it("with 3 valid arguments", async () => {
+            it("with 3 valid arguments (address, amount, currency)", async () => {
                 const arg1: string = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
                 const arg2: string = "10";
                 const arg3: string = "USD";
                 const arg4: string = "";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg1, arg2, arg3, arg4, sender);
-                expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
 
@@ -1381,9 +1491,16 @@ describe("pay-Parser: ParserUtils()", () => {
                 const arg3: string = "USD";
                 const arg4: string = "ARK";
                 const result: Command = await ParserUtils.parseWITHDRAW(arg4, arg1, arg2, arg3, sender);
-                expect(result).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result.command).toEqual("WITHDRAW");
-                expect(result.transfer).toContainAllKeys(["address", "command", "arkToshiValue", "check", "sender"]);
+                expect(result.transfer).toContainAllKeys([
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "sender",
+                    "token",
+                ]);
                 expect(result.transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
         });
@@ -1402,7 +1519,7 @@ describe("pay-Parser: ParserUtils()", () => {
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
             const result: Transfer[] = await ParserUtils.parseReward(mentionBody, mentionIndex, platform, sender);
             expect(result).toBeArrayOfSize(3);
-            expect(result[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command", "sender"]);
+            expect(result[0]).toContainAllKeys(["receiver", "arkToshiValue", "check", "command", "sender", "token"]);
             expect(result[0].command).toEqual("TIP");
             expect(result[0].arkToshiValue).toEqual(arktoshiValue.times(10));
             expect(result[0].receiver).toContainAllKeys(["username", "platform"]);

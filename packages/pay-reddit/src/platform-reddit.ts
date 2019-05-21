@@ -33,6 +33,8 @@ interface Author {
     name;
 }
 
+const merchantsConfig = config.get("merchants");
+
 export class PlatformReddit {
     /**
      * Load settings from the configuration file
@@ -97,6 +99,20 @@ export class PlatformReddit {
         }
         return false;
     }
+
+    private static __getMerchant(command: string): Username {
+        command = command.toLowerCase();
+
+        if (!merchantsConfig.hasOwnProperty(command)) {
+            throw TypeError(`Could not find merchant for ${command.toUpperCase()} in the configuration`);
+        }
+
+        if (!merchantsConfig[command].hasOwnProperty("notify")) {
+            throw TypeError(`Could not find merchant notify for ${command.toUpperCase()} in the configuration`);
+        }
+
+        return merchantsConfig[command].notify;
+    }
     public readonly platformConfig: Snoowrap;
 
     private readonly redditConfig: RedditConfig;
@@ -128,22 +144,25 @@ export class PlatformReddit {
     public async redditPolling() {
         try {
             const inbox: RedditMessage[] = await this.getUnreadMessages();
-            for (const item in inbox) {
+            for (const inboxIndex in inbox) {
                 if (
-                    typeof inbox[item] !== "undefined" &&
-                    inbox[item].hasOwnProperty("author") &&
-                    inbox[item].author.hasOwnProperty("name")
+                    typeof inbox[inboxIndex] !== "undefined" &&
+                    inbox[inboxIndex].hasOwnProperty("author") &&
+                    inbox[inboxIndex].author.hasOwnProperty("name")
                 ) {
-                    const commands: Command[] = await this.processInboxItem(inbox[item]);
-                    for (const item in commands) {
-                        if (commands[item]) {
+                    if (!inbox[inboxIndex].hasOwnProperty("was_comment")) {
+                        inbox[inboxIndex].was_comment = false;
+                    }
+                    const commands: Command[] = await this.processInboxItem(inbox[inboxIndex]);
+                    logger.info(`COMMANDS: ${JSON.stringify(commands)}`); // todo
+                    for (const commandIndex in commands) {
+                        if (commands[commandIndex]) {
                             try {
-                                const command: Command = commands[item];
+                                const command: Command = commands[commandIndex];
                                 const reply: Reply = await RedditCommands.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
-
                                 if (reply.hasOwnProperty("directMessageSender")) {
-                                    this.sendDirectMessage(
+                                    await this.sendDirectMessage(
                                         command.commandSender.username,
                                         reply.directMessageSender,
                                         subject,
@@ -151,27 +170,43 @@ export class PlatformReddit {
                                 }
                                 if (reply.hasOwnProperty("directMessageReceiver")) {
                                     // todo: check platform
-                                    const subject = `You've got ${command.transfer.token}!`;
-                                    this.sendDirectMessage(
-                                        command.transfer.receiver.username,
+                                    let youGot: string = command.command;
+                                    if (
+                                        command.hasOwnProperty("transfer") &&
+                                        command.transfer.hasOwnProperty("token")
+                                    ) {
+                                        youGot = command.transfer.token;
+                                    }
+                                    const subject = `You've got ${youGot}!`;
+                                    let receiver: Username = command.commandReplyTo;
+                                    if (
+                                        command.hasOwnProperty("transfer") &&
+                                        command.transfer.hasOwnProperty("receiver")
+                                    ) {
+                                        receiver = command.transfer.receiver;
+                                    }
+                                    await this.sendDirectMessage(
+                                        receiver.username,
                                         reply.directMessageReceiver,
                                         subject,
                                     );
                                 }
 
                                 if (reply.hasOwnProperty("directMessageMerchant")) {
-                                    this.sendDirectMessage(
-                                        command.commandSender.username,
+                                    const merchant: Username = PlatformReddit.__getMerchant(command.command);
+                                    // todo check platform
+                                    await this.sendDirectMessage(
+                                        merchant.username,
                                         reply.directMessageMerchant,
                                         subject,
                                     );
                                 }
 
-                                if (inbox[item].was_comment && reply.hasOwnProperty("replyComment")) {
-                                    this.postCommentReply(inbox[item].id, reply.replyComment);
+                                if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].hasOwnProperty("id")) {
+                                    await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
                                 }
                             } catch (e) {
-                                logger.error(e.message);
+                                logger.error(e);
                             }
                         }
                     }

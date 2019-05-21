@@ -67,68 +67,132 @@ describe("pay-Parser: Parser()", () => {
 
         describe("should return a valid Command for a STICKERS mention", () => {
             it("for: stickers u/arktippr", async () => {
+                const id: string = "xxx";
                 const inputText: string = "stickers u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
             });
 
             it("for: stickers u/arktippr.", async () => {
+                const id: string = "xxx";
                 const inputText: string = "stickers u/arktippr.";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
             });
 
             it("for: stickers u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "stickers u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeTrue();
             });
 
             it("for: I am giving you stickers u/arktippr so you can enjoy them", async () => {
                 const inputText: string = "I am giving you stickers u/arktippr so you can enjoy them";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
             });
 
             it("for: I am giving you stickers u/arktippr ~ so you can enjoy them (small footer)", async () => {
                 const inputText: string = "I am giving you stickers u/arktippr ~ so you can enjoy them";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeTrue();
             });
 
             it("for: stickers @arktippr.", async () => {
                 const inputText: string = "stickers @arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
             });
 
             it("for: stickers @arktippr.", async () => {
                 const inputText: string = "stickers @arktippr.";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
             });
 
             it("for: I am giving you stickers @arktippr so you can enjoy them", async () => {
                 const inputText: string = "I am giving you stickers @arktippr so you can enjoy them";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
-                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo"]);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
+                expect(result[0]).toContainAllKeys(["command", "smallFooter", "commandSender", "commandReplyTo", "id"]);
                 expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
             });
@@ -137,13 +201,22 @@ describe("pay-Parser: Parser()", () => {
         describe("should return a valid Command for a TIP mention", () => {
             it("for: 10 USD u/arktippr", async () => {
                 const inputText: string = "10 USD u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -156,13 +229,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10 USD u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 USD u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -175,13 +257,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10USD u/arktippr", async () => {
                 const inputText: string = "10USD u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -194,13 +285,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10USD u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10USD u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -215,13 +315,22 @@ describe("pay-Parser: Parser()", () => {
         describe("should return a valid Command for a TIP mention", () => {
             it("for: USD 10 u/arktippr", async () => {
                 const inputText: string = "USD 10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -234,13 +343,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: USD 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "USD 10 u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -253,13 +371,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: USD10 u/arktippr", async () => {
                 const inputText: string = "USD10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -272,13 +399,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: USD10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "USD10 u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -293,25 +429,57 @@ describe("pay-Parser: Parser()", () => {
         describe("should return null for a bad mention", () => {
             it("for: u/arktippr", async () => {
                 const inputText: string = "u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
             });
 
             it("for: 10EOS u/arktippr", async () => {
                 const inputText: string = "10EOS u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
             });
 
             it("for: 10 EOS u/arktippr", async () => {
                 const inputText: string = "10 for u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
             });
 
             it("for: a message without a tip u/arktippr", async () => {
                 const inputText: string = "a message without a tip u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
             });
         });
@@ -319,64 +487,99 @@ describe("pay-Parser: Parser()", () => {
         describe("Should return null on non-valid input", () => {
             it("for empty input", async () => {
                 const emptyInput = "";
-                let result: Command[] = await Parser.parseMention(emptyInput, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                let result: Command[] = await Parser.parseMention(
+                    emptyInput,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
-                result = await Parser.parseMention(emptyInput, emptyInput, platform, sender, receiver);
+                result = await Parser.parseMention(emptyInput, emptyInput, platform, sender, receiver, id);
                 expect(result).toBeNull();
                 const inputText: string = "10 u/arktippr";
-                result = await Parser.parseMention(inputText, emptyInput, platform, sender, receiver);
+                result = await Parser.parseMention(inputText, emptyInput, platform, sender, receiver, id);
                 expect(result).toBeNull();
             });
 
             it("for a mention without a command", async () => {
                 const onlyMention = "u/arktippr";
+                const id: string = "xxx";
                 const result: Command[] = await Parser.parseMention(
                     onlyMention,
                     mentionUser,
                     platform,
                     sender,
                     receiver,
+                    id,
                 );
                 expect(result).toBeNull();
             });
 
             it("for invalid or badly formatted input", async () => {
+                const id: string = "xxx";
                 let badInput: string = "anything that is not valid for u/arktippr We just mentioned him";
-                let result: Command[] = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver);
+                let result: Command[] = await Parser.parseMention(
+                    badInput,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
                 badInput = "10 for u/arktippr";
-                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver);
+                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver, id);
                 expect(result).toBeNull();
                 badInput = "10 nocurrency u/arktippr";
-                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver);
+                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver, id);
                 expect(result).toBeNull();
                 badInput = "10nocurrency u/arktippr";
-                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver);
+                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver, id);
                 expect(result).toBeNull();
             });
 
             it("for empty input", async () => {
                 const emptyInput = "";
-                let result: Command[] = await Parser.parseMention(emptyInput, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                let result: Command[] = await Parser.parseMention(
+                    emptyInput,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeNull();
-                result = await Parser.parseMention(emptyInput, emptyInput, platform, sender, receiver);
+                result = await Parser.parseMention(emptyInput, emptyInput, platform, sender, receiver, id);
                 expect(result).toBeNull();
                 const inputText: string = "10 u/arktippr";
-                result = await Parser.parseMention(inputText, emptyInput, platform, sender, receiver);
+                result = await Parser.parseMention(inputText, emptyInput, platform, sender, receiver, id);
                 expect(result).toBeNull();
             });
         });
 
         describe("should return a valid Command for a TIP mention", () => {
             it("for: 10 $ u/arktippr", async () => {
+                const id: string = "xxx";
                 const inputText: string = "10 $ u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0].command).toEqual("TIP");
@@ -389,14 +592,23 @@ describe("pay-Parser: Parser()", () => {
             });
 
             it("for: 10 $ u/arktippr ~ (small footer)", async () => {
+                const id: string = "xxx";
                 const inputText: string = "10 $ u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0].command).toEqual("TIP");
@@ -410,7 +622,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10$ u/arktippr", async () => {
                 const inputText: string = "10$ u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -418,6 +638,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -430,13 +651,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10$ u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10$ u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0].command).toEqual("TIP");
@@ -452,13 +682,22 @@ describe("pay-Parser: Parser()", () => {
         describe("should return a valid Command for a TIP mention", () => {
             it("for: $ 10 u/arktippr", async () => {
                 const inputText: string = "$ 10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0].command).toEqual("TIP");
@@ -472,13 +711,22 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: $ 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "$ 10 u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result[0]).toContainAllKeys([
                     "command",
                     "transfer",
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0].command).toEqual("TIP");
@@ -492,7 +740,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: $10 u/arktippr", async () => {
                 const inputText: string = "$10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -500,6 +756,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -512,7 +769,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: $10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "$10 u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -520,6 +785,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -532,7 +798,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10 u/arktippr", async () => {
                 const inputText: string = "10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -540,6 +814,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -552,7 +827,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: EOS 10 u/arktippr (expected behaviour is ARK for any text that is not a valid currency before the number)", async () => {
                 const inputText: string = "10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -560,6 +843,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -572,7 +856,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -580,6 +872,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -592,7 +885,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: text here that is no currency 10 u/arktippr", async () => {
                 const inputText: string = "10 u/arktippr";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -600,6 +901,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
@@ -612,7 +914,15 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: text here that is no currency 10 u/arktippr ~ (small footer)", async () => {
                 const inputText: string = "10 u/arktippr ~";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -620,6 +930,7 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
                 expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeTrue();
@@ -635,7 +946,15 @@ describe("pay-Parser: Parser()", () => {
             it("for a single REWARD entry", async () => {
                 const inputText: string = "REWARD u/arktippr \
                     10 u/user1";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -643,8 +962,9 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
-                expect(result[0].command).toEqual("REWARD");
+                expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
                 expect(result[0].transfer).toContainAllKeys([
                     "sender",
@@ -652,6 +972,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver).toContainAllKeys(["username", "platform"]);
                 expect(result[0].transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
@@ -667,7 +988,15 @@ describe("pay-Parser: Parser()", () => {
             it("for a single STICKERS REWARD entry", async () => {
                 const inputText: string = "REWARD u/arktippr \
                     STICKERS user1";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(1);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -675,8 +1004,9 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
-                expect(result[0].command).toEqual("REWARD");
+                expect(result[0].command).toEqual("STICKERS");
                 expect(result[0].smallFooter).toBeFalse();
                 expect(result[0].transfer).toContainAllKeys(["sender", "receiver", "command"]);
                 expect(result[0].transfer.receiver).toContainAllKeys(["username", "platform"]);
@@ -693,7 +1023,15 @@ describe("pay-Parser: Parser()", () => {
                     STICKERS user5@reddit\
                     40 USD u/user4 \
                     EUR 50 user6";
-                const result: Command[] = await Parser.parseMention(inputText, mentionUser, platform, sender, receiver);
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
                 expect(result).toBeArrayOfSize(4);
                 expect(result[0]).toContainAllKeys([
                     "command",
@@ -701,8 +1039,9 @@ describe("pay-Parser: Parser()", () => {
                     "smallFooter",
                     "commandSender",
                     "commandReplyTo",
+                    "id",
                 ]);
-                expect(result[0].command).toEqual("REWARD");
+                expect(result[0].command).toEqual("TIP");
                 expect(result[0].smallFooter).toBeFalse();
                 expect(result[0].transfer).toContainAllKeys([
                     "sender",
@@ -710,6 +1049,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver).toContainAllKeys(["username", "platform"]);
                 expect(result[0].transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
@@ -886,6 +1226,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver.username).toEqual("user1");
                 expect(result[0].transfer.receiver.platform).toEqual(platform);
@@ -903,6 +1244,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver.username).toEqual("user1");
                 expect(result[0].transfer.receiver.platform).toEqual(platform);
@@ -920,6 +1262,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver.username).toEqual("user1");
                 expect(result[0].transfer.receiver.platform).toEqual(platform);
@@ -937,6 +1280,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver.username).toEqual("user1");
                 expect(result[0].transfer.receiver.platform).toEqual(platform);
@@ -954,6 +1298,7 @@ describe("pay-Parser: Parser()", () => {
                     "command",
                     "arkToshiValue",
                     "check",
+                    "token",
                 ]);
                 expect(result[0].transfer.receiver.username).toEqual("user1");
                 expect(result[0].transfer.receiver.platform).toEqual(platform);
@@ -981,25 +1326,46 @@ describe("pay-Parser: Parser()", () => {
                 let messageBody: string = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
                 let result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toBeNull();
                 messageBody = "WITHDRAW ARK AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toBeNull();
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("ARK");
@@ -1007,9 +1373,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW ARK AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("ARK");
@@ -1017,9 +1390,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V ARK 10";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("ARK");
@@ -1027,9 +1407,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW ARK AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V ARK 10";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("ARK");
@@ -1037,9 +1424,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10 USD";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("USD");
@@ -1047,9 +1441,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW ARK AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10 USD";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("USD");
@@ -1057,9 +1458,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10USD";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("USD");
@@ -1067,9 +1475,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW ARK AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V 10USD";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("USD");
@@ -1077,9 +1492,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V EUR10";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("EUR");
@@ -1087,9 +1509,16 @@ describe("pay-Parser: Parser()", () => {
                 messageBody = "WITHDRAW ARK AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V EUR10";
                 result = await Parser.parseDirectMessage(messageBody, platform, sender);
                 expect(result).toBeArrayOfSize(1);
-                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender"]);
+                expect(result[0]).toContainAllKeys(["command", "transfer", "commandSender", "token"]);
                 expect(result[0].command).toEqual("WITHDRAW");
-                expect(result[0].transfer).toContainAllKeys(["sender", "address", "command", "arkToshiValue", "check"]);
+                expect(result[0].transfer).toContainAllKeys([
+                    "sender",
+                    "address",
+                    "command",
+                    "arkToshiValue",
+                    "check",
+                    "token",
+                ]);
                 expect(result[0].transfer.address).toEqual("AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V");
                 expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
                 expect(result[0].transfer.check.currency).toEqual("EUR");
