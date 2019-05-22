@@ -1,0 +1,74 @@
+[
+    {
+        "command": "TIP",
+        "commandReplyTo": { "platform": "reddit", "username": "user1" },
+        "commandSender": { "platform": "reddit", "username": "cryptology" },
+        "id": "xxx",
+        "smallFooter": false,
+        "transfer": {
+            "arkToshiValue": "1000000000",
+            "check": { "amount": "10", "arkToshiValue": "1000000000", "currency": "ARK" },
+            "command": "TIP",
+            "receiver": { "platform": "reddit", "username": "user1" },
+            "sender": { "platform": "reddit", "username": "cryptology" },
+            "token": "ARK"
+        }
+    },
+    {
+        "command": "TIP",
+        "commandReplyTo": { "platform": "reddit", "username": "20USD" },
+        "commandSender": { "platform": "reddit", "username": "cryptology" },
+        "id": "xxx",
+        "smallFooter": false,
+        "transfer": {
+            "arkToshiValue": "1000000000",
+            "check": { "amount": "10", "arkToshiValue": "1000000000", "currency": "ARK" },
+            "command": "TIP",
+            "receiver": { "platform": "reddit", "username": "20USD" },
+            "sender": { "platform": "reddit", "username": "cryptology" },
+            "token": "ARK"
+        }
+    },
+    {
+        "command": "STICKERS",
+        "commandReplyTo": { "platform": "reddit", "username": "user5" },
+        "commandSender": { "platform": "reddit", "username": "cryptology" },
+        "id": "xxx",
+        "smallFooter": false,
+        "transfer": {
+            "command": "STICKERS",
+            "receiver": { "platform": "reddit", "username": "user5" },
+            "sender": { "platform": "reddit", "username": "cryptology" }
+        }
+    },
+    {
+        "command": "TIP",
+        "commandReplyTo": { "platform": "reddit", "username": "user4" },
+        "commandSender": { "platform": "reddit", "username": "cryptology" },
+        "id": "xxx",
+        "smallFooter": false,
+        "transfer": {
+            "arkToshiValue": "4000000000",
+            "check": { "amount": "40", "arkToshiValue": "4000000000", "currency": "USD" },
+            "command": "TIP",
+            "receiver": { "platform": "reddit", "username": "user4" },
+            "sender": { "platform": "reddit", "username": "cryptology" },
+            "token": "ARK"
+        }
+    },
+    {
+        "command": "TIP",
+        "commandReplyTo": { "platform": "reddit", "username": "user6" },
+        "commandSender": { "platform": "reddit", "username": "cryptology" },
+        "id": "xxx",
+        "smallFooter": false,
+        "transfer": {
+            "arkToshiValue": "5000000000",
+            "check": { "amount": "50", "arkToshiValue": "5000000000", "currency": "EUR" },
+            "command": "TIP",
+            "receiver": { "platform": "reddit", "username": "user6" },
+            "sender": { "platform": "reddit", "username": "cryptology" },
+            "token": "ARK"
+        }
+    }
+]

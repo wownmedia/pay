@@ -115,36 +115,30 @@ describe("pay-currency: Currency()", () => {
             });
         });
 
-        describe("should correctly parse invalid input and throw a TypeError", () => {
+        describe("should correctly parse invalid input reutrn null", () => {
             let badInput: string = "bad";
-            expect(() => {
-                Currency.parseAmountCurrency(badInput);
-            }).toThrow(TypeError);
+            let result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
 
             badInput = "10BAD";
-            expect(() => {
-                Currency.parseAmountCurrency(badInput);
-            }).toThrow(TypeError);
+            result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
 
             badInput = "BAD10";
-            expect(() => {
-                Currency.parseAmountCurrency(badInput);
-            }).toThrow(TypeError);
+            result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
 
             badInput = "USDTEN";
-            expect(() => {
-                Currency.parseAmountCurrency(badInput);
-            }).toThrow(TypeError);
+            result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
 
             badInput = "TENUSD";
-            expect(() => {
-                Currency.parseAmountCurrency(badInput);
-            }).toThrow(TypeError);
+            result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
 
             badInput = "USD";
-            expect(() => {
-                Currency.parseAmountCurrency(badInput);
-            }).toThrow(TypeError);
+            result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
         });
     });
 

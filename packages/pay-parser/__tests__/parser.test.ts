@@ -425,6 +425,26 @@ describe("pay-Parser: Parser()", () => {
                 expect(result[0].transfer.check.amount).toEqual(new BigNumber(10));
                 expect(result[0].transfer.check.arkToshiValue).toEqual(arktoshiValue.times(10));
             });
+
+            it("for: 10 EOS u/arktippr", async () => {
+                const inputText: string = "10 for u/arktippr";
+                const id: string = "xxx";
+                const result: Command[] = await Parser.parseMention(
+                    inputText,
+                    mentionUser,
+                    platform,
+                    sender,
+                    receiver,
+                    id,
+                );
+                expect(result[0].command).toEqual("TIP");
+                expect(result[0].smallFooter).toBeFalse();
+                expect(result[0].transfer.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result[0].transfer.check).toContainAllKeys(["currency", "amount", "arkToshiValue"]);
+                expect(result[0].transfer.check.currency).toEqual("ARK");
+                expect(result[0].transfer.check.amount).toEqual(new BigNumber(10));
+                expect(result[0].transfer.check.arkToshiValue).toEqual(arktoshiValue.times(10));
+            });
         });
 
         describe("should return null for a bad mention", () => {
@@ -444,20 +464,6 @@ describe("pay-Parser: Parser()", () => {
 
             it("for: 10EOS u/arktippr", async () => {
                 const inputText: string = "10EOS u/arktippr";
-                const id: string = "xxx";
-                const result: Command[] = await Parser.parseMention(
-                    inputText,
-                    mentionUser,
-                    platform,
-                    sender,
-                    receiver,
-                    id,
-                );
-                expect(result).toBeNull();
-            });
-
-            it("for: 10 EOS u/arktippr", async () => {
-                const inputText: string = "10 for u/arktippr";
                 const id: string = "xxx";
                 const result: Command[] = await Parser.parseMention(
                     inputText,
@@ -530,12 +536,6 @@ describe("pay-Parser: Parser()", () => {
                     receiver,
                     id,
                 );
-                expect(result).toBeNull();
-                badInput = "10 for u/arktippr";
-                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver, id);
-                expect(result).toBeNull();
-                badInput = "10 nocurrency u/arktippr";
-                result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver, id);
                 expect(result).toBeNull();
                 badInput = "10nocurrency u/arktippr";
                 result = await Parser.parseMention(badInput, mentionUser, platform, sender, receiver, id);
@@ -1020,7 +1020,6 @@ describe("pay-Parser: Parser()", () => {
                 const inputText: string =
                     "REWARD u/arktippr \
                     10 user1 \
-                    20USD @user2@twitter \
                     STICKERS user5@reddit\
                     40 USD u/user4 \
                     EUR 50 user6";

@@ -174,7 +174,7 @@ export class Currency {
     public static parseAmountCurrency(data: string): AmountCurrency {
         // First make sure the input is valid
         if (!Currency.isValidCurrencyInput(data)) {
-            throw TypeError(`${data} is not a valid amount/currency input`);
+            return null;
         }
 
         // Make sure input is formatted correctly

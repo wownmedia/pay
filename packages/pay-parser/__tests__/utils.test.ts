@@ -41,6 +41,111 @@ configMock.mockImplementation(() => ({
 import { ParserUtils } from "../src/utils";
 
 describe("pay-Parser: ParserUtils()", () => {
+    describe("parseAmount()", () => {
+        describe("should correctly parse amount/currency combinations", () => {
+            it("for a numerical input only (10)", async () => {
+                const input: string = "10";
+                let result: AmountCurrency = await ParserUtils.parseAmount(input);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+                result = await ParserUtils.parseAmount("", input);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+
+            it("for a single argument currency input (10USD | USD10)", async () => {
+                let input: string = "10USD";
+                let result: AmountCurrency = await ParserUtils.parseAmount(input);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+                result = await ParserUtils.parseAmount("", input);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+                input = "USD10";
+                result = await ParserUtils.parseAmount(input);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+                result = await ParserUtils.parseAmount("", input);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+
+            it("for a double argument currency and numerical input (10 USD | USD 10)", async () => {
+                const value: string = "10";
+                const currency = "USD";
+                let result: AmountCurrency = await ParserUtils.parseAmount(value, currency);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+                result = await ParserUtils.parseAmount(currency, value);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("USD");
+                expect(result.amount).toEqual(amount);
+            });
+
+            it("for double argument with 1 numeric input (10 BAD | BAD 10)", async () => {
+                const value: string = "10";
+                const currency = "BAD";
+                let result: AmountCurrency = await ParserUtils.parseAmount(value, currency);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+                result = await ParserUtils.parseAmount(currency, value);
+                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
+                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
+                expect(result.currency).toEqual("ARK");
+                expect(result.amount).toEqual(amount);
+            });
+        });
+        describe("should return NULL on invalid input", () => {
+            it("for non numerical input", async () => {
+                const badInput: string = "USD";
+                let result: AmountCurrency = await ParserUtils.parseAmount(badInput);
+                expect(result).toBeNull();
+                result = await ParserUtils.parseAmount(badInput, badInput);
+                expect(result).toBeNull();
+                result = await ParserUtils.parseAmount("", badInput);
+                expect(result).toBeNull();
+            });
+
+            it("for bad single argument currency input (10BAD | BAD10)", async () => {
+                let badInput: string = "10BAD";
+                let result: AmountCurrency = await ParserUtils.parseAmount(badInput);
+                expect(result).toBeNull();
+                result = await ParserUtils.parseAmount("", badInput);
+                expect(result).toBeNull();
+                badInput = "BAD10";
+                result = await ParserUtils.parseAmount(badInput);
+                expect(result).toBeNull();
+                result = await ParserUtils.parseAmount("", badInput);
+                expect(result).toBeNull();
+            });
+
+            it("for empty input", async () => {
+                const emptyInput: string = "";
+                let result: AmountCurrency = await ParserUtils.parseAmount(emptyInput);
+                expect(result).toBeNull();
+                result = await ParserUtils.parseAmount(emptyInput, emptyInput);
+                expect(result).toBeNull();
+            });
+        });
+    });
+
     describe("isValidUser()", () => {
         it("should return TRUE on valid input", async () => {
             const user: Username = {
@@ -751,14 +856,6 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency).toBeNull();
             });
 
-            const amount = "10";
-            it("for input with a numerical part and without valid currency (10 EOS)", async () => {
-                let amountCurrency = await ParserUtils.parseAmount(amount, badInputBadCurrency);
-                expect(amountCurrency).toBeNull();
-                amountCurrency = await ParserUtils.parseAmount(badInputBadCurrency, amount);
-                expect(amountCurrency).toBeNull();
-            });
-
             const badInputWithNumericalLargerThanMAXINT = `${Number.MAX_SAFE_INTEGER + 1}`;
             it("for input with a numerical part that is larger than, or equal to, Max Integer value", async () => {
                 let amountCurrency = await ParserUtils.parseAmount(badInputWithNumericalLargerThanMAXINT);
@@ -968,105 +1065,6 @@ describe("pay-Parser: ParserUtils()", () => {
                 expect(amountCurrency.currency).toEqual(expectedCurrency);
                 expect(amountCurrency.amount).toEqual(new BigNumber(1.0));
                 expect(amountCurrency.arkToshiValue).toEqual(new BigNumber(arktoshiValue));
-            });
-        });
-    });
-
-    describe("parseAmount()", () => {
-        describe("should correctly parse amount/currency combinations", () => {
-            it("for a numerical input only (10)", async () => {
-                const input: string = "10";
-                let result: AmountCurrency = await ParserUtils.parseAmount(input);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("ARK");
-                expect(result.amount).toEqual(amount);
-                result = await ParserUtils.parseAmount("", input);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("ARK");
-                expect(result.amount).toEqual(amount);
-            });
-
-            it("for a single argument currency input (10USD | USD10)", async () => {
-                let input: string = "10USD";
-                let result: AmountCurrency = await ParserUtils.parseAmount(input);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                result = await ParserUtils.parseAmount("", input);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                input = "USD10";
-                result = await ParserUtils.parseAmount(input);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                result = await ParserUtils.parseAmount("", input);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-            });
-
-            it("for a double argument currency and numerical input (10 USD | USD 10)", async () => {
-                const value: string = "10";
-                const currency = "USD";
-                let result: AmountCurrency = await ParserUtils.parseAmount(value, currency);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-                result = await ParserUtils.parseAmount(currency, value);
-                expect(result).toContainAllKeys(["arkToshiValue", "currency", "amount"]);
-                expect(result.arkToshiValue).toEqual(arktoshiValue.times(10));
-                expect(result.currency).toEqual("USD");
-                expect(result.amount).toEqual(amount);
-            });
-        });
-        describe("should return NULL on invalid input", () => {
-            it("for non numerical input", async () => {
-                const badInput: string = "USD";
-                let result: AmountCurrency = await ParserUtils.parseAmount(badInput);
-                expect(result).toBeNull();
-                result = await ParserUtils.parseAmount(badInput, badInput);
-                expect(result).toBeNull();
-                result = await ParserUtils.parseAmount("", badInput);
-                expect(result).toBeNull();
-            });
-
-            it("for bad single argument currency input (10BAD | BAD10)", async () => {
-                let badInput: string = "10BAD";
-                let result: AmountCurrency = await ParserUtils.parseAmount(badInput);
-                expect(result).toBeNull();
-                result = await ParserUtils.parseAmount("", badInput);
-                expect(result).toBeNull();
-                badInput = "BAD10";
-                result = await ParserUtils.parseAmount(badInput);
-                expect(result).toBeNull();
-                result = await ParserUtils.parseAmount("", badInput);
-                expect(result).toBeNull();
-            });
-
-            it("for bad double argument currency input (10 BAD | BAD 10)", async () => {
-                const value: string = "10";
-                const badCurrency = "BAD";
-                let result: AmountCurrency = await ParserUtils.parseAmount(value, badCurrency);
-                expect(result).toBeNull();
-                result = await ParserUtils.parseAmount(badCurrency, value);
-                expect(result).toBeNull();
-            });
-
-            it("for empty input", async () => {
-                const emptyInput: string = "";
-                let result: AmountCurrency = await ParserUtils.parseAmount(emptyInput);
-                expect(result).toBeNull();
-                result = await ParserUtils.parseAmount(emptyInput, emptyInput);
-                expect(result).toBeNull();
             });
         });
     });

@@ -32,7 +32,7 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { AmountCurrency } from "../src";
+import { AmountCurrency, Currency } from "../src";
 import { CoinGeckoAPI } from "../src/coinGecko";
 import { CurrencyUtils } from "../src/utils";
 
@@ -134,15 +134,13 @@ describe("pay-currency: CurrencyUtils()", () => {
             expect(result.amount).toEqual(new BigNumber(10));
         });
 
-        it("should throw a TypeError on invalid input", () => {
+        it("should return null on invalid input", () => {
             let badInput = "anythingReally";
-            expect(() => {
-                CurrencyUtils.splitCurrencyAmountPair(badInput);
-            }).toThrowError(TypeError);
+            let result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
             badInput = "USDNOAMOUNT";
-            expect(() => {
-                CurrencyUtils.splitCurrencyAmountPair(badInput);
-            }).toThrowError(TypeError);
+            result = Currency.parseAmountCurrency(badInput);
+            expect(result).toBeNull();
         });
 
         it("should correctly accept an ecosystem currency", () => {

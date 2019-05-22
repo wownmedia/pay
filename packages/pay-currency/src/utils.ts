@@ -78,12 +78,12 @@ export class CurrencyUtils {
                 if (data.startsWith(currency) || data.endsWith(currency)) {
                     const amount = new BigNumber(data.replace(currency, "").trim());
                     if (amount.isNaN()) {
-                        throw TypeError("Not a valid amount currency pair: Amount missing");
+                        return null;
                     }
                     return { currency, amount };
                 }
             }
         }
-        throw TypeError("Not a valid amount currency pair");
+        return null;
     }
 }

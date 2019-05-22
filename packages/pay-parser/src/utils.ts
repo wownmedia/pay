@@ -230,25 +230,45 @@ export class ParserUtils {
      * <amount> <currency>
      * <currency> <amount>
      */
-    public static async parseAmount(leftInput: string, rightInput?: string): Promise<AmountCurrency> {
-        let amountCurrency: AmountCurrency;
-        try {
-            if (typeof rightInput === "undefined") {
-                rightInput = "";
-            }
-
+    public static async parseAmount(leftInput: string, rightInput: string = ""): Promise<AmountCurrency> {
+        let amountCurrency: AmountCurrency = null;
+        logger.info(`Left: ${leftInput} || right: ${rightInput}`);
+        // A valid Currency/Amount pair E.g. [1,ARK], [USD,1]
+        if (
+            (Currency.isNumericalInput(leftInput) && Currency.isValidCurrency(rightInput)) ||
+            (Currency.isNumericalInput(rightInput) && Currency.isValidCurrency(leftInput))
+        ) {
+            logger.info("right + left");
             const toParse: string = rightInput.trim() + leftInput.trim();
             amountCurrency = Currency.parseAmountCurrency(toParse);
+        }
+
+        // A single left input; E.g. [1,_], [ARK1,_], [USD1,_]
+        else if (
+            leftInput !== "" &&
+            (typeof rightInput === "undefined" ||
+                rightInput === "" ||
+                (!Currency.isValidCurrency(rightInput) && !Currency.isNumericalInput(rightInput)))
+        ) {
+            logger.info("left");
+            amountCurrency = Currency.parseAmountCurrency(leftInput);
+        }
+
+        // E.g. [_,1], [_,ARK1], [_,USD1]
+        else {
+            logger.info("right");
+            amountCurrency = Currency.parseAmountCurrency(rightInput);
+        }
+
+        if (amountCurrency !== null) {
             // Convert currency to its current Arktoshi value
             amountCurrency.currency = Currency.currencySymbolsToName(amountCurrency.currency);
             amountCurrency.arkToshiValue = await Currency.getExchangedValue(
                 amountCurrency.amount,
                 amountCurrency.currency,
             );
-            return amountCurrency;
-        } catch (e) {
-            return null;
         }
+        return amountCurrency;
     }
 
     /**
