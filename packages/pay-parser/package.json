@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-parser",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "author": "Marc Schot",
     "license": "MIT",
     "description": "Parse text for ARK pay commands",

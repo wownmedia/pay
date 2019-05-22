@@ -109,12 +109,15 @@ export class ParserUtils {
                 // Check if we received a TIP command
                 const amountCurrency: AmountCurrency = await ParserUtils.parseTipValue(bodyParts, mentionIndex);
                 if (amountCurrency !== null) {
+                    const token: string = arkEcosystemConfig.hasOwnProperty(amountCurrency.currency.toLowerCase())
+                        ? amountCurrency.currency.toUpperCase()
+                        : baseCurrency.ticker;
                     const transfer: Transfer = {
                         sender: commandSender,
                         receiver: commandReplyTo,
                         command: "TIP",
                         arkToshiValue: amountCurrency.arkToshiValue,
-                        token: amountCurrency.currency,
+                        token,
                         check: amountCurrency,
                     };
                     return [
@@ -198,12 +201,15 @@ export class ParserUtils {
         if (await ParserUtils.isValidUser(receiver)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                const token: string = arkEcosystemConfig.hasOwnProperty(amountCurrency.currency.toLowerCase())
+                    ? amountCurrency.currency.toUpperCase()
+                    : baseCurrency.ticker;
                 const transfer: Transfer = {
                     sender: commandSender,
                     receiver,
                     command,
                     arkToshiValue: amountCurrency.arkToshiValue,
-                    token: amountCurrency.currency,
+                    token,
                     check: amountCurrency,
                 };
                 return { command, transfer, commandSender, commandReplyTo: receiver };
@@ -558,12 +564,17 @@ export class ParserUtils {
                                     : "";
                             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
                             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                                const token: string = arkEcosystemConfig.hasOwnProperty(
+                                    amountCurrency.currency.toLowerCase(),
+                                )
+                                    ? amountCurrency.currency.toUpperCase()
+                                    : baseCurrency.ticker;
                                 const transfer: Transfer = {
                                     sender: commandSender,
                                     receiver,
                                     command: "TIP",
                                     arkToshiValue: amountCurrency.arkToshiValue,
-                                    token: amountCurrency.currency,
+                                    token,
                                     check: amountCurrency,
                                 };
                                 requestedRewards.push(transfer);
