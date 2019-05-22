@@ -14,10 +14,11 @@ export class Withdraw extends Send {
     public static async transfer(transfer: Transfer): Promise<Reply> {
         try {
             // Check if the Sender has sufficient balance
+            const balanceCheckAmount = transfer.arkToshiValue === null ? new BigNumber(1) : transfer.arkToshiValue;
             const senderBalance: WalletBalance = await this.__senderHasBalance(
                 transfer.sender,
                 transfer.token,
-                transfer.arkToshiValue,
+                balanceCheckAmount,
             );
             if (!senderBalance.success) {
                 return Messenger.senderLowBalance(
@@ -43,17 +44,7 @@ export class Withdraw extends Send {
 
     protected static __getWithdrawBalance(balance: BigNumber, token: string): BigNumber {
         token = token.toLowerCase();
-        if (
-            typeof arkEcosystemConfig[token] === "undefined" ||
-            arkEcosystemConfig[token].transactionFee === "undefined"
-        ) {
-            throw TypeError(`Could not find ${token} in the configuration`);
-        }
-
         const fee: BigNumber = new BigNumber(arkEcosystemConfig[token].transactionFee);
-        if (fee.isNaN()) {
-            throw TypeError(`Bad transaction fee for ${token.toUpperCase()} in the configuration`);
-        }
 
         return balance.minus(fee);
     }

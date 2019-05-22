@@ -167,7 +167,6 @@ export class Send {
         amount: BigNumber,
     ): Promise<WalletBalance> {
         token = token.toLowerCase();
-
         if (
             typeof arkEcosystemConfig[token] === "undefined" ||
             typeof arkEcosystemConfig[token].transactionFee === "undefined"

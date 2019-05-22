@@ -4,7 +4,7 @@ import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
 
-export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP"];
+export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
 
 /**
  * Command parsed from a parsed mention/command and it's value in Arktoshi
@@ -56,6 +56,7 @@ export class Commands {
                 return false;
 
             // Commands that have arguments
+            case "REWARD":
             case "BALANCE":
             case "ADDRESS":
             case "DEPOSIT":
@@ -70,7 +71,7 @@ export class Commands {
 
     public static async executeCommand(command: Command): Promise<Reply> {
         switch (command.command) {
-            default:
+            case "REWARD":
             case "HELP":
                 return Help.getHelp(command.command);
             case "DEPOSIT":
