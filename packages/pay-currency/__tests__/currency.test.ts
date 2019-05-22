@@ -221,8 +221,14 @@ describe("pay-currency: Currency()", () => {
             mock.mockRestore();
         });
 
+        it("should return 0 for input that is 0", async () => {
+            const units: BigNumber = new BigNumber(arktoshi).times(0);
+            const result = await Currency.baseCurrencyUnitsToUSD(units);
+            expect(result).toEqual(new BigNumber(0));
+        });
+
         it("should throw a TypeError for amounts in units that are <= 0", async () => {
-            const units: BigNumber = new BigNumber(0);
+            const units: BigNumber = new BigNumber(-1);
             await expect(Currency.baseCurrencyUnitsToUSD(units)).rejects.toThrowError(TypeError);
         });
     });

@@ -40,22 +40,15 @@ export class CoinGeckoAPI {
             return new BigNumber(1);
         }
 
-        const simpleCurrencyTicker = await coinGeckoClient.simple.price({
-            ids: [currency],
-            vs_currencies: [fiat],
-        });
+        try {
+            const simpleCurrencyTicker = await coinGeckoClient.simple.price({
+                ids: [currency],
+                vs_currencies: [fiat],
+            });
 
-        if (!simpleCurrencyTicker.hasOwnProperty("data") || !simpleCurrencyTicker.success === true) {
-            throw new Error(
-                `Can not communicate to CoinGecko: simpleCurrencyTicker: ${JSON.stringify(simpleCurrencyTicker)}`,
-            );
+            return new BigNumber(simpleCurrencyTicker.data[currency][fiat]);
+        } catch (e) {
+            return new BigNumber(0);
         }
-
-        const currencyValue = new BigNumber(simpleCurrencyTicker.data[currency][fiat]);
-        if (currencyValue.isNaN()) {
-            throw new Error(`Did not receive a valid value for ${currency}`);
-        }
-
-        return currencyValue;
     }
 }

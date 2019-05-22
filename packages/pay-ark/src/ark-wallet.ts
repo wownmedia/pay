@@ -1,5 +1,6 @@
 import { crypto } from "@arkecosystem/crypto";
 import { config } from "@cryptology.hk/pay-config";
+import { logger } from "@cryptology.hk/pay-logger";
 import { SecureStorage } from "@cryptology.hk/pay-storage";
 import BigNumber from "bignumber.js";
 import { generateMnemonic } from "bip39";
@@ -89,12 +90,16 @@ export class ArkWallet {
     }
 
     public static async getBalance(wallet: string, token: string): Promise<BigNumber> {
-        const response: ApiResponse = await Network.getFromAPI(`/api/v2/wallets/${wallet}`, token);
-        if (!response.hasOwnProperty("data") || response.error) {
-            throw new Error("Failed to retrieve wallet status from node.");
+        let balance: BigNumber = new BigNumber(0);
+        logger.info(`GETTING BALANCE: ${wallet} at ${token}`);
+        try {
+            const response: ApiResponse = await Network.getFromAPI(`/api/v2/wallets/${wallet}`, token);
+            const retrievedWallet: APITransaction = response.data;
+            logger.info(`retrievedWallet: ${JSON.stringify(retrievedWallet)}`);
+            balance = new BigNumber(retrievedWallet.balance);
+        } catch (e) {
+            logger.error(e);
         }
-        const retrievedWallet: APITransaction = response.data;
-        const balance = new BigNumber(retrievedWallet.balance);
 
         if (balance.isNaN() || balance.lt(0)) {
             throw new Error(`Could not retrieve a correct balance for ${wallet}`);

@@ -237,7 +237,7 @@ export class PlatformReddit {
                 }
             }
         } catch (e) {
-            logger.warn(e.messenger);
+            logger.warn(e.message);
         }
     }
 

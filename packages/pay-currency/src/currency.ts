@@ -65,8 +65,12 @@ export class Currency {
         }
 
         // Check if input is correct
-        if (units.isNaN() || units.lte(0)) {
+        if (units.isNaN() || units.lt(0)) {
             throw TypeError("Please enter a valid amount.");
+        }
+
+        if (units.eq(0)) {
+            return new BigNumber(0);
         }
 
         // Will throw an error if it fails.

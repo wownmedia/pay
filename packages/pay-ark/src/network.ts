@@ -78,6 +78,8 @@ export class Network {
 
                     if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
                         logger.info(`Retrieved data from ${node}`);
+                        logger.info(`${node}${request}`);
+                        logger.info(JSON.stringify(response.data));
                         return response.data;
                     }
                 } catch (e) {

@@ -87,11 +87,7 @@ export class Send {
             transfer.sender.platform,
             transfer.token,
         );
-        const walletReceiver: Wallet = await Storage.getWallet(
-            transfer.receiver.username,
-            transfer.receiver.platform,
-            transfer.token,
-        );
+        const walletReceiver: string = await User.getWalletAddress(transfer.receiver, transfer.token);
         const token: string = transfer.token;
         const txSender: ArkEcosystemWallet = {
             address: walletSender.address,
@@ -100,8 +96,8 @@ export class Send {
             token,
         };
         const txReceiver: ArkEcosystemWallet = {
-            address: walletReceiver.address,
-            encryptedSeed: walletReceiver.encryptedSeed,
+            address: walletReceiver,
+            encryptedSeed: "",
             networkVersion,
             token,
         };
