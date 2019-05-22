@@ -266,6 +266,11 @@ export class ParserUtils {
      * A username can never be a valid currency or a number (that would parse badly)
      */
     public static async isValidUser(user: Username): Promise<boolean> {
+        // A user can never be a command
+        if (Commands.isValidCommand(user.username)) {
+            return false;
+        }
+
         // A user can never be a currency or a number
         return !(
             Currency.isValidCurrency(user.username) ||
