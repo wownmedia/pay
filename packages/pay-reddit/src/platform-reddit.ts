@@ -1,5 +1,6 @@
 import { Command, Commands } from "@cryptology.hk/pay-commands";
 import { config } from "@cryptology.hk/pay-config";
+import { Currency } from "@cryptology.hk/pay-currency";
 import { logger } from "@cryptology.hk/pay-logger";
 import { Reply } from "@cryptology.hk/pay-messenger";
 import { Parser } from "@cryptology.hk/pay-parser";
@@ -334,6 +335,12 @@ export class PlatformReddit {
      */
     public async isValidUser(username: string): Promise<boolean> {
         try {
+            if (Commands.isValidCommand(username.toUpperCase())) {
+                return false;
+            }
+            if (Currency.isValidCurrency(username.toUpperCase())) {
+                return false;
+            }
             const redditUser = await this.platformConfig.getUser(username).getTrophies();
             return redditUser && redditUser.hasOwnProperty("trophies");
         } catch (error) {
