@@ -186,6 +186,7 @@ export class PlatformReddit {
                                 const reply: Reply = await Commands.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
                                 if (reply.hasOwnProperty("directMessageSender")) {
+                                    logger.info(`Sending DM to sender: ${command.commandSender.username}`);
                                     await this.sendDirectMessage(
                                         command.commandSender.username,
                                         reply.directMessageSender,
@@ -209,6 +210,7 @@ export class PlatformReddit {
                                     ) {
                                         receiver = command.transfer.receiver;
                                     }
+                                    logger.info(`Sending DM to receiver: ${receiver.username}`);
                                     await this.sendDirectMessage(
                                         receiver.username,
                                         reply.directMessageReceiver,
@@ -219,6 +221,7 @@ export class PlatformReddit {
                                 if (reply.hasOwnProperty("directMessageMerchant")) {
                                     const merchant: Username = PlatformReddit.__getMerchant(command.command);
                                     // todo check platform
+                                    logger.info(`Sending DM to merchant: ${merchant.username}`);
                                     await this.sendDirectMessage(
                                         merchant.username,
                                         reply.directMessageMerchant,
@@ -226,7 +229,8 @@ export class PlatformReddit {
                                     );
                                 }
 
-                                if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].hasOwnProperty("id")) {
+                                if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
+                                    logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id}`);
                                     await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
                                 }
                             } catch (e) {

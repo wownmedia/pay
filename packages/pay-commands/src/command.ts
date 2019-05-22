@@ -86,7 +86,7 @@ export class Commands {
                     return Help.getHelp(command.command);
                 }
                 const parentId: string = command.hasOwnProperty("id") ? command.id : "";
-                const vendorField: string = `ARK Pay: SEND: ${command.commandSender.username}@${
+                const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${
                     command.commandSender.platform
                 } >> ${command.transfer.receiver.username}@${command.transfer.receiver.platform} ${parentId}`;
                 return await Send.transfer(command.transfer, vendorField);
