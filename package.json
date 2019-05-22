@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "pay",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "license": "MIT",
     "description": "Payment application for ARK and ARK-based bridgechains",
     "author": "Cryptology",
