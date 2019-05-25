@@ -198,7 +198,8 @@ export class ParserUtils {
     ): Promise<Command> {
         const command = "SEND";
         const receiver: Username = ParserUtils.parseUsername(arg1, platform);
-        if (await ParserUtils.isValidUser(receiver)) {
+        const validUser: boolean = ParserUtils.isValidUser(receiver);
+        if (validUser) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                 const token: string = arkEcosystemConfig.hasOwnProperty(amountCurrency.currency.toLowerCase())
@@ -291,19 +292,25 @@ export class ParserUtils {
      *
      * A username can never be a valid currency or a number (that would parse badly)
      */
-    public static async isValidUser(user: Username): Promise<boolean> {
+    public static isValidUser(user: Username): boolean {
+        logger.info(`username: ${user.username} : ${new BigNumber(user.username).isNaN()}`);
         // A user can never be a command
         if (Commands.isValidCommand(user.username)) {
             return false;
         }
 
         // A user can never be a currency or a number
-        return !(
+        const amountCurrency: AmountCurrency = Currency.parseAmountCurrency(user.username);
+        if (
+            amountCurrency !== null ||
             Currency.isValidCurrency(user.username) ||
-            !new BigNumber(user.username).isNaN() ||
-            !this.isValidPlatform(user.platform) ||
-            user.username === ""
-        );
+            Currency.isNumericalInput(user.username)
+        ) {
+            return false;
+        }
+        logger.info(`username: ${user.username} : ${new BigNumber(user.username).isNaN()}`);
+
+        return !(!new BigNumber(user.username).isNaN() || !this.isValidPlatform(user.platform) || user.username === "");
     }
 
     public static isValidPlatform(platform: string): boolean {
@@ -464,7 +471,8 @@ export class ParserUtils {
     public static async parseSTICKERS(arg1: string, platform: string, commandSender: Username): Promise<Command> {
         const command = "STICKERS";
         const commandReplyTo: Username = ParserUtils.parseUsername(arg1, platform);
-        if (await ParserUtils.isValidUser(commandReplyTo)) {
+        const validUser = ParserUtils.isValidUser(commandReplyTo);
+        if (validUser) {
             return { command, commandReplyTo, commandSender };
         }
         return { command, commandSender };
@@ -565,8 +573,10 @@ export class ParserUtils {
             if (typeof bodyParts[item] !== "undefined") {
                 const index: number = parseInt(item, 10);
                 if (typeof bodyParts[index - 1] !== "undefined") {
-                    const receiver: Username = ParserUtils.parseUsername(bodyParts[item], platform);
-                    if (await ParserUtils.isValidUser(receiver)) {
+                    const receiver: Username = this.parseUsername(bodyParts[item], platform);
+                    const validUser: boolean = this.isValidUser(receiver);
+                    logger.info(`REWARD: isValidUser( ${JSON.stringify(receiver)} ) === ${validUser}`);
+                    if (validUser) {
                         const command: string = bodyParts[index - 1].toUpperCase();
 
                         if (command === "STICKERS") {
@@ -579,10 +589,10 @@ export class ParserUtils {
                         } else {
                             const rightInput: string = bodyParts[index - 1].toUpperCase();
                             const leftInput: string =
-                                index >= 2 && ParserUtils.isValidLeftInput(bodyParts[index - 2], rightInput)
+                                index >= 2 && this.isValidLeftInput(bodyParts[index - 2], rightInput)
                                     ? bodyParts[index - 2].toUpperCase()
                                     : "";
-                            const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(leftInput, rightInput);
+                            const amountCurrency: AmountCurrency = await this.parseAmount(leftInput, rightInput);
                             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
                                 const token: string = arkEcosystemConfig.hasOwnProperty(
                                     amountCurrency.currency.toLowerCase(),

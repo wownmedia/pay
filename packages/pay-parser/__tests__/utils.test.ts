@@ -152,7 +152,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 username: "user1",
                 platform: "reddit",
             };
-            const result: boolean = await ParserUtils.isValidUser(user);
+            const result: boolean = ParserUtils.isValidUser(user);
             expect(result).toBeTrue();
         });
 
@@ -161,16 +161,16 @@ describe("pay-Parser: ParserUtils()", () => {
                 username: "user1",
                 platform: "badPlatform",
             };
-            let result: boolean = await ParserUtils.isValidUser(user);
+            let result: boolean = ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
             user.platform = "badPlatform";
-            result = await ParserUtils.isValidUser(user);
+            result = ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
             user.username = "10";
-            result = await ParserUtils.isValidUser(user);
+            result = ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
             user.username = "USD";
-            result = await ParserUtils.isValidUser(user);
+            result = ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
         });
     });
@@ -720,17 +720,12 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result.command).toEqual(command);
             command = "STICKERS";
             commandArguments = [command];
-            const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
-            mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(false));
             result = await ParserUtils.parseCommand(command, commandArguments, platform, sender);
             expect(result).toContainAllKeys(["command", "commandSender"]);
             expect(result.command).toEqual(command);
-            mockParserUtilsisValidUser.mockClear();
         });
 
         it("should correctly parse a SEND command with valid arguments", async () => {
-            const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
-            mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(true));
             const platform: string = "reddit";
             const command: string = "SEND";
             const arg1: string = "user1";
@@ -761,7 +756,6 @@ describe("pay-Parser: ParserUtils()", () => {
                 "sender",
                 "token",
             ]);
-            mockParserUtilsisValidUser.mockRestore();
         });
 
         it("should correctly parse a WITHDRAW command with valid arguments", async () => {
@@ -1333,14 +1327,11 @@ describe("pay-Parser: ParserUtils()", () => {
             });
 
             it("without valid arguments", async () => {
-                const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
-                mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(false));
                 const platform: string = "reddit";
                 const arg1: string = "";
                 const result: Command = await ParserUtils.parseSTICKERS(arg1, platform, sender);
                 expect(result).toContainAllKeys(["command", "commandSender"]);
                 expect(result.command).toEqual("STICKERS");
-                mockParserUtilsisValidUser.mockClear();
             });
         });
     });
@@ -1503,8 +1494,6 @@ describe("pay-Parser: ParserUtils()", () => {
         const platform: string = "reddit";
         const mentionedUser = "arktippr";
         it("should correctly parse a REWARD mention with mixed multiple entries", async () => {
-            const mockParserUtilsisValidUser = jest.spyOn(ParserUtils, "isValidUser");
-            mockParserUtilsisValidUser.mockImplementation(() => Promise.resolve(true));
             const bodyParts: string[] = [command, mentionedUser];
             const mentionBody: string = "REWARD u/arktippr 10 user1 20USD user2@reddit EUR 4 user4 0 user5";
             const mentionIndex: number = bodyParts.indexOf(mentionedUser);
@@ -1524,7 +1513,6 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result[1].receiver.platform).toEqual(platform);
             expect(result[1].check.currency).toEqual("USD");
             expect(result[1].check.amount).toEqual(new BigNumber(20));
-            mockParserUtilsisValidUser.mockClear();
         });
 
         it("should return NULL for a REWARD mention without valid entries", async () => {
