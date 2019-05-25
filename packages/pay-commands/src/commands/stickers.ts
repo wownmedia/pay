@@ -7,7 +7,6 @@ import { Storage, Wallet } from "@cryptology.hk/pay-storage";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import crypto from "crypto";
-import { Transfer } from "../command";
 import { Send } from "./send";
 
 const stickersConfig = config.get("merchants").stickers;

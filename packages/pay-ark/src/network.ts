@@ -56,7 +56,7 @@ export class Network {
                         },
                     );
                     results.push({ node: nodes[item], response: response.data });
-                    logger.info(`Posted transaction to ${node}`);
+                    logger.info(`Posted transaction to ${node} - ${JSON.stringify(response.data)}`);
                 } catch (e) {
                     logger.error(e.message);
                 }

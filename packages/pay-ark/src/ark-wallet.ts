@@ -114,16 +114,15 @@ export class ArkWallet {
         vendorField: string,
         token: string,
     ): Promise<TransactionResponse[]> {
-        const networkVersion = this.getArkEcosystemNetworkVersionForToken(token);
         const fee = this.getArkEcosystemNetworkTransactionFee(token);
         const seed = SecureStorage.getSeedFromSecret(sender.encryptedSeed);
-        const transaction = ArkTransaction.generateTransferTransaction(
-            networkVersion,
+        const transaction = await ArkTransaction.generateTransferTransaction(
             amount,
             receiver.address,
             vendorField,
             fee,
             seed,
+            token,
         );
 
         const transactions: any[] = [];
