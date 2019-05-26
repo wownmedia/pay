@@ -44,6 +44,6 @@
         "@cryptology.hk/pay-config": "^2.0.0",
         "@cryptology.hk/pay-logger": "^2.0.0",
         "@cryptology.hk/pay-storage": "^2.0.0",
-        "@cryptology.hk/pay-ark": "^2.0.2"
+        "@cryptology.hk/pay-ark": "^2.0.3"
     }
 }
