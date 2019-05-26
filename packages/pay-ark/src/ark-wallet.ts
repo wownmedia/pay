@@ -7,6 +7,7 @@ import { generateMnemonic } from "bip39";
 import Joi from "joi";
 import { ApiResponse, APITransaction, Network, TransactionResponse } from "./network";
 import { ArkTransaction } from "./transaction";
+const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 
@@ -92,18 +93,22 @@ export class ArkWallet {
     public static async getBalance(wallet: string, token: string): Promise<BigNumber> {
         let balance: BigNumber = new BigNumber(0);
         logger.info(`GETTING BALANCE: ${wallet} at ${token}`);
+
+        // In case the wallet is new the Node will return a 404 Error
+        // Using the try{} catch{} to avoid getting an error there
         try {
             const response: ApiResponse = await Network.getFromAPI(`/api/v2/wallets/${wallet}`, token);
             const retrievedWallet: APITransaction = response.data;
-            logger.info(`retrievedWallet: ${JSON.stringify(retrievedWallet)}`);
             balance = new BigNumber(retrievedWallet.balance);
         } catch (e) {
-            logger.error(e);
+            logger.info(e.message);
         }
 
         if (balance.isNaN() || balance.lt(0)) {
-            throw new Error(`Could not retrieve a correct balance for ${wallet}`);
+            balance = new BigNumber(0);
         }
+
+        logger.info(`BALANCE for ${wallet} at ${token}: ${balance.div(ARKTOSHI).toNumber()}`);
         return balance;
     }
 

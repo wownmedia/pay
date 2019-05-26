@@ -37,6 +37,7 @@ export class ArkTransaction {
             transaction.data.timestamp = this.__calculateTimestamp(epoch);
         }
 
+        logger.info(`Epoch: ${epoch}`);
         transaction = transaction.sign(seed);
 
         if (secondPassphrase) {
@@ -66,6 +67,10 @@ export class ArkTransaction {
 
     private static __getArkEcosystemEpochForToken(token: string): string {
         token = token.toLowerCase();
-        return typeof arkEcosystemConfig[token].epoch !== "undefined" ? arkEcosystemConfig[token].epoch : null;
+        try {
+            return typeof arkEcosystemConfig[token].epoch !== "undefined" ? arkEcosystemConfig[token].epoch : null;
+        } catch (e) {
+            return null;
+        }
     }
 }

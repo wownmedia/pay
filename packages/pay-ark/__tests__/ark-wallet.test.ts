@@ -185,19 +185,19 @@ describe("pay-ark: ArkWallet()", () => {
             getAPIMock.mockClear();
         });
 
-        it("should throw for a bad response", async () => {
+        it("should return 0 for a bad response", async () => {
             const getAPIMock = jest.spyOn(Network, "getFromAPI");
             getAPIMock.mockImplementation(() =>
                 Promise.resolve({
-                    data: {
-                        balance: 1,
-                    },
-                    error: "Forbidden",
+                    statusCode: 404,
+                    error: "Not found",
+                    message: "Wallet not found",
                 }),
             );
             const address: string = "marc";
             const token: string = "BAD";
-            expect(ArkWallet.getBalance(address, token)).rejects.toThrow();
+            const result: BigNumber = await ArkWallet.getBalance(address, token);
+            expect(result).toEqual(new BigNumber(0));
         });
 
         it("should throw for a bad balance", async () => {
@@ -211,7 +211,8 @@ describe("pay-ark: ArkWallet()", () => {
             );
             const address: string = "marc";
             const token: string = "BAD";
-            expect(ArkWallet.getBalance(address, token)).rejects.toThrow();
+            const result: BigNumber = await ArkWallet.getBalance(address, token);
+            expect(result).toEqual(new BigNumber(0));
         });
     });
 });

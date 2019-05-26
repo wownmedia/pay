@@ -14,8 +14,10 @@ export interface Parameters {
 }
 
 export interface ApiResponse {
-    data: APITransaction;
+    data?: APITransaction;
     error?: string;
+    statusCode?: number;
+    message?: string;
 }
 
 export interface APITransaction {
