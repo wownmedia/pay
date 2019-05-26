@@ -373,12 +373,20 @@ export class PlatformReddit {
             });
     }
 
-    public async postCommentReply(submissionId: string, reply: string) {
+    /**
+     * @dev Post a comment reply on Reddit
+     * @param submissionId {string} The ID of the comment to reply to
+     * @param reply {string}        The text to reply
+     * @returns {Promise<boolean>}  True id the comment was posted
+     */
+    public async postCommentReply(submissionId: string, reply: string): Promise<boolean> {
         try {
             const submission = await this.platformConfig.getComment(submissionId);
             await submission.reply(reply);
+            return true;
         } catch (e) {
             logger.error(e.message);
+            return false;
         }
     }
 
@@ -407,10 +415,10 @@ export class PlatformReddit {
     /**
      * @dev  Process an item (message, mention) from the Bot's Inbox
      * @param {object} item The message or mention to process
+     * @returns {Promise<Command[]>}    An array with Commands
      * @private
      */
     private async __processInboxItem(item: RedditMessage): Promise<Command[]> {
-        logger.info(JSON.stringify(item)); // todo
         try {
             const needToProcessSubmission: boolean = await PlatformReddit.__isNewSubmission(item.id);
             if (!needToProcessSubmission) {
@@ -421,6 +429,8 @@ export class PlatformReddit {
             if (item.was_comment && item.parent_id) {
                 // This is a Mention
                 await this.__markCommentRead(item.id);
+
+                // Retrieve the author of the Reddit comment/post the user replied to
                 const parentAuthor: Author = await this.__getParentAuthor(item.parent_id);
                 receiver = {
                     username: parentAuthor.name,
@@ -431,7 +441,6 @@ export class PlatformReddit {
                 await this.__markMessageRead(item.id);
             }
 
-            logger.info(`Processing new submission ${item.id} from ${item.author.name}`);
             const sender: Username = {
                 username: item.author.name,
                 platform: "reddit",
@@ -444,6 +453,12 @@ export class PlatformReddit {
         }
     }
 
+    /**
+     * @dev Retreive the author of the post/commend the sender replied to
+     * @param commentId {string}    The ID of the comment/post the sender replied to
+     * @returns {Promise<Author>}   The author of the post/commend
+     * @private
+     */
     private async __getParentAuthor(commentId: string): Promise<Author> {
         const parentAuthor: Author = await this.platformConfig.getComment(commentId).author;
         if (!parentAuthor || !parentAuthor.hasOwnProperty("name") || parentAuthor.name === "[deleted]") {
@@ -471,6 +486,11 @@ export class PlatformReddit {
         }
     }
 
+    /**
+     * @dev Mark a comment as read
+     * @param id
+     * @private
+     */
     private async __markCommentRead(id: string): Promise<void> {
         try {
             const comment: any = await this.platformConfig.getComment(id);
@@ -480,6 +500,11 @@ export class PlatformReddit {
         }
     }
 
+    /**
+     * @dev Mark a message as read
+     * @param id
+     * @private
+     */
     private async __markMessageRead(id: string): Promise<void> {
         try {
             const privateMessage: any = await this.platformConfig.getMessage(id);
