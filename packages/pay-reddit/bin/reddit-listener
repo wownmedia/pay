@@ -1,8 +1,6 @@
 #!/usr/bin/env node
-const {redditListener} = require("../dist");
-
-async function start() {
-    await redditListener.listener();
-}
-
-start();
+const { RedditListener } = require("../dist");
+const redditListener = new RedditListener();
+redditListener.listener().catch(e => {
+    console.log(`Error running Reddit Listener: ${e.message}`);
+});

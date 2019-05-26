@@ -1,41 +1,35 @@
 import { logger } from "@cryptology.hk/pay-logger";
+import { Poller } from "@cryptology.hk/pay-poller";
 import { PlatformReddit } from "./platform-reddit";
 
-const waitTime: number = 5000;
+const waitTime: number = 5000; // Poll Reddit every 5 seconds
 
-class RedditListener {
+export class RedditListener {
+    private readonly poller: Poller;
+
+    constructor() {
+        this.poller = new Poller(waitTime);
+    }
+
     /**
      * @dev Start to poll for new messages and mentions on Reddit
      */
     public async listener() {
         try {
-            const platformReddit = new PlatformReddit();
+            const platformReddit: PlatformReddit = new PlatformReddit();
             const isoNow: string = new Date().toISOString();
             logger.info(`Reddit Listener started - ${isoNow}`);
             await platformReddit.notifyAdmin();
 
-            // noinspection InfiniteLoopJS
-            while (true) {
-                // Prevent chaining of Promises that gobble up memory
-                try {
-                    await platformReddit.redditPolling();
-                } catch (e) {
-                    logger.error(e.messenger);
-                }
-                await this.sleep(waitTime);
-            }
+            this.poller.onPoll(async () => {
+                await platformReddit.redditPolling();
+                this.poller.poll(); // Go for the next poll
+            });
+
+            // Initial start
+            this.poller.poll();
         } catch (e) {
             logger.error(e.messenger);
         }
     }
-
-    /**
-     * @dev  Wait for <ms> miliseconds
-     * @param {number} ms miliseconds
-     */
-    private async sleep(ms: number) {
-        await new Promise(resolve => setTimeout(resolve, ms));
-    }
 }
-
-export const redditListener = new RedditListener();

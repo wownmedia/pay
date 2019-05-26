@@ -244,7 +244,7 @@ export class PlatformReddit {
 
                     if (commands.length === 0 && inbox[inboxIndex].was_comment) {
                         // We received a mention without a command
-                        // Reply to the comment with an error message
+                        // Reply to the comment with a "I was summoned but have no clue what you want from me" message
                         const reply: Reply = Messenger.summonedMessage();
                         logger.info(`Sending Summoned Reply to comment: ${inbox[inboxIndex].id}`);
                         await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
@@ -257,6 +257,8 @@ export class PlatformReddit {
                                 const command: Command = commands[commandIndex];
                                 const reply: Reply = await Commands.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
+
+                                // Reply to the Sender of the command
                                 if (reply.hasOwnProperty("directMessageSender")) {
                                     logger.info(
                                         `Sending Direct Message to sender: ${command.commandSender.username} on reddit`,
@@ -267,6 +269,8 @@ export class PlatformReddit {
                                         subject,
                                     );
                                 }
+
+                                // Reply to the receiver of the command
                                 if (reply.hasOwnProperty("directMessageReceiver")) {
                                     // todo: check platform
                                     let youGot: string = command.command;
@@ -296,6 +300,7 @@ export class PlatformReddit {
                                     );
                                 }
 
+                                // Reply to a Merchant (that's you Justin)
                                 if (reply.hasOwnProperty("directMessageMerchant")) {
                                     const merchant: Username = PlatformReddit.__getMerchantUsername(command.command);
                                     // todo check platform
@@ -311,12 +316,13 @@ export class PlatformReddit {
                                     );
                                 }
 
+                                // Reply to a Post or Comment
                                 if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
                                     logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
                                     await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
                                 }
                             } catch (e) {
-                                logger.error(e);
+                                logger.error(e.message);
                             }
                         }
                     }
