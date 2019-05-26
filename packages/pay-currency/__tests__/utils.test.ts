@@ -134,12 +134,15 @@ describe("pay-currency: CurrencyUtils()", () => {
             expect(result.amount).toEqual(new BigNumber(10));
         });
 
-        it("should return null on invalid input", () => {
-            let badInput = "anythingReally";
-            let result = Currency.parseAmountCurrency(badInput);
+        it("should return null on invalid input with valid currency", () => {
+            const badInput = "USDNOAMOUNT";
+            const result = CurrencyUtils.splitCurrencyAmountPair(badInput);
             expect(result).toBeNull();
-            badInput = "USDNOAMOUNT";
-            result = Currency.parseAmountCurrency(badInput);
+        });
+
+        it("should return null on invalid input", () => {
+            const badInput = "BADNOAMOUNT";
+            const result = CurrencyUtils.splitCurrencyAmountPair(badInput);
             expect(result).toBeNull();
         });
 
