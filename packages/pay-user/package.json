@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-user",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "author": "Marc Schot",
     "license": "MIT",
     "description": "User functionality ARK pay commands",
