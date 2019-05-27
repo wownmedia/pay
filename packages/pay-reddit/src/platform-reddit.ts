@@ -189,7 +189,7 @@ export class PlatformReddit {
     /**
      * @dev The Snoowrap object (API to Reddit)
      */
-    private readonly platformConfig: Snoowrap;
+    public readonly platformConfig: Snoowrap;
 
     /**
      * @dev The configuration for the Snoowrap API
@@ -255,6 +255,12 @@ export class PlatformReddit {
                         if (commands[commandIndex]) {
                             try {
                                 const command: Command = commands[commandIndex];
+
+                                // check receiver
+                                if (!(await this.__checkReceiver(command))) {
+                                    return;
+                                }
+
                                 const reply: Reply = await Commands.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
 
@@ -349,9 +355,13 @@ export class PlatformReddit {
             if (Currency.isValidCurrency(username.toUpperCase())) {
                 return false;
             }
+
+            const temp = await this.platformConfig.getUser(username);
+            logger.info(`TEMP: ${JSON.stringify(temp)}`);
             const redditUser: any = await this.platformConfig.getUser(username).getTrophies();
             return redditUser && redditUser.hasOwnProperty("trophies");
-        } catch (error) {
+        } catch (e) {
+            logger.error(e);
             return false;
         }
     }
@@ -416,6 +426,32 @@ export class PlatformReddit {
                 logger.warn(e.message);
                 return false;
             });
+    }
+
+    /**
+     * @dev Check if a receiver is valid on a platform
+     * @param command
+     * @returns {Promise<boolean>}  True if receiver is valid on the platform
+     * @private
+     */
+    private async __checkReceiver(command: Command): Promise<boolean> {
+        const checkReceiver: Username = command.hasOwnProperty("transfer")
+            ? command.transfer.receiver
+            : command.hasOwnProperty("commandReplyTo")
+            ? command.commandReplyTo
+            : null;
+
+        // No receiver, so always good
+        if (checkReceiver === null) {
+            return true;
+        }
+
+        // todo platform independent: pay-platforms isValidUser(username, platform)
+        const receiverOk: boolean = await this.isValidUser(checkReceiver.username);
+        if (!receiverOk) {
+            logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
+        }
+        return receiverOk;
     }
 
     /**

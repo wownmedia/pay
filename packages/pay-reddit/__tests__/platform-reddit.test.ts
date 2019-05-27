@@ -1,6 +1,7 @@
+import "jest-extended";
+
 // Mock Config
 import { config } from "@cryptology.hk/pay-config";
-import "jest-extended";
 const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     reddit: {
@@ -31,6 +32,27 @@ describe("pay-reddit: PlatformReddit()", () => {
     describe("isValidUser()", () => {
         it("should be a function", () => {
             expect(platformReddit.isValidUser).toBeFunction();
+        });
+
+        it("should correctly invalidate a username that is a command", async () => {
+            const username: string = "help";
+            const result = await platformReddit.isValidUser(username);
+            expect(result).toBeFalse();
+        });
+
+        it("should correctly invalidate a username that is a currency", async () => {
+            const username: string = "ark";
+            const result = await platformReddit.isValidUser(username);
+            expect(result).toBeFalse();
+        });
+
+        it("should correctly invalidate a username that is nat a valid username", async () => {
+            const userMock = jest.spyOn(platformReddit.platformConfig, "getUser");
+            userMock.mockImplementation(() => Promise.reject("Bad User"));
+            const username: string = "@";
+            const result = await platformReddit.isValidUser(username);
+            expect(result).toBeFalse();
+            userMock.mockRestore();
         });
     });
 
