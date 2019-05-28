@@ -1,6 +1,5 @@
 import { configManager, transactionBuilder } from "@arkecosystem/crypto";
 import { config } from "@cryptology.hk/pay-config";
-import { logger } from "@cryptology.hk/pay-logger";
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { Network } from "./network";
@@ -23,7 +22,6 @@ export class ArkTransaction {
             configManager.setConfig(config);
         }
 
-        logger.info(`Config: ${JSON.stringify(config)}`);
         let transaction = transactionBuilder
             .transfer()
             .amount(amount.toNumber())
@@ -37,7 +35,6 @@ export class ArkTransaction {
             transaction.data.timestamp = this.__calculateTimestamp(epoch);
         }
 
-        logger.info(`Epoch: ${epoch}`);
         transaction = transaction.sign(seed);
 
         if (secondPassphrase) {

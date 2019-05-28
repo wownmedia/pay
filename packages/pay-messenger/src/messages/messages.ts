@@ -194,13 +194,13 @@ const _ERROR_MESSAGE = "\n\n " + "Sorry, something went wrong executing your com
 const _WITHDRAW_MESSAGE =
     "\n\n " +
     "You withdrew funds from your wallet successfully! \n\n " +
-    "#amount# #token# ($#usdValue# USD) was transferred out of your wallet.\n\n " +
+    "#amount# #token# ($#usdValue# USD) was transferred out of your #token# wallet.\n\n " +
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _BALANCE_MESSAGE =
     "\n\n " +
-    "Your ArkTippr wallet balance is: #balance# #token# ($#usdValue# USD).\n\n " +
-    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply WITHDRAW #token#.\n\n ";
+    "Your ArkTippr #token# wallet balance is: #balance# #token# ($#usdValue# USD).\n\n " +
+    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply ` WITHDRAW #token# `.\n\n ";
 
 const _MINIMAL_TRANSACTION_VALUE =
     "\n\n " +
@@ -216,7 +216,7 @@ const _SEND_NO_BALANCE_MESSAGE =
     "Unfortunately, your #token# wallet does not have a sufficient balance for this transaction.\n\n " +
     "You tried to send #amount# but your wallet only contains #balance#. " +
     "Perhaps the transaction failed due to not accounting for the network transaction fee.\n\n " +
-    "Your #token# wallet address is **#address#** \n\n " +
+    "Your #token# wallet address is ` #address# ` \n\n " +
     "Add #token# to your balance at that address and retry.\n\n " +
     "Thank you!\n\n ";
 
@@ -225,20 +225,20 @@ const _DEPOSIT_MESSAGE =
     "Your #token# address is:\n\n " +
     "**#address#**\n\n " +
     "Every #platform# user has their own unique #token# wallet address, and this one is yours!\n\n " +
-    "Add to your wallet balance by sending #token# to this address.\n\n " +
+    "Add to your #token# wallet balance by sending #token# to this address.\n\n " +
     "You can also add this address to any official #token# wallet in Watch-Only mode, to track your balance.\n\n ";
 
 const _TRANSACTION_MESSAGE =
     "\n\n " +
-    "Your transaction to #receiver# on #platform# was successful!\n\n " +
+    "Your #token# transaction to #receiver# on #platform# was successful!\n\n " +
     "You sent #amount# #token# ($#usdValue# USD) from your ArkTippr wallet.\n\n " +
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _TRANSACTION_RECEIVE_MESSAGE =
     "\n\n " +
-    "User #username# on #platform# has sent you  #amount# #token# ($#usdValue# USD) directly via ArkTippr!\n\n " +
-    "For reference, your personal #token# wallet address is #address#\n\n " +
-    "For assistance withdrawing this #token# to a different wallet, reply **WITHDRAW** or visit the " +
+    "User #username# on #platform# has sent you `#amount# #token# ($#usdValue# USD)` directly via ArkTippr!\n\n " +
+    "For reference, your personal #token# wallet address is `#address#`\n\n " +
+    "For assistance withdrawing this #token# to a different wallet, reply ` WITHDRAW #token# ` or visit the " +
     "[Usage page of the ArkTippr Wiki](https://np.reddit.com/r/arktippr/wiki/usage)\n\n " +
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 

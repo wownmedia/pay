@@ -9,10 +9,7 @@ export class Balance {
         try {
             const wallet: string = await User.getWalletAddress(user, token);
             const balance: BigNumber = await ArkWallet.getBalance(wallet, token);
-            let usdValue: BigNumber = new BigNumber(0);
-            // if(balance.gt(0) && token === "ARK") {
-            usdValue = await Currency.baseCurrencyUnitsToUSD(balance, token);
-            // }
+            const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(balance, token);
             return Messenger.balanceMessage(balance, usdValue, token);
         } catch (e) {
             return Messenger.errorMessage();

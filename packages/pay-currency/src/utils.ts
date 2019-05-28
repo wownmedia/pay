@@ -1,5 +1,4 @@
 import { config } from "@cryptology.hk/pay-config";
-import { logger } from "@cryptology.hk/pay-logger";
 import BigNumber from "bignumber.js";
 import { CoinGeckoAPI } from "./coinGecko";
 import { AmountCurrency, BaseCurrency } from "./currency";

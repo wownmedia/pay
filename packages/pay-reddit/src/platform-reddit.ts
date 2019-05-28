@@ -216,7 +216,7 @@ export class PlatformReddit {
             };
             this.platformConfig.config(parameters);
         } catch (e) {
-            logger.error(e.messenger);
+            logger.error(e.message);
         }
     }
 
@@ -360,12 +360,10 @@ export class PlatformReddit {
                 return false;
             }
 
-            const temp = await this.platformConfig.getUser(username);
-            logger.info(`TEMP: ${JSON.stringify(temp)}`);
             const redditUser: any = await this.platformConfig.getUser(username).getTrophies();
             return redditUser && redditUser.hasOwnProperty("trophies");
         } catch (e) {
-            logger.error(e);
+            logger.error(e.message);
             return false;
         }
     }
@@ -556,8 +554,8 @@ export class PlatformReddit {
         try {
             const privateMessage: any = await this.platformConfig.getMessage(id);
             await privateMessage.markAsRead();
-        } catch (error) {
-            logger.error(error);
+        } catch (e) {
+            logger.error(e.message);
         }
     }
 }

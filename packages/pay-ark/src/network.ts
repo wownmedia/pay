@@ -58,7 +58,7 @@ export class Network {
                         },
                     );
                     results.push({ node: nodes[item], response: response.data });
-                    logger.info(`Posted transaction to ${node} - ${JSON.stringify(response.data)}`);
+                    logger.info(`Posted transaction to ${node}`);
                 } catch (e) {
                     logger.error(e.message);
                 }
@@ -80,8 +80,6 @@ export class Network {
 
                     if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
                         logger.info(`Retrieved data from ${node}`);
-                        logger.info(`${node}${request}`);
-                        logger.info(JSON.stringify(response.data));
                         return response.data;
                     }
                 } catch (e) {

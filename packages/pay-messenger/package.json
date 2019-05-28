@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-messenger",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "author": "Marc Schot",
     "license": "MIT",
     "description": "Messenger functionality ARK pay commands",
@@ -41,7 +41,6 @@
     "dependencies": {
         "bignumber.js": "^8.1.1",
         "joi": "^14.3.1",
-        "@cryptology.hk/pay-config": "^2.0.0",
-        "@cryptology.hk/pay-logger": "^2.0.0"
+        "@cryptology.hk/pay-config": "^2.1.0"
     }
 }
