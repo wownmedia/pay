@@ -23,6 +23,7 @@ export class Storage {
 
         // User does not exist, try lowercase version of the username (previously users were not stored in Lowercase)
         if (typeof user === "undefined") {
+            username = username.toLowerCase();
             const result = await payDatabase.query(query, [username, platform]);
             user = result.rows[0];
         }
@@ -40,6 +41,7 @@ export class Storage {
     public static async setWallet(username: string, platform: string, token: string, wallet: Wallet): Promise<boolean> {
         token = token.toLowerCase();
         platform = platform.toLowerCase();
+        username = username.toLowerCase();
 
         // todo rename users table to ark
         if (token === "ark") {
