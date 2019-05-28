@@ -411,7 +411,6 @@ export class PlatformReddit {
     /**
      * @dev Send a notification to the admin that the Reddit listener has started
      * @returns {Promise<boolean>}  True if admin was notified
-     * @private
      */
     public async notifyAdmin(): Promise<boolean> {
         return this.platformConfig

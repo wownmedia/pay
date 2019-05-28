@@ -2,6 +2,9 @@ import { logger } from "@cryptology.hk/pay-logger";
 import { Poller } from "@cryptology.hk/pay-poller";
 import { PlatformReddit } from "./platform-reddit";
 
+/**
+ * @dev The time to wait before emitting a next poll event
+ */
 const waitTime: number = 5000; // Poll Reddit every 5 seconds
 
 export class RedditListener {
@@ -12,7 +15,7 @@ export class RedditListener {
     }
 
     /**
-     * @dev Start to poll for new messages and mentions on Reddit
+     * @dev Poll for new direct messages and mentions on Reddit
      */
     public async listener() {
         try {

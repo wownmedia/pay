@@ -19,17 +19,13 @@ const arkEcosystemConfig = config.get("arkEcosystem");
 
 const usernameSchema = Joi.object().keys({
     sender: {
-        username: Joi.string()
-            .token()
-            .required(),
+        username: Joi.string().required(),
         platform: Joi.string()
             .token()
             .required(),
     },
     receiver: {
-        username: Joi.string()
-            .token()
-            .required(),
+        username: Joi.string().required(),
         platform: Joi.string()
             .token()
             .required(),
