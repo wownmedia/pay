@@ -232,9 +232,12 @@ export class PlatformReddit {
                     inbox[inboxIndex].hasOwnProperty("author") &&
                     inbox[inboxIndex].author.hasOwnProperty("name")
                 ) {
+                    // Add was_comment property to a Direct Message, easier for parsing and executing later on.
                     if (!inbox[inboxIndex].hasOwnProperty("was_comment")) {
                         inbox[inboxIndex].was_comment = false;
                     }
+
+                    // Check what we have
                     const commands: Command[] = await this.__processInboxItem(inbox[inboxIndex]);
 
                     if (commands === null) {
@@ -261,6 +264,7 @@ export class PlatformReddit {
                                     return;
                                 }
 
+                                // Execute the command
                                 const reply: Reply = await Commands.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
 
@@ -435,11 +439,12 @@ export class PlatformReddit {
      * @private
      */
     private async __checkReceiver(command: Command): Promise<boolean> {
-        const checkReceiver: Username = command.hasOwnProperty("transfer")
-            ? command.transfer.receiver
-            : command.hasOwnProperty("commandReplyTo")
-            ? command.commandReplyTo
-            : null;
+        const checkReceiver: Username =
+            command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")
+                ? command.transfer.receiver
+                : command.hasOwnProperty("commandReplyTo")
+                ? command.commandReplyTo
+                : null;
 
         // No receiver, so always good
         if (checkReceiver === null) {
