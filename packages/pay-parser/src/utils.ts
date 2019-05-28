@@ -1,7 +1,6 @@
 import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
 import { config } from "@cryptology.hk/pay-config";
 import { AmountCurrency, BaseCurrency, Currency } from "@cryptology.hk/pay-currency";
-import { logger } from "@cryptology.hk/pay-logger";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
@@ -233,13 +232,11 @@ export class ParserUtils {
      */
     public static async parseAmount(leftInput: string, rightInput: string = ""): Promise<AmountCurrency> {
         let amountCurrency: AmountCurrency = null;
-        logger.info(`Left: ${leftInput} || right: ${rightInput}`);
         // A valid Currency/Amount pair E.g. [1,ARK], [USD,1]
         if (
             (Currency.isNumericalInput(leftInput) && Currency.isValidCurrency(rightInput)) ||
             (Currency.isNumericalInput(rightInput) && Currency.isValidCurrency(leftInput))
         ) {
-            logger.info("right + left");
             const toParse: string = rightInput.trim() + leftInput.trim();
             amountCurrency = Currency.parseAmountCurrency(toParse);
         }
@@ -251,13 +248,11 @@ export class ParserUtils {
                 rightInput === "" ||
                 (!Currency.isValidCurrency(rightInput) && !Currency.isNumericalInput(rightInput)))
         ) {
-            logger.info("left");
             amountCurrency = Currency.parseAmountCurrency(leftInput);
         }
 
         // E.g. [_,1], [_,ARK1], [_,USD1]
         else {
-            logger.info("right");
             amountCurrency = Currency.parseAmountCurrency(rightInput);
         }
 
@@ -293,7 +288,6 @@ export class ParserUtils {
      * A username can never be a valid currency or a number (that would parse badly)
      */
     public static isValidUser(user: Username): boolean {
-        logger.info(`username: ${user.username} : ${new BigNumber(user.username).isNaN()}`);
         // A user can never be a command
         if (Commands.isValidCommand(user.username)) {
             return false;
@@ -308,8 +302,6 @@ export class ParserUtils {
         ) {
             return false;
         }
-        logger.info(`username: ${user.username} : ${new BigNumber(user.username).isNaN()}`);
-
         return !(!new BigNumber(user.username).isNaN() || !this.isValidPlatform(user.platform) || user.username === "");
     }
 
@@ -407,32 +399,14 @@ export class ParserUtils {
      */
     public static async isValidAddress(address: string, token: string): Promise<boolean> {
         try {
-            switch (token) {
-                case "ARK":
-                    const arkSchema = {
-                        address: Joi.string()
-                            .regex(/^A/)
-                            .token()
-                            .length(34)
-                            .required(),
-                    };
-                    await Joi.attempt({ address }, arkSchema);
-                    return true;
-
-                case "DARK":
-                    const darkSchema = {
-                        address: Joi.string()
-                            .regex(/^D/)
-                            .token()
-                            .length(34)
-                            .required(),
-                    };
-                    await Joi.attempt({ address }, darkSchema);
-                    return true;
-
-                default:
-                    return false;
-            }
+            const arkSchema = {
+                address: Joi.string()
+                    .token()
+                    .length(34)
+                    .required(),
+            };
+            await Joi.attempt({ address }, arkSchema);
+            return true;
         } catch (e) {
             return false;
         }
@@ -575,7 +549,6 @@ export class ParserUtils {
                 if (typeof bodyParts[index - 1] !== "undefined") {
                     const receiver: Username = this.parseUsername(bodyParts[item], platform);
                     const validUser: boolean = this.isValidUser(receiver);
-                    logger.info(`REWARD: isValidUser( ${JSON.stringify(receiver)} ) === ${validUser}`);
                     if (validUser) {
                         const command: string = bodyParts[index - 1].toUpperCase();
 
