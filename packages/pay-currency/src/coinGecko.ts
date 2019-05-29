@@ -35,12 +35,10 @@ export class CoinGeckoAPI {
      * Didn't manage to mock the getter for simple.price in testing, so no coverage for this method.
      */
     public static async getSimplePrice(currency: string, fiat: string): Promise<BigNumber> {
-        if (process.env.NODE_ENV === "test") {
-            // This thing just dont work well with mocks, so yeah...
-            return new BigNumber(1);
-        }
-
         try {
+            currency = currency.toLowerCase();
+            fiat = fiat.toLowerCase();
+
             const simpleCurrencyTicker = await coinGeckoClient.simple.price({
                 ids: [currency],
                 vs_currencies: [fiat],
