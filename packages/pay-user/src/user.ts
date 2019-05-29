@@ -16,7 +16,7 @@ export class User {
             }
 
             // No Wallet found, create a new user
-            return await User.__createWallet(user, token);
+            return await User.createWallet(user, token);
         } catch (e) {
             logger.error(e.message);
         }
@@ -24,7 +24,7 @@ export class User {
         throw new Error(`Could not find nor create a/an ${token} wallet for ${JSON.stringify(user)}`);
     }
 
-    private static async __createWallet(user: Username, token: string): Promise<string> {
+    private static async createWallet(user: Username, token: string): Promise<string> {
         try {
             // generate wallet for token
             const wallet: ArkEcosystemWallet = ArkWallet.generateWallet(token);

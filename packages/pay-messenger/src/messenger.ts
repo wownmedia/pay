@@ -50,7 +50,7 @@ export class Messenger {
     public static balanceMessage(balance: BigNumber, usdValue: BigNumber, token: string): Reply {
         token = token.toUpperCase();
         const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
-        const amount: string = this.__formatBalance(balance, currencySymbol);
+        const amount: string = this.formatBalance(balance, currencySymbol);
         const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const directMessageSender: string = Messages.balanceMessage(amount, token, usdValueConverted);
         return { directMessageSender };
@@ -59,7 +59,7 @@ export class Messenger {
     public static withdrawMessage(value: BigNumber, usdValue: BigNumber, transactionId: string, token: string): Reply {
         token = token.toUpperCase();
         const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
-        const amount: string = this.__formatBalance(value, currencySymbol);
+        const amount: string = this.formatBalance(value, currencySymbol);
         const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const directMessageSender: string = Messages.withdrawMessage(amount, token, usdValueConverted, transactionId);
         return { directMessageSender };
@@ -83,7 +83,7 @@ export class Messenger {
             ? platforms[sender.platform].usernamePrefix
             : "";
         const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
-        const amount: string = this.__formatBalance(arkToshiValue, currencySymbol);
+        const amount: string = this.formatBalance(arkToshiValue, currencySymbol);
         const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const footer: string = Messages.getFooter(smallFooter);
         let directMessageSender: string = Messages.transferMessage(
@@ -129,7 +129,7 @@ export class Messenger {
         const receiverUsernamePrefix = platforms.hasOwnProperty(receiver.platform)
             ? platforms[receiver.platform].usernamePrefix
             : "";
-        const formattedAmount: string = this.__formatBalance(amount, "Ѧ");
+        const formattedAmount: string = this.formatBalance(amount, "Ѧ");
         const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const footer: string = Messages.getFooter(smallFooter);
         const directMessageSender: string = Messages.stickersMessage(
@@ -151,7 +151,7 @@ export class Messenger {
      * @param currencySymbol
      * @returns  String with amount
      */
-    protected static __formatBalance(amount: BigNumber, currencySymbol?: string): string {
+    protected static formatBalance(amount: BigNumber, currencySymbol?: string): string {
         const balance = amount
             .div(ARKTOSHI)
             .toFixed(8)
