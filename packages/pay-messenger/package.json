@@ -33,15 +33,12 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "bignumber.js": "^8.1.1",
+        "bignumber.js": "^9.0.0",
         "joi": "^14.3.1",
         "@cryptology.hk/pay-config": "^2.1.0"
     },
     "devDependencies": {
-        "@types/joi": "^14.3.3",
-        "@cryptology.hk/pay-config": "^2.1.0",
-        "bignumber.js": "^9.0.0",
-        "joi": "^14.3.1"
+        "@types/joi": "^14.3.3"
     },
     "engines": {
         "node": ">=10.x"

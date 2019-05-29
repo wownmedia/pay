@@ -37,12 +37,11 @@
         "@cryptology.hk/pay-config": "^2.1.0",
         "@cryptology.hk/pay-currency": "^2.1.0",
         "@cryptology.hk/pay-user": "^2.1.1",
-        "@cryptology.hk/pay-commands": "^2.1.2"
-    },
-    "devDependencies": {
-        "@types/joi": "^14.3.3",
         "bignumber.js": "^9.0.0",
         "joi": "^14.3.1"
+    },
+    "devDependencies": {
+        "@types/joi": "^14.3.3"
     },
     "engines": {
         "node": ">=10.x"
