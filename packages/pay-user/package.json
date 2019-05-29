@@ -45,5 +45,8 @@
         "@cryptology.hk/pay-logger": "^2.1.0",
         "@cryptology.hk/pay-storage": "^2.1.1",
         "@cryptology.hk/pay-ark": "^2.1.1"
+    },
+    "devDependencies": {
+        "@types/joi": "^14.3.3"
     }
 }

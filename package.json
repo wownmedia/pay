@@ -17,6 +17,8 @@
         "@types/node": "^11.13.6",
         "@types/prettier": "^1.16.3",
         "@types/pretty-ms": "^4.0.0",
+        "@types/prompts": "^2.4.0",
+        "@types/request": "^2.48.1",
         "@types/request-promise": "^4.1.42",
         "@types/rimraf": "^2.0.2",
         "@types/uuid": "^3.4.4",

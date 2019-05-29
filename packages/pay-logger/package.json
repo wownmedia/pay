@@ -41,5 +41,8 @@
     "dependencies": {
         "pino": "^5.12.2",
         "pino-pretty": "^2.6.0"
+    },
+    "devDependencies": {
+        "@types/pino": "^5.20.0"
     }
 }

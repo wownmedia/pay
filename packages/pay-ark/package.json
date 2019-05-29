@@ -48,5 +48,8 @@
         "@arkecosystem/crypto": "^2.3.22",
         "bip39": "^3.0.2",
         "moment": "^2.24.0"
+    },
+    "devDependencies": {
+        "@types/joi": "^14.3.3"
     }
 }

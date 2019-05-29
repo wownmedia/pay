@@ -42,5 +42,8 @@
         "@cryptology.hk/pay-config": "^2.1.0",
         "@cryptology.hk/pay-logger": "^2.1.0",
         "pg": "^7.11.0"
+    },
+    "devDependencies": {
+        "@types/pg": "^7.4.14"
     }
 }

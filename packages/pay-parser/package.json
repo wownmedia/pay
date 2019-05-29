@@ -45,5 +45,8 @@
         "@cryptology.hk/pay-currency": "^2.1.0",
         "@cryptology.hk/pay-user": "^2.1.1",
         "@cryptology.hk/pay-commands": "^2.1.2"
+    },
+    "devDependencies": {
+        "@types/joi": "^14.3.3"
     }
 }
