@@ -3,6 +3,12 @@ import CoinGecko from "coingecko-api";
 const coinGeckoClient = new CoinGecko();
 
 export class CoinGeckoAPI {
+    /**
+     * @dev Retrieve a fiat exchange rate from CoinGecko
+     * @param currency {string} The currency to convert
+     * @param fiat {string}     The fiat currency to convert into
+     * @returns {Promise<BigNumber>} The exchange rate
+     */
     public static async price(currency: string, fiat: string): Promise<BigNumber> {
         currency = currency.toLowerCase();
         switch (currency) {
@@ -29,8 +35,9 @@ export class CoinGeckoAPI {
 
     /**
      * @dev Interface to the CoinGecko API
-     * @param currency
-     * @param fiat
+     * @param currency {string} The currency to convert
+     * @param fiat {string}     The fiat currency to convert into
+     * @returns {Promise<BigNumber>} The exchange rate
      *
      * Didn't manage to mock the getter for simple.price in testing, so no coverage for this method.
      */
