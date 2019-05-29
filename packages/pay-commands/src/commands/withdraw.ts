@@ -11,6 +11,11 @@ import { Send } from "./send";
 const arkEcosystemConfig = config.get("arkEcosystem");
 
 export class Withdraw extends Send {
+    /**
+     * @dev Generate and transfer a transaction to withdraw funds of a user to an ArEcosystem wallet
+     * @param transfer {Transfer}   A parsed withdraw request
+     * @returns {Promise<Reply}>}   Object with message to send to sender per direct message
+     */
     public static async transfer(transfer: Transfer): Promise<Reply> {
         try {
             // Check if the Sender has sufficient balance
@@ -35,13 +40,20 @@ export class Withdraw extends Send {
 
             // and..... send
             const vendorField: string = "ARK Pay - Withdraw";
-            return await this.sendTransaction(transfer, vendorField, true);
+            return await this.sendTransaction(transfer, vendorField);
         } catch (e) {
             logger.warn(e.message);
             return Messenger.errorMessage();
         }
     }
 
+    /**
+     * @dev Calculate the maximal withdrawable balance
+     * @param balance {BigNumber}   The balance of the wallet
+     * @param token {string}        The token of the ArkEcosystem Blockchain to check the fees for
+     * @returns {BigNumber} The maximal possible withdraw amount
+     * @protected
+     */
     protected static getWithdrawBalance(balance: BigNumber, token: string): BigNumber {
         token = token.toLowerCase();
         const fee: BigNumber = new BigNumber(arkEcosystemConfig[token].transactionFee);
@@ -49,11 +61,14 @@ export class Withdraw extends Send {
         return balance.minus(fee);
     }
 
-    protected static async sendTransaction(
-        transfer: Transfer,
-        vendorField: string,
-        smallFooter: boolean,
-    ): Promise<Reply> {
+    /**
+     * @dev Generate and broadcast a withdraw transfer
+     * @param transfer {Transfer}    A parsed withdraw transfer
+     * @param vendorField {string}  The vendor field text
+     * @returns {Promise<Reply>} Object with message to send to sender per direct message
+     * @protected
+     */
+    protected static async sendTransaction(transfer: Transfer, vendorField: string): Promise<Reply> {
         const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(transfer.token);
         const walletSender: Wallet = await Storage.getWallet(
             transfer.sender.username,
