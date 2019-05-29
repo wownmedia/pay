@@ -17,10 +17,11 @@ const acceptedCurrencies: string[] = configuration.acceptedCurrencies
 
 export class Currency {
     /**
-     * Return the value of <amount> <currency> in the units of the base currency (e.g. Arktoshi)
+     * @dev Return the value of <amount> <currency> in the units of the base currency (e.g. Arktoshi)
      * e.g. input 10 USD => 20000000000 Arktoshi
-     * @param amount
-     * @param currency
+     * @param amount {BigNumber}    The amount to convert
+     * @param currency {string}     The currency to convert from
+     * @returns {Promise<BigNumber>} The value of converted in ArkToshi
      */
     public static async getExchangedValue(amount: BigNumber, currency: string): Promise<BigNumber> {
         // Check if the input is correct
@@ -41,10 +42,11 @@ export class Currency {
     }
 
     /**
-     * Get the US$ value of a value in units of the base currency (e.g. Arktoshi)
+     * @dev Get the US$ value of a value in units of the base currency (e.g. Arktoshi)
      * e.g. 2000000000 Arktoshi => US$10
-     * @param units
-     * @param token
+     * @param units {BigNumber} The Arktoshi amount of token to be converted into USD value
+     * @param token {string}    The currency the amount is in
+     * @returns {Promise<BigNumber>} The USD value
      */
     public static async baseCurrencyUnitsToUSD(units: BigNumber, token?: string): Promise<BigNumber> {
         if (!token) {
@@ -67,8 +69,9 @@ export class Currency {
     }
 
     /**
-     * Check if a string is a valid currency
-     * @param currency
+     * @dev Check if a string is a valid currency
+     * @param currency {string} To be checked wheter or not it is a valid currency
+     * @returns {boolean} TRUE if input is a valid configured currency
      */
     public static isValidCurrency(currency: string): boolean {
         currency = currency.toLowerCase();
@@ -81,9 +84,9 @@ export class Currency {
     }
 
     /**
-     * Check if input is a valid currency or amount + valid currency
-     * Valid input formats: 10 | 1.0 | 1,0 | USD10 | USD1.0 | USD1,1 | 10USD | 1.0USD | 1,1USD
-     * @param data
+     * @dev Check if input is a valid currency or amount + valid currency
+     * @param data {string} Valid input formats: 10 | 1.0 | 1,0 | USD10 | USD1.0 | USD1,1 | 10USD | 1.0USD | 1,1USD
+     * @returns {boolean} TRUE if input is a valis currency + amount pair
      */
     public static isValidCurrencyInput(data: string): boolean {
         data = CurrencyUtils.convertAmountCurrency(data);
@@ -122,8 +125,9 @@ export class Currency {
     }
 
     /**
-     * Check if data is a valid numerical: positive number, greater than 0 and smaller than Max Safe Integer
-     * @param data
+     * @dev Check if data is a valid numerical: positive number, greater than 0 and smaller than Max Safe Integer
+     * @param data {string} The input to check
+     * @returns {boolean} TRUE if input is numerical > 0 && < Max safe integer
      */
     public static isNumericalInput(data: string): boolean {
         data = data.replace(/[,]/g, ".");
@@ -132,9 +136,9 @@ export class Currency {
     }
 
     /**
-     * Split a string up into an amount and a currency part, use base currency if only an amount is inputted
-     * @param data e.g. 1.8, 10USD or USD1.0
-     * @returns amountCurrency
+     * @dev Split a string up into an amount and a currency part, use base currency if only an amount is inputted
+     * @param {string} data e.g. 1.8, 10USD or USD1.0
+     * @returns {AmountCurrency} Amount/currency pair
      */
     public static parseAmountCurrency(data: string): AmountCurrency {
         // First make sure the input is valid
