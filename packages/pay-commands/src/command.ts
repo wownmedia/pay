@@ -6,14 +6,20 @@ export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDR
 
 export class Commands {
     /**
-     * Check if a string is a valid command
-     * @param command
+     * @dev Check if input is a valid command
+     * @param command {string}  The input to check whether or not it is a valid command
+     * @returns {boolean} TRUE if the input is a valid command
      */
     public static isValidCommand(command: string): boolean {
         command = command.toUpperCase();
         return COMMANDS.indexOf(command) !== -1;
     }
 
+    /**
+     * @dev Check if the command can have optional arguments
+     * @param command {string} The command to check
+     * @returns TRUE if the command can have additional arguments
+     */
     public static hasArguments(command: string): boolean {
         command = command.toUpperCase();
         switch (command) {
@@ -36,6 +42,11 @@ export class Commands {
         }
     }
 
+    /**
+     * @dev Execute the command
+     * @param command {Command} The command to execute
+     * @returns {Promise<Reply>} Object with messages to send to Sender, Receiver, Merchant and comment reply
+     */
     public static async executeCommand(command: Command): Promise<Reply> {
         switch (command.command) {
             case "REWARD":
