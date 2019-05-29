@@ -5,7 +5,8 @@ import { SecureStorage } from "@cryptology.hk/pay-storage";
 import BigNumber from "bignumber.js";
 import { generateMnemonic } from "bip39";
 import Joi from "joi";
-import { ApiResponse, APITransaction, Network, TransactionResponse } from "./network";
+import { ApiResponse, APITransaction, ArkEcosystemWallet, TransactionResponse } from "./interfaces";
+import { Network } from "./network";
 import { ArkTransaction } from "./transaction";
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 
@@ -21,19 +22,6 @@ const walletSchema = Joi.object().keys({
         .length(34)
         .required(),
 });
-
-export interface WalletBalance {
-    address: string;
-    balance: BigNumber;
-    success: boolean;
-}
-
-export interface ArkEcosystemWallet {
-    address: string;
-    encryptedSeed: string;
-    networkVersion: number;
-    token: string;
-}
 
 export class ArkWallet {
     public static generateWallet(token: string): ArkEcosystemWallet {

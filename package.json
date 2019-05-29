@@ -85,5 +85,34 @@
         "webpack-cli": "^3.3.0",
         "webpack-merge": "^4.2.1",
         "webpack-node-externals": "^1.7.2"
+    },
+    "scripts": {
+        "lerna": "./node_modules/lerna/cli.js",
+        "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
+        "bootstrap": "yarn lerna bootstrap",
+        "clean": "yarn lerna clean --yes",
+        "build": "yarn lerna run build",
+        "lint": "yarn lerna run lint",
+        "format": "yarn lint && yarn prettier",
+        "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
+        "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
+        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
+        "snyk": "./node_modules/.bin/snyk protect",
+        "version": "cross-env-shell ./scripts/version.sh"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "jest": {
+        "preset": "./jest-preset.json",
+        "collectCoverageFrom": [
+            "packages/**/src/**/*.ts",
+            "!**/node_modules/**"
+        ]
     }
 }
