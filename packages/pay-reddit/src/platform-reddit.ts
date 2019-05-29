@@ -8,31 +8,7 @@ import { Storage } from "@cryptology.hk/pay-storage";
 import { Username } from "@cryptology.hk/pay-user";
 import os from "os";
 import Snoowrap from "snoowrap";
-
-export interface RedditConfig {
-    admin: string;
-    userAgent: string;
-    clientId: string;
-    clientSecret: string;
-    username: string;
-    password: string;
-    requestDelay: number;
-    continueAfterRatelimitError: boolean;
-    networks: string[];
-}
-
-export interface RedditMessage {
-    author: Author;
-    name: string;
-    body: string;
-    was_comment: boolean;
-    id: string;
-    parent_id?: string;
-}
-
-interface Author {
-    name;
-}
+import { Author, RedditConfig, RedditMessage } from "./interfaces";
 
 const merchantsConfig = config.get("merchants");
 
@@ -46,7 +22,7 @@ export class PlatformReddit {
      * @returns {Command[]}         An array with all parsed commands
      * @private
      */
-    private static async __prepareCommand(
+    private static async prepareCommand(
         item: RedditMessage,
         sender: Username,
         receiver: Username,
@@ -89,7 +65,7 @@ export class PlatformReddit {
      * @returns {RedditConfig}  Configuration for Reddit
      * @private
      */
-    private static __loadConfig(): RedditConfig {
+    private static loadConfig(): RedditConfig {
         const platforms: any = config.get("platforms");
         if (!platforms || !platforms.hasOwnProperty("reddit")) {
             throw new Error("Did not find the configuration for Reddit.");
@@ -126,7 +102,7 @@ export class PlatformReddit {
      * @returns {RedditMessage[]}   Array of filtered messages
      * @private
      */
-    private static __sortInbox(unreadMessages: RedditMessage[]): RedditMessage[] {
+    private static sortInbox(unreadMessages: RedditMessage[]): RedditMessage[] {
         const inbox: RedditMessage[] = [];
 
         for (const item in unreadMessages) {
@@ -153,7 +129,7 @@ export class PlatformReddit {
      * @returns {Promise<boolean>} True if the message was not processed already
      * @private
      */
-    private static async __isNewSubmission(submissionId: string): Promise<boolean> {
+    private static async isNewSubmission(submissionId: string): Promise<boolean> {
         try {
             if (await Storage.checkSubmission(submissionId)) {
                 return false;
@@ -172,7 +148,7 @@ export class PlatformReddit {
      * @returns {Username}  The username of the merchant that needs to be notified
      * @private
      */
-    private static __getMerchantUsername(command: string): Username {
+    private static getMerchantUsername(command: string): Username {
         command = command.toLowerCase();
 
         if (!merchantsConfig.hasOwnProperty(command)) {
@@ -201,7 +177,7 @@ export class PlatformReddit {
      */
     constructor() {
         try {
-            this.redditConfig = PlatformReddit.__loadConfig();
+            this.redditConfig = PlatformReddit.loadConfig();
             this.platformConfig = new Snoowrap({
                 userAgent: this.redditConfig.userAgent,
                 clientId: this.redditConfig.clientId,
@@ -225,7 +201,7 @@ export class PlatformReddit {
      */
     public async redditPolling() {
         try {
-            const inbox: RedditMessage[] = await this.__getUnreadMessages();
+            const inbox: RedditMessage[] = await this.getUnreadMessages();
             for (const inboxIndex in inbox) {
                 if (
                     typeof inbox[inboxIndex] !== "undefined" &&
@@ -238,7 +214,7 @@ export class PlatformReddit {
                     }
 
                     // Check what we have
-                    const commands: Command[] = await this.__processInboxItem(inbox[inboxIndex]);
+                    const commands: Command[] = await this.processInboxItem(inbox[inboxIndex]);
 
                     if (commands === null) {
                         // Nothing to do here, bad command, no connection to DB or it was processed already by an other server
@@ -260,7 +236,7 @@ export class PlatformReddit {
                                 const command: Command = commands[commandIndex];
 
                                 // check receiver
-                                if (!(await this.__checkReceiver(command))) {
+                                if (!(await this.checkReceiver(command))) {
                                     return;
                                 }
 
@@ -312,7 +288,7 @@ export class PlatformReddit {
 
                                 // Reply to a Merchant (that's you Justin)
                                 if (reply.hasOwnProperty("directMessageMerchant")) {
-                                    const merchant: Username = PlatformReddit.__getMerchantUsername(command.command);
+                                    const merchant: Username = PlatformReddit.getMerchantUsername(command.command);
                                     // todo check platform
                                     logger.info(
                                         `Sending Direct Message to merchant: ${merchant.username} on ${
@@ -435,7 +411,7 @@ export class PlatformReddit {
      * @returns {Promise<boolean>}  True if receiver is valid on the platform
      * @private
      */
-    private async __checkReceiver(command: Command): Promise<boolean> {
+    private async checkReceiver(command: Command): Promise<boolean> {
         const checkReceiver: Username =
             command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")
                 ? command.transfer.receiver
@@ -462,9 +438,9 @@ export class PlatformReddit {
      * @returns {Promise<Command[]>}    An array with Commands
      * @private
      */
-    private async __processInboxItem(item: RedditMessage): Promise<Command[]> {
+    private async processInboxItem(item: RedditMessage): Promise<Command[]> {
         try {
-            const needToProcessSubmission: boolean = await PlatformReddit.__isNewSubmission(item.id);
+            const needToProcessSubmission: boolean = await PlatformReddit.isNewSubmission(item.id);
             if (!needToProcessSubmission) {
                 return null;
             }
@@ -472,17 +448,17 @@ export class PlatformReddit {
             let receiver: Username = null;
             if (item.was_comment && item.parent_id) {
                 // This is a Mention
-                await this.__markCommentRead(item.id);
+                await this.markCommentRead(item.id);
 
                 // Retrieve the author of the Reddit comment/post the user replied to
-                const parentAuthor: Author = await this.__getParentAuthor(item.parent_id);
+                const parentAuthor: Author = await this.getParentAuthor(item.parent_id);
                 receiver = {
                     username: parentAuthor.name,
                     platform: "reddit",
                 };
             } else {
                 // This is a Direct Messenger
-                await this.__markMessageRead(item.id);
+                await this.markMessageRead(item.id);
             }
 
             const sender: Username = {
@@ -490,7 +466,7 @@ export class PlatformReddit {
                 platform: "reddit",
             };
 
-            return await PlatformReddit.__prepareCommand(item, sender, receiver, this.redditConfig.username);
+            return await PlatformReddit.prepareCommand(item, sender, receiver, this.redditConfig.username);
         } catch (e) {
             logger.error(e.message);
             return null;
@@ -503,7 +479,7 @@ export class PlatformReddit {
      * @returns {Promise<Author>}   The author of the post/commend
      * @private
      */
-    private async __getParentAuthor(commentId: string): Promise<Author> {
+    private async getParentAuthor(commentId: string): Promise<Author> {
         const parentAuthor: Author = await this.platformConfig.getComment(commentId).author;
         if (!parentAuthor || !parentAuthor.hasOwnProperty("name") || parentAuthor.name === "[deleted]") {
             throw new Error("Parent comment has been deleted.");
@@ -516,14 +492,14 @@ export class PlatformReddit {
      * @returns {Promise<RedditMessage[]>}  An array with unread Direct Messages and Mentions
      * @private
      */
-    private async __getUnreadMessages(): Promise<RedditMessage[]> {
+    private async getUnreadMessages(): Promise<RedditMessage[]> {
         const options: any = {
             filter: "unread",
         };
 
         try {
             let unreadMessages: RedditMessage[] = await this.platformConfig.getInbox(options);
-            unreadMessages = PlatformReddit.__sortInbox(unreadMessages);
+            unreadMessages = PlatformReddit.sortInbox(unreadMessages);
             return unreadMessages;
         } catch (e) {
             return [];
@@ -535,7 +511,7 @@ export class PlatformReddit {
      * @param id
      * @private
      */
-    private async __markCommentRead(id: string): Promise<void> {
+    private async markCommentRead(id: string): Promise<void> {
         try {
             const comment: any = await this.platformConfig.getComment(id);
             await this.platformConfig.markMessagesAsRead([comment]);
@@ -549,7 +525,7 @@ export class PlatformReddit {
      * @param id
      * @private
      */
-    private async __markMessageRead(id: string): Promise<void> {
+    private async markMessageRead(id: string): Promise<void> {
         try {
             const privateMessage: any = await this.platformConfig.getMessage(id);
             await privateMessage.markAsRead();

@@ -5,7 +5,7 @@ import { logger } from "@cryptology.hk/pay-logger";
 import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
 import { Storage, Wallet } from "@cryptology.hk/pay-storage";
 import BigNumber from "bignumber.js";
-import { Transfer } from "../command";
+import { Transfer } from "../interfaces";
 import { Send } from "./send";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
@@ -15,7 +15,7 @@ export class Withdraw extends Send {
         try {
             // Check if the Sender has sufficient balance
             const balanceCheckAmount = transfer.arkToshiValue === null ? new BigNumber(1) : transfer.arkToshiValue;
-            const senderBalance: WalletBalance = await this.__senderHasBalance(
+            const senderBalance: WalletBalance = await this.senderHasBalance(
                 transfer.sender,
                 transfer.token,
                 balanceCheckAmount,
@@ -30,26 +30,26 @@ export class Withdraw extends Send {
             }
 
             if (transfer.arkToshiValue === null) {
-                transfer.arkToshiValue = this.__getWithdrawBalance(senderBalance.balance, transfer.token);
+                transfer.arkToshiValue = this.getWithdrawBalance(senderBalance.balance, transfer.token);
             }
 
             // and..... send
             const vendorField: string = "ARK Pay - Withdraw";
-            return await this.__sendTransaction(transfer, vendorField, true);
+            return await this.sendTransaction(transfer, vendorField, true);
         } catch (e) {
             logger.warn(e.message);
             return Messenger.errorMessage();
         }
     }
 
-    protected static __getWithdrawBalance(balance: BigNumber, token: string): BigNumber {
+    protected static getWithdrawBalance(balance: BigNumber, token: string): BigNumber {
         token = token.toLowerCase();
         const fee: BigNumber = new BigNumber(arkEcosystemConfig[token].transactionFee);
 
         return balance.minus(fee);
     }
 
-    protected static async __sendTransaction(
+    protected static async sendTransaction(
         transfer: Transfer,
         vendorField: string,
         smallFooter: boolean,
@@ -82,7 +82,7 @@ export class Withdraw extends Send {
             token,
         );
 
-        const transactionId: string = this.__processTransaction(response);
+        const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(transfer.arkToshiValue, transfer.token);
         return Messenger.withdrawMessage(transfer.arkToshiValue, usdValue, transactionId, transfer.token);
     }

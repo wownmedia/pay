@@ -30,9 +30,9 @@ export class ArkTransaction {
             .fee(fee.toNumber());
 
         // todo: Remove this workaround for pre 2.4 networks that have a different epoch than ARK Devnet
-        const epoch: string = this.__getArkEcosystemEpochForToken(token);
+        const epoch: string = this.getArkEcosystemEpochForToken(token);
         if (epoch !== null) {
-            transaction.data.timestamp = this.__calculateTimestamp(epoch);
+            transaction.data.timestamp = this.calculateTimestamp(epoch);
         }
 
         transaction = transaction.sign(seed);
@@ -54,7 +54,7 @@ export class ArkTransaction {
         }
     }
 
-    private static __calculateTimestamp(epoch: string): number {
+    private static calculateTimestamp(epoch: string): number {
         const epochTime = moment(epoch)
             .utc()
             .valueOf();
@@ -62,7 +62,7 @@ export class ArkTransaction {
         return Math.floor((now - epochTime) / 1000);
     }
 
-    private static __getArkEcosystemEpochForToken(token: string): string {
+    private static getArkEcosystemEpochForToken(token: string): string {
         token = token.toLowerCase();
         try {
             return typeof arkEcosystemConfig[token].epoch !== "undefined" ? arkEcosystemConfig[token].epoch : null;
