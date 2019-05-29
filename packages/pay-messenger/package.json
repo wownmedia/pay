@@ -39,8 +39,9 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
+        "@cryptology.hk/pay-config": "^2.1.0",
+        "@cryptology.hk/pay-user": "^2.1.1",
         "bignumber.js": "^8.1.1",
-        "joi": "^14.3.1",
-        "@cryptology.hk/pay-config": "^2.1.0"
+        "joi": "^14.3.1"
     }
 }
