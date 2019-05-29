@@ -8,31 +8,7 @@ import { Storage } from "@cryptology.hk/pay-storage";
 import { Username } from "@cryptology.hk/pay-user";
 import os from "os";
 import Snoowrap from "snoowrap";
-
-export interface RedditConfig {
-    admin: string;
-    userAgent: string;
-    clientId: string;
-    clientSecret: string;
-    username: string;
-    password: string;
-    requestDelay: number;
-    continueAfterRatelimitError: boolean;
-    networks: string[];
-}
-
-export interface RedditMessage {
-    author: Author;
-    name: string;
-    body: string;
-    was_comment: boolean;
-    id: string;
-    parent_id?: string;
-}
-
-interface Author {
-    name;
-}
+import { Author, RedditConfig, RedditMessage } from "./interfaces";
 
 const merchantsConfig = config.get("merchants");
 

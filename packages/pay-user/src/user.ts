@@ -1,11 +1,7 @@
 import { ArkEcosystemWallet, ArkWallet } from "@cryptology.hk/pay-ark";
 import { logger } from "@cryptology.hk/pay-logger";
 import { Storage, Wallet } from "@cryptology.hk/pay-storage";
-
-export interface Username {
-    username: string;
-    platform: string;
-}
+import { Username } from "./interfaces";
 
 export class User {
     public static async getWalletAddress(user: Username, token: string): Promise<string> {

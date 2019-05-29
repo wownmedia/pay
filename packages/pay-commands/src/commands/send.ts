@@ -13,7 +13,7 @@ import { Storage, Wallet } from "@cryptology.hk/pay-storage";
 import { User, Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
-import { Transfer } from "../command";
+import { Transfer } from "../interfaces";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 

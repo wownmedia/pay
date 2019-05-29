@@ -1,17 +1,11 @@
 import { config } from "@cryptology.hk/pay-config";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
+import { Reply } from "./interfaces";
 import { Messages } from "./messages";
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const platforms = config.get("platforms");
-
-export interface Reply {
-    directMessageSender?: string;
-    directMessageReceiver?: string;
-    directMessageMerchant?: string;
-    replyComment?: string;
-}
 
 export class Messenger {
     public static helpMessage(command: string): Reply {

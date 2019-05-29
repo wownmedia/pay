@@ -1,43 +1,9 @@
 import { config } from "@cryptology.hk/pay-config";
 import { logger } from "@cryptology.hk/pay-logger";
 import axios from "axios";
+import { ApiResponse, Node, Parameters, TransactionResponse } from "./interfaces";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
-
-export interface Node {
-    host: string;
-    port: number;
-}
-
-export interface Parameters {
-    nope?: string;
-}
-
-export interface ApiResponse {
-    data?: APITransaction;
-    error?: string;
-    statusCode?: number;
-    message?: string;
-}
-
-export interface APITransaction {
-    accept?: string[];
-    broadcast?: string[];
-    excess?: string[];
-    invalid?: string[];
-    address?: string;
-    publicKey?: string;
-    username?: string;
-    secondPublicKey?: string;
-    balance?: number;
-    isDelegate?: boolean;
-    vote?: string;
-}
-
-export interface TransactionResponse {
-    node: Node;
-    response: ApiResponse;
-}
 
 export class Network {
     public static async broadcastTransactions(transactions: any[], token: string): Promise<TransactionResponse[]> {

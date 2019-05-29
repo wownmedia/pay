@@ -5,7 +5,7 @@ import { logger } from "@cryptology.hk/pay-logger";
 import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
 import { Storage, Wallet } from "@cryptology.hk/pay-storage";
 import BigNumber from "bignumber.js";
-import { Transfer } from "../command";
+import { Transfer } from "../interfaces";
 import { Send } from "./send";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
