@@ -41,7 +41,7 @@ export interface TransactionResponse {
 
 export class Network {
     public static async broadcastTransactions(transactions: any[], token: string): Promise<TransactionResponse[]> {
-        const nodes: Node[] = this.__loadNodes(token);
+        const nodes: Node[] = this.loadNodes(token);
         const results: TransactionResponse[] = [];
         for (const item in nodes) {
             if (nodes[item]) {
@@ -68,7 +68,7 @@ export class Network {
     }
 
     public static async getFromAPI(request: string, token: string, params?: Parameters): Promise<ApiResponse> {
-        const nodes: Node[] = this.__loadNodes(token);
+        const nodes: Node[] = this.loadNodes(token);
         for (const item in nodes) {
             if (nodes[item]) {
                 const node = `http://${nodes[item].host}:${nodes[item].port}`;
@@ -90,7 +90,7 @@ export class Network {
         return null;
     }
 
-    private static __loadNodes(token: string): Node[] {
+    private static loadNodes(token: string): Node[] {
         token = token.toLowerCase();
         if (typeof arkEcosystemConfig[token] === "undefined" || arkEcosystemConfig[token].nodes === "undefined") {
             throw TypeError(`Could not find ${token.toUpperCase()} in the configuration`);
