@@ -145,28 +145,6 @@ export class Currency {
     }
 
     /**
-     * Convert currency symbols to names
-     * @param symbol
-     */
-    public static currencySymbolsToName(symbol: string): string {
-        switch (symbol) {
-            case "Ѧ":
-                symbol = "ARK";
-                break;
-            case "$":
-                symbol = "USD";
-                break;
-            case "€":
-                symbol = "EUR";
-                break;
-            case "£":
-                symbol = "GBP";
-                break;
-        }
-        return symbol;
-    }
-
-    /**
      * Split a string up into an amount and a currency part, use base currency if only an amount is inputted
      * @param data e.g. 1.8, 10USD or USD1.0
      * @returns amountCurrency
