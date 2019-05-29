@@ -29,7 +29,7 @@ export class SecureStorage {
         const encryptionKey: string = secureStorageConfig.encryptionKey;
         const { error } = Joi.validate({ encryptedSeed, encryptionKey }, encryptionSchema);
         if (error) {
-            throw TypeError(error);
+            throw TypeError(error.message);
         }
 
         const textParts: string[] = encryptedSeed.split(":");
@@ -46,7 +46,7 @@ export class SecureStorage {
         const encryptionKey: string = secureStorageConfig.encryptionKey;
         const { error } = Joi.validate({ seed, encryptionKey }, decryptionSchema);
         if (error) {
-            throw TypeError(error);
+            throw TypeError(error.message);
         }
 
         const iv: Buffer = crypto.randomBytes(IV_LENGTH);

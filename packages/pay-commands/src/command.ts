@@ -1,41 +1,8 @@
-import { AmountCurrency } from "@cryptology.hk/pay-currency";
 import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
-import { Username } from "@cryptology.hk/pay-user";
-import BigNumber from "bignumber.js";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
+import { Command } from "./interfaces";
 
 export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
-
-/**
- * Command parsed from a parsed mention/command and it's value in Arktoshi
- */
-export interface Command {
-    command: string;
-    commandSender?: Username;
-    commandReplyTo?: Username;
-    transfer?: Transfer;
-    smallFooter?: boolean;
-    token?: string;
-    id?: string;
-}
-
-export interface Transfer {
-    sender?: Username;
-    receiver?: Username;
-    command: string;
-    address?: string;
-    arkToshiValue?: BigNumber;
-    token?: string;
-    check?: AmountCurrency;
-}
-
-export interface Transaction {
-    sender: Username;
-    receiver: Username;
-    transactionId: string;
-    arkToshiValue?: BigNumber;
-    currency?: string;
-}
 
 export class Commands {
     /**

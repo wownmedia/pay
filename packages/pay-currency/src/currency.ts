@@ -1,15 +1,11 @@
 import { config } from "@cryptology.hk/pay-config";
 import BigNumber from "bignumber.js";
+import { AmountCurrency, BaseCurrency } from "./interfaces";
 import { CurrencyUtils } from "./utils";
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const configuration = config.get("currency");
 const arkEcosystemConfig = config.get("arkEcosystem");
-
-export interface BaseCurrency {
-    ticker: string;
-    units: BigNumber;
-}
 
 const baseCurrency: BaseCurrency = {
     ticker: configuration.baseCurrency ? configuration.baseCurrency.toUpperCase() : "ARK",
@@ -18,15 +14,6 @@ const baseCurrency: BaseCurrency = {
 const acceptedCurrencies: string[] = configuration.acceptedCurrencies
     ? configuration.acceptedCurrencies
     : [baseCurrency.ticker];
-
-/**
- * Parsed amount/currency pair and it's value in Arktoshi
- */
-export interface AmountCurrency {
-    arkToshiValue?: BigNumber;
-    amount: BigNumber;
-    currency: string;
-}
 
 export class Currency {
     /**
@@ -142,28 +129,6 @@ export class Currency {
         data = data.replace(/[,]/g, ".");
         const numerical: BigNumber = new BigNumber(data);
         return !numerical.isNaN() && numerical.lte(Number.MAX_SAFE_INTEGER) && numerical.gt(0);
-    }
-
-    /**
-     * Convert currency symbols to names
-     * @param symbol
-     */
-    public static currencySymbolsToName(symbol: string): string {
-        switch (symbol) {
-            case "Ѧ":
-                symbol = "ARK";
-                break;
-            case "$":
-                symbol = "USD";
-                break;
-            case "€":
-                symbol = "EUR";
-                break;
-            case "£":
-                symbol = "GBP";
-                break;
-        }
-        return symbol;
     }
 
     /**

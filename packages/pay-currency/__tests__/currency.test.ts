@@ -32,7 +32,7 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { AmountCurrency, Currency } from "../src";
+import { AmountCurrency, Currency, CurrencySymbol } from "../src";
 import { CurrencyUtils } from "../src/utils";
 
 const arktoshi = Math.pow(10, 8);
@@ -244,25 +244,25 @@ describe("pay-currency: Currency()", () => {
     describe("currencySymbolsToName", () => {
         it("should correctly convert $ to USD", () => {
             const symbol: string = "$";
-            const result = Currency.currencySymbolsToName(symbol);
+            const result = CurrencySymbol[symbol];
             expect(result).toEqual("USD");
         });
 
         it("should correctly convert € to EUR", () => {
             const symbol: string = "€";
-            const result = Currency.currencySymbolsToName(symbol);
+            const result = CurrencySymbol[symbol];
             expect(result).toEqual("EUR");
         });
 
         it("should correctly convert Ѧ to ARK", () => {
             const symbol: string = "Ѧ";
-            const result = Currency.currencySymbolsToName(symbol);
+            const result = CurrencySymbol[symbol];
             expect(result).toEqual("ARK");
         });
 
         it("should correctly convert £ to GBP", () => {
             const symbol: string = "£";
-            const result = Currency.currencySymbolsToName(symbol);
+            const result = CurrencySymbol[symbol];
             expect(result).toEqual("GBP");
         });
     });

@@ -15,22 +15,22 @@ export class Stickers extends Send {
     public static async send(sender: Username, receiver: Username): Promise<Reply> {
         try {
             // Prepare the transfer
-            const price: BigNumber = this.__getStickersPrice();
-            const address: string = this.__getStickersAddress();
-            const token: string = this.__getStickersToken();
+            const price: BigNumber = this.getStickersPrice();
+            const address: string = this.getStickersAddress();
+            const token: string = this.getStickersToken();
 
             // Check if the Sender has sufficient balance
-            const senderBalance: WalletBalance = await Send.__senderHasBalance(sender, token, price);
+            const senderBalance: WalletBalance = await Send.senderHasBalance(sender, token, price);
             if (!senderBalance.success) {
                 return Messenger.senderLowBalance(senderBalance.balance, price, token, senderBalance.address);
             }
 
             // Generate the code
-            const stickerCode: string = this.__generateCode(sender, receiver);
+            const stickerCode: string = this.generateCode(sender, receiver);
 
             // and..... send
             const vendorField: string = "ARK Pay - Stickers!";
-            return await this.__sendStickersTransaction(
+            return await this.sendStickersTransaction(
                 sender,
                 receiver,
                 address,
@@ -46,7 +46,7 @@ export class Stickers extends Send {
         }
     }
 
-    protected static async __sendStickersTransaction(
+    protected static async sendStickersTransaction(
         sender: Username,
         receiver: Username,
         address: string,
@@ -79,7 +79,7 @@ export class Stickers extends Send {
             token,
         );
 
-        const transactionId: string = this.__processTransaction(response);
+        const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(price, token);
         return Messenger.stickersMessage(
             sender,
@@ -93,7 +93,7 @@ export class Stickers extends Send {
         );
     }
 
-    private static __getStickersPrice(): BigNumber {
+    private static getStickersPrice(): BigNumber {
         if (!stickersConfig.hasOwnProperty("price")) {
             throw TypeError("Could not find Stickers price in the configuration");
         }
@@ -107,7 +107,7 @@ export class Stickers extends Send {
         return price;
     }
 
-    private static __getStickersAddress(): string {
+    private static getStickersAddress(): string {
         if (!stickersConfig.hasOwnProperty("payoutTo")) {
             throw TypeError("Could not find Stickers payoutTo in the configuration");
         }
@@ -115,14 +115,14 @@ export class Stickers extends Send {
         return `${stickersConfig.payoutTo}`;
     }
 
-    private static __getStickersToken(): string {
+    private static getStickersToken(): string {
         if (!stickersConfig.hasOwnProperty("token")) {
             throw TypeError("Could not find Stickers token in the configuration");
         }
         return stickersConfig.token.toUpperCase();
     }
 
-    private static __generateCode(sender: Username, receiver: Username): string {
+    private static generateCode(sender: Username, receiver: Username): string {
         const now: string = Date.now().toString();
         const secret: string = sender.username + receiver.username + now;
         const hash: string = crypto

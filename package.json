@@ -1,10 +1,39 @@
 {
-    "private": true,
     "name": "pay",
-    "version": "2.0.0",
-    "license": "MIT",
+    "version": "2.1.0",
+    "private": true,
     "description": "Payment application for ARK and ARK-based bridgechains",
+    "license": "MIT",
     "author": "Cryptology",
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "lerna": "./node_modules/lerna/cli.js",
+        "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
+        "bootstrap": "yarn lerna bootstrap",
+        "clean": "yarn lerna clean --yes",
+        "build": "yarn lerna run build",
+        "lint": "yarn lerna run lint",
+        "format": "yarn lint && yarn prettier",
+        "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
+        "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
+        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
+        "snyk": "./node_modules/.bin/snyk protect",
+        "version": "cross-env-shell ./scripts/version.sh"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "jest": {
+        "preset": "./jest-preset.json",
+        "collectCoverageFrom": [
+            "packages/**/src/**/*.ts",
+            "!**/node_modules/**"
+        ]
+    },
     "devDependencies": {
         "@babel/core": "^7.4.3",
         "@babel/preset-env": "^7.4.3",
@@ -17,6 +46,8 @@
         "@types/node": "^11.13.6",
         "@types/prettier": "^1.16.3",
         "@types/pretty-ms": "^4.0.0",
+        "@types/prompts": "^2.4.0",
+        "@types/request": "^2.48.1",
         "@types/request-promise": "^4.1.42",
         "@types/rimraf": "^2.0.2",
         "@types/uuid": "^3.4.4",
@@ -28,6 +59,7 @@
         "codecov": "^3.3.0",
         "cross-env": "^5.2.0",
         "del-cli": "^1.1.0",
+        "depcheck": "^0.8.0",
         "docdash": "^1.1.0",
         "express": "^4.16.4",
         "husky": "^1.3.1",
@@ -54,34 +86,5 @@
         "webpack-cli": "^3.3.0",
         "webpack-merge": "^4.2.1",
         "webpack-node-externals": "^1.7.2"
-    },
-    "scripts": {
-        "lerna": "./node_modules/lerna/cli.js",
-        "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
-        "bootstrap": "yarn lerna bootstrap",
-        "clean": "yarn lerna clean --yes",
-        "build": "yarn lerna run build",
-        "lint": "yarn lerna run lint",
-        "format": "yarn lint && yarn prettier",
-        "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
-        "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
-        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
-        "snyk": "./node_modules/.bin/snyk protect",
-        "version": "cross-env-shell ./scripts/version.sh"
-    },
-    "workspaces": [
-        "packages/*"
-    ],
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged && cross-env-shell ./scripts/pre-commit.sh"
-        }
-    },
-    "jest": {
-        "preset": "./jest-preset.json",
-        "collectCoverageFrom": [
-            "packages/**/src/**/*.ts",
-            "!**/node_modules/**"
-        ]
     }
 }

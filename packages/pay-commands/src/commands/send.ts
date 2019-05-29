@@ -13,7 +13,7 @@ import { Storage, Wallet } from "@cryptology.hk/pay-storage";
 import { User, Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
-import { Transfer } from "../command";
+import { Transfer } from "../interfaces";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 
@@ -33,6 +33,13 @@ const usernameSchema = Joi.object().keys({
 });
 
 export class Send {
+    /**
+     * @dev Create and Send a transfer
+     * @param transfer
+     * @param vendorField
+     * @param smallFooter
+     * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
+     */
     public static async transfer(
         transfer: Transfer,
         vendorField: string,
@@ -40,17 +47,17 @@ export class Send {
     ): Promise<Reply> {
         try {
             // Check if not sending to self
-            if (this.__sendingToSelf(transfer.sender, transfer.receiver)) {
+            if (this.sendingToSelf(transfer.sender, transfer.receiver)) {
                 return Messenger.errorMessage();
             }
 
             // Check if amount is above minimum
-            if (!this.__amountLargerThanMinimum(transfer.arkToshiValue, transfer.token)) {
+            if (!this.amountLargerThanMinimum(transfer.arkToshiValue, transfer.token)) {
                 return Messenger.minAmountMessage(transfer.token);
             }
 
             // Check if the Sender has sufficient balance
-            const senderBalance: WalletBalance = await this.__senderHasBalance(
+            const senderBalance: WalletBalance = await this.senderHasBalance(
                 transfer.sender,
                 transfer.token,
                 transfer.arkToshiValue,
@@ -65,14 +72,14 @@ export class Send {
             }
 
             // and..... send
-            return await this.__sendTransaction(transfer, vendorField, smallFooter);
+            return await this.sendTransaction(transfer, vendorField, smallFooter);
         } catch (e) {
             logger.warn(e.message);
             return Messenger.errorMessage();
         }
     }
 
-    protected static async __sendTransaction(
+    protected static async sendTransaction(
         transfer: Transfer,
         vendorField: string,
         smallFooter: boolean,
@@ -105,7 +112,7 @@ export class Send {
             token,
         );
 
-        const transactionId: string = this.__processTransaction(response);
+        const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(transfer.arkToshiValue, transfer.token);
         return Messenger.transferMessage(
             transfer.sender,
@@ -119,7 +126,7 @@ export class Send {
         );
     }
 
-    protected static __processTransaction(response: TransactionResponse[]): string {
+    protected static processTransaction(response: TransactionResponse[]): string {
         for (const item in response) {
             if (response[item]) {
                 const data: APITransaction = response[item].response.data;
@@ -131,13 +138,13 @@ export class Send {
         throw new Error("Could not succesfully send Transaction");
     }
 
-    protected static __sendingToSelf(sender: Username, receiver: Username): boolean {
+    protected static sendingToSelf(sender: Username, receiver: Username): boolean {
         // Check the Users
         Joi.assert({ sender, receiver }, usernameSchema);
         return sender.username === receiver.username && sender.platform === receiver.platform;
     }
 
-    protected static __amountLargerThanMinimum(amount: BigNumber, token: string): boolean {
+    protected static amountLargerThanMinimum(amount: BigNumber, token: string): boolean {
         token = token.toLowerCase();
         if (
             typeof arkEcosystemConfig[token] === "undefined" ||
@@ -153,7 +160,7 @@ export class Send {
         return minValue.lte(amount);
     }
 
-    protected static async __senderHasBalance(
+    protected static async senderHasBalance(
         sender: Username,
         token: string,
         amount: BigNumber,

@@ -1,6 +1,6 @@
 import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
 import { config } from "@cryptology.hk/pay-config";
-import { AmountCurrency, BaseCurrency, Currency } from "@cryptology.hk/pay-currency";
+import { AmountCurrency, BaseCurrency, Currency, CurrencySymbol } from "@cryptology.hk/pay-currency";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
 import Joi from "joi";
@@ -258,7 +258,7 @@ export class ParserUtils {
 
         if (amountCurrency !== null) {
             // Convert currency to its current Arktoshi value
-            amountCurrency.currency = Currency.currencySymbolsToName(amountCurrency.currency);
+            amountCurrency.currency = CurrencySymbol[amountCurrency.currency];
             amountCurrency.arkToshiValue = await Currency.getExchangedValue(
                 amountCurrency.amount,
                 amountCurrency.currency,
