@@ -12,6 +12,12 @@ import { Send } from "./send";
 const stickersConfig = config.get("merchants").stickers;
 
 export class Stickers extends Send {
+    /**
+     * @dev Generate, pay and send Stickers code
+     * @param sender {Username}     Sender of the Stickers command
+     * @param receiver {Username}   Receiver of the Stickers code
+     * @returns {Promise<Reply>} Object with messages for the Sender, Receiver, Merchant and a comment reply message
+     */
     public static async send(sender: Username, receiver: Username): Promise<Reply> {
         try {
             // Prepare the transfer
@@ -46,6 +52,17 @@ export class Stickers extends Send {
         }
     }
 
+    /**
+     * @dev Generate and send a transfer from Sender to Merchant
+     * @param sender {Username}     The Sender of the command
+     * @param receiver {Username}   The receiver of the Stickers code
+     * @param address {string}      The wallet address of the merchant
+     * @param token {string}        The token of the ArkEcosystem blockchain to send the merchant funds on
+     * @param price {BigNumber}     The price of a stickerset in ArkToshi
+     * @param vendorField {string}  The vendor field message
+     * @param stickerCode {string}  The redeemable sticker code
+     * @param smallFooter {boolean} Whether or not to show a small footer in the comment reply
+     */
     protected static async sendStickersTransaction(
         sender: Username,
         receiver: Username,
@@ -93,6 +110,11 @@ export class Stickers extends Send {
         );
     }
 
+    /**
+     * @dev Retrieve the price of a Stickers set from the config
+     * @returns {BigNumber} the price in ArkToshi
+     * @private
+     */
     private static getStickersPrice(): BigNumber {
         if (!stickersConfig.hasOwnProperty("price")) {
             throw TypeError("Could not find Stickers price in the configuration");
@@ -107,6 +129,11 @@ export class Stickers extends Send {
         return price;
     }
 
+    /**
+     * @dev Retrieve the wallet address of the Stickers merchant from the config
+     * @returns {string} The wallet address
+     * @private
+     */
     private static getStickersAddress(): string {
         if (!stickersConfig.hasOwnProperty("payoutTo")) {
             throw TypeError("Could not find Stickers payoutTo in the configuration");
@@ -115,6 +142,11 @@ export class Stickers extends Send {
         return `${stickersConfig.payoutTo}`;
     }
 
+    /**
+     * @dev Retreive the token of the ArkEcosystem Blockchain to send the payment transfer on
+     * @returns {string}    The token
+     * @private
+     */
     private static getStickersToken(): string {
         if (!stickersConfig.hasOwnProperty("token")) {
             throw TypeError("Could not find Stickers token in the configuration");
@@ -122,6 +154,13 @@ export class Stickers extends Send {
         return stickersConfig.token.toUpperCase();
     }
 
+    /**
+     * @dev Generate a redeemable stickers code
+     * @param sender {Username}     The Sender
+     * @param receiver {Username}   The Receiver
+     * @returns {string} A stickers code
+     * @private
+     */
     private static generateCode(sender: Username, receiver: Username): string {
         const now: string = Date.now().toString();
         const secret: string = sender.username + receiver.username + now;
