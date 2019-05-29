@@ -1,11 +1,6 @@
 import { logger } from "@cryptology.hk/pay-logger";
 import { payDatabase } from "./database";
-
-export interface Wallet {
-    address: string;
-    encryptedSeed: string;
-    seed?: string;
-}
+import { Wallet } from "./interfaces";
 
 export class Storage {
     public static async getWallet(username: string, platform: string, token: string): Promise<Wallet> {

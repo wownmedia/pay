@@ -1,2 +1,3 @@
-export * from "./storage";
+export * from "./interfaces";
 export * from "./secure-storage";
+export * from "./storage";
