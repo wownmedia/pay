@@ -17,9 +17,10 @@ const acceptedCurrencies: string[] = configuration.acceptedCurrencies
 
 export class CurrencyUtils {
     /**
-     * Calculate the exchange rate for a currency in amount of base currency
-     * @param currency
-     * @param baseCurrency
+     * @dev Calculate the exchange rate for a currency in amount of base currency
+     * @param currency {string}     The currency to exchange
+     * @param baseCurrency {string} The base currency to exchange into
+     * @returns {Promise<BigNumber>} The exchange rate
      */
     public static async getCurrencyTicker(currency: string, baseCurrency: string): Promise<BigNumber> {
         // Check if we have no conversion to make
@@ -34,17 +35,19 @@ export class CurrencyUtils {
     }
 
     /**
-     * Retrieve the exchange rate for a currency on CoinGecko
-     * @param currency
-     * @param fiat
+     * @dev Retrieve the exchange rate for a currency on CoinGecko
+     * @param currency {string}
+     * @param fiat {string}
+     * @returns {Promise<BigNumber>} The exchange rate
      */
     public static async getCurrencyValue(currency: string, fiat: string): Promise<BigNumber> {
         return await CoinGeckoAPI.price(currency, fiat);
     }
 
     /**
-     * Replace , (comma) by . (dot) and uppercase text so it can be parsed correctly
-     * @param data
+     * @dev Replace , (comma) by . (dot) and uppercase text so it can be parsed correctly
+     * @param data {string}
+     * @returns {string}
      */
     public static convertAmountCurrency(data: string): string {
         if (typeof data === "undefined" || data.trim() === "") {
@@ -54,8 +57,9 @@ export class CurrencyUtils {
     }
 
     /**
-     * Correctly split <amount><currency> into <amount> <currency>
+     * @dev Correctly split <amount><currency> into <amount> <currency>
      * @param data
+     * @returns {AmountCurrency}
      */
     public static splitCurrencyAmountPair(data: string): AmountCurrency {
         for (const i in arkEcosystemConfig) {
