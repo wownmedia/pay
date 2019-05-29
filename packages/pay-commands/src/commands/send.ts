@@ -33,6 +33,13 @@ const usernameSchema = Joi.object().keys({
 });
 
 export class Send {
+    /**
+     * @dev Create and Send a transfer
+     * @param transfer
+     * @param vendorField
+     * @param smallFooter
+     * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
+     */
     public static async transfer(
         transfer: Transfer,
         vendorField: string,

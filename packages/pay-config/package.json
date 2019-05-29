@@ -35,8 +35,7 @@
     "dependencies": {
         "@cryptology.hk/pay-logger": "^2.1.0",
         "bignumber.js": "^9.0.0",
-        "find-config": "^1.0.0",
-        "@cryptology.hk/pay-logger": "^2.1.0"
+        "find-config": "^1.0.0"
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",
