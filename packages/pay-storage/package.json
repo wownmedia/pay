@@ -38,6 +38,9 @@
         "joi": "^14.3.1",
         "pg": "^7.11.0"
     },
+    "devDependencies": {
+        "@types/pg": "^7.4.14"
+    },
     "engines": {
         "node": ">=10.x"
     },

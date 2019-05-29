@@ -51,6 +51,9 @@
         "joi": "^14.3.1",
         "snoowrap": "^1.15.2"
     },
+    "devDependencies": {
+        "@types/joi": "^14.3.3"
+    },
     "engines": {
         "node": ">=10.x"
     },
