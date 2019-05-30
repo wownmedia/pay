@@ -257,8 +257,9 @@ export class ParserUtils {
         }
 
         if (amountCurrency !== null) {
+            amountCurrency.currency = CurrencySymbol[amountCurrency.currency] || amountCurrency.currency;
+
             // Convert currency to its current Arktoshi value
-            amountCurrency.currency = CurrencySymbol[amountCurrency.currency];
             amountCurrency.arkToshiValue = await Currency.getExchangedValue(
                 amountCurrency.amount,
                 amountCurrency.currency,
