@@ -1,44 +1,28 @@
 import { logger } from "@cryptology.hk/pay-logger";
-import findConfig from "find-config";
-import os from "os";
+import envPaths from "env-paths";
 
 export class Config {
-    /**
-     * @dev Retrieve the path to the JSON file where the config is stored
-     * @returns {any} The path
-     */
-    public static getConfigFile(): any {
-        // Load a config file from __test__ directories in case we are testing
-        let homeDir = os.homedir();
-        if (process.env.NODE_ENV === "test") {
-            homeDir = __dirname.replace("src", "__tests__");
-        }
-        return findConfig("pay-config.json", { dir: `${homeDir}/.config/ark-pay/` });
-    }
-
-    /**
-     * @dev Internally stored config JSON
-     */
-    private readonly configuration: any;
+    private configuration: Record<string, any> = {};
 
     constructor() {
+        this.loadFromFile(`${envPaths("ark-pay").config}/pay-config.json`);
+    }
+
+    public loadFromFile(path: string): void {
         try {
-            const configFile = Config.getConfigFile();
-            this.configuration = require(configFile);
+            this.configuration = require(path);
         } catch (e) {
-            this.configuration = {};
-            logger.warn("pay-config: Bad configuration: " + e.message);
+            logger.warn(`pay-config: Bad configuration: ${e.message}`);
         }
     }
 
     /**
      * @dev Retrieve a sub-configuration from file
      * @param subConfig {string}
-     * @returns {any} The subconfiguration requested
+     * @returns {T} The subconfiguration requested
      */
-    public get(subConfig: string): any {
-        const config = this.configuration[subConfig];
-        return config ? config : {};
+    public get<T = any>(subConfig: string): T {
+        return this.configuration[subConfig];
     }
 }
 
