@@ -1216,30 +1216,30 @@ describe("pay-Parser: ParserUtils()", () => {
     });
 
     describe("isValidAddress()", () => {
-        it("should correctly validate an ARK address", async () => {
-            let address: string = "AFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+        it("should correctly validate an ARK address", () => {
+            let address: string = "AGeYmgbg2LgGxRW2vNNJvQ88PknEJsYizC";
             const token: string = "ARK";
-            let result: boolean = await ParserUtils.isValidAddress(address, token);
+            let result: boolean = ParserUtils.isValidAddress(address, token);
             expect(result).toBeTrue();
             address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            result = await ParserUtils.isValidAddress(address, token);
+            result = ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
 
-        it("should correctly validate a DARK address", async () => {
-            let address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+        it("should correctly validate a DARK address", () => {
+            let address: string = "D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib";
             const token: string = "DARK";
-            let result: boolean = await ParserUtils.isValidAddress(address, token);
+            let result: boolean = ParserUtils.isValidAddress(address, token);
             expect(result).toBeTrue();
             address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            result = await ParserUtils.isValidAddress(address, token);
+            result = ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
 
-        it("should return false on other addresses", async () => {
+        it("should return false on other addresses", () => {
             const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
             const token: string = "NOTSUPPORTED";
-            const result = await ParserUtils.isValidAddress(address, token);
+            const result = ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
     });

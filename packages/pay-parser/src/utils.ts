@@ -1,9 +1,9 @@
+import { Address, configManager } from "@arkecosystem/crypto";
 import { Command, Commands, Transfer } from "@cryptology.hk/pay-commands";
 import { config } from "@cryptology.hk/pay-config";
 import { AmountCurrency, BaseCurrency, Currency, CurrencySymbol } from "@cryptology.hk/pay-currency";
 import { Username } from "@cryptology.hk/pay-user";
 import BigNumber from "bignumber.js";
-import Joi from "joi";
 
 const configuration = config.get("parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";
@@ -258,7 +258,7 @@ export class ParserUtils {
 
         if (amountCurrency !== null) {
             // Convert currency to its current Arktoshi value
-            amountCurrency.currency = CurrencySymbol[amountCurrency.currency];
+            amountCurrency.currency = CurrencySymbol[amountCurrency.currency] || amountCurrency.currency;
             amountCurrency.arkToshiValue = await Currency.getExchangedValue(
                 amountCurrency.amount,
                 amountCurrency.currency,
@@ -397,19 +397,14 @@ export class ParserUtils {
      * @param address
      * @param token
      */
-    public static async isValidAddress(address: string, token: string): Promise<boolean> {
-        try {
-            const arkSchema = {
-                address: Joi.string()
-                    .token()
-                    .length(34)
-                    .required(),
-            };
-            await Joi.attempt({ address }, arkSchema);
-            return true;
-        } catch (e) {
-            return false;
+    public static isValidAddress(address: string, token: string): boolean {
+        if (token === "ARK") {
+            configManager.setFromPreset("mainnet");
+        } else if (token === "DARK") {
+            configManager.setFromPreset("devnet");
         }
+
+        return Address.validate(address);
     }
 
     /**
@@ -508,7 +503,7 @@ export class ParserUtils {
             amount = arg4;
         }
 
-        if (await ParserUtils.isValidAddress(address, token)) {
+        if (ParserUtils.isValidAddress(address, token)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(currency, amount);
             const arkToshiValue =
                 amountCurrency !== null && amountCurrency.arkToshiValue.gt(0) ? amountCurrency.arkToshiValue : null;
