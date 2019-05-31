@@ -2,7 +2,6 @@
     "pay-config": {
         "test": "cryptology"
     },
-
     "database": {
         "dbUser": "arkpay",
         "dbPassword": "password",
@@ -10,13 +9,10 @@
         "database": "arkpay",
         "port": 5432
     },
-
     "user": {},
-
     "secureStorage": {
         "encryptionKey": "935bff586aeb4244452802e4cf87eaca"
     },
-
     "currency": {
         "tokens": [
             {

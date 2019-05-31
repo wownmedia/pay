@@ -1,35 +1,23 @@
 import { logger } from "@cryptology.hk/pay-logger";
-import findConfig from "find-config";
-import os from "os";
+import envPaths from "env-paths";
 
 export class Config {
-    public static getConfigFile() {
-        // Load a config file from __test__ directories in case we are testing
-        let homeDir = os.homedir();
-        if (process.env.NODE_ENV === "test") {
-            homeDir = __dirname.replace("src", "__tests__");
-        }
-        return findConfig("pay-config.json", { dir: `${homeDir}/.config/ark-pay/` });
-    }
-    private readonly configuration: any;
+    private configuration: Record<string, any> = {};
 
     constructor() {
+        this.loadFromFile(`${envPaths("ark-pay").config}/pay-config.json`);
+    }
+
+    public loadFromFile(path: string): void {
         try {
-            const configFile = Config.getConfigFile();
-            this.configuration = require(configFile);
+            this.configuration = require(path);
         } catch (e) {
-            this.configuration = {};
-            logger.warn("pay-config: Bad configuration: " + e.message);
+            logger.warn(`pay-config: Bad configuration: ${e.message}`);
         }
     }
 
-    /**
-     * Retrieve a sub-configuration from file
-     * @param subConfig
-     */
-    public get(subConfig: string): any {
-        const config = this.configuration[subConfig];
-        return config ? config : {};
+    public get<T = any>(subConfig: string): T {
+        return this.configuration[subConfig];
     }
 }
 

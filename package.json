@@ -9,18 +9,19 @@
         "packages/*"
     ],
     "scripts": {
-        "lerna": "./node_modules/lerna/cli.js",
-        "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
         "bootstrap": "yarn lerna bootstrap",
-        "clean": "yarn lerna clean --yes",
         "build": "yarn lerna run build",
-        "lint": "yarn lerna run lint",
+        "clean": "yarn lerna clean --yes",
         "format": "yarn lint && yarn prettier",
+        "lerna": "./node_modules/lerna/cli.js",
+        "lint": "yarn lerna run lint",
         "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
+        "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
+        "snyk": "./node_modules/.bin/snyk protect",
         "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
         "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
-        "snyk": "./node_modules/.bin/snyk protect",
-        "version": "cross-env-shell ./scripts/version.sh"
+        "version": "cross-env-shell ./scripts/version.sh",
+        "deps:missing": "node ./scripts/deps/missing.js"
     },
     "husky": {
         "hooks": {
@@ -28,11 +29,11 @@
         }
     },
     "jest": {
-        "preset": "./jest-preset.json",
         "collectCoverageFrom": [
             "packages/**/src/**/*.ts",
             "!**/node_modules/**"
-        ]
+        ],
+        "preset": "./jest-preset.json"
     },
     "devDependencies": {
         "@babel/core": "^7.4.3",
