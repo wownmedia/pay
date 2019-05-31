@@ -35,9 +35,9 @@ const usernameSchema = Joi.object().keys({
 export class Send {
     /**
      * @dev Create and Send a transfer
-     * @param transfer
-     * @param vendorField
-     * @param smallFooter
+     * @param transfer {Transfer}   A parsed transfer
+     * @param vendorField {string}  The text to place in the vendor field
+     * @param smallFooter {boolean} True when user requested a small footer instead of a regular footer
      * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
      */
     public static async transfer(
@@ -79,6 +79,14 @@ export class Send {
         }
     }
 
+    /**
+     * @dev Send the transaction to the blockchain
+     * @param transfer {Transfer}   A parsed transfer
+     * @param vendorField {string}  The text to add to the vendor field
+     * @param smallFooter {boolean} True when user requested a small footer instead of a regular footer
+     * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
+     * @protected
+     */
     protected static async sendTransaction(
         transfer: Transfer,
         vendorField: string,
@@ -126,6 +134,12 @@ export class Send {
         );
     }
 
+    /**
+     * @dev Process a sent transaction and check if it was accepted
+     * @param response {TransactionResponse[]}  An array containing the transaction responses per node it was broadcasted to
+     * @returns {string} The transaction ID if a tx was successful
+     * @protected
+     */
     protected static processTransaction(response: TransactionResponse[]): string {
         for (const item in response) {
             if (response[item]) {
@@ -138,12 +152,26 @@ export class Send {
         throw new Error("Could not succesfully send Transaction");
     }
 
+    /**
+     * @dev Checks if sender and receiver are the same (no tipping to self!)
+     * @param sender {Username}     The sender's username/platform pair
+     * @param receiver {Username}   The receiver's username/platform pair
+     * @returns {boolean}   True if sender === receiver
+     * @protected
+     */
     protected static sendingToSelf(sender: Username, receiver: Username): boolean {
         // Check the Users
         Joi.assert({ sender, receiver }, usernameSchema);
         return sender.username === receiver.username && sender.platform === receiver.platform;
     }
 
+    /**
+     * @dev Check if the amount of the transfer is above the configured threshold of an ArkEcosystem blockchain
+     * @param amount {BigNumber}    The amount the sender requests to transfer
+     * @param token {string}        The token of the ArkEcosystem blockchain to transfer on
+     * @returns {boolean} True if amount is larger or equal to the threshold
+     * @protected
+     */
     protected static amountLargerThanMinimum(amount: BigNumber, token: string): boolean {
         token = token.toLowerCase();
         if (
@@ -160,6 +188,13 @@ export class Send {
         return minValue.lte(amount);
     }
 
+    /**
+     * @dev Check if the sender has sufficient balance for the requested transfer
+     * @param sender {Username} The username/platform pair of the sender
+     * @param token {string}    The token for the ArkEcosystem blockchain to transfer on
+     * @param amount {BigNumber} The amount the sender requests to transfer
+     * @returns {Promise<WalletBalance>} The balance, address and success = True if balance is sufficient
+     */
     protected static async senderHasBalance(
         sender: Username,
         token: string,

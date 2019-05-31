@@ -5,6 +5,10 @@ const arkEcoSytemConfig = config.get("arkEcosystem");
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 
 export class Messages {
+    /**
+     * @dev Generate a HELP message
+     * @param command
+     */
     public static helpMessage(command: string): string {
         switch (command.toUpperCase()) {
             case "WITHDRAW":
@@ -21,6 +25,10 @@ export class Messages {
         }
     }
 
+    /**
+     * @dev  Retrieve the explorer for a blockchain from config
+     * @param token
+     */
     public static getExplorer(token: string): string {
         token = token.toLowerCase();
         if (arkEcoSytemConfig.hasOwnProperty(token) && arkEcoSytemConfig[token].hasOwnProperty("explorer")) {
@@ -29,18 +37,31 @@ export class Messages {
         return _EXPLORER;
     }
 
+    /**
+     * @dev generate an error message
+     */
     public static errorMessage(): string {
         return _ERROR_MESSAGE;
     }
 
+    /**
+     * @dev generate an error comment reply
+     */
     public static errorComment(): string {
         return _ERROR_COMMENT;
     }
 
+    /**
+     * @dev generate a summoned message
+     */
     public static summonedComment(): string {
         return _SUMMONED_COMMENT;
     }
 
+    /**
+     * @dev generate a footer
+     * @param small
+     */
     public static getFooter(small?: boolean): string {
         if (small) {
             return _SMALL_FOOTER;
@@ -48,6 +69,10 @@ export class Messages {
         return _FOOTER;
     }
 
+    /**
+     * @dev generate a minimum amount message
+     * @param token
+     */
     public static minAmountMessage(token: string): string {
         token = token.toLowerCase();
         let amount: BigNumber = new BigNumber(1);
@@ -58,6 +83,13 @@ export class Messages {
         return Messages.replaceAll(_MINIMAL_TRANSACTION_VALUE, "#minValue#", lowestValue);
     }
 
+    /**
+     * @dev generate a too low balance message
+     * @param balance
+     * @param amount
+     * @param token
+     * @param address
+     */
     public static senderLowBalance(balance: BigNumber, amount: BigNumber, token: string, address: string): string {
         const amountString = `${amount.div(ARKTOSHI).toFixed(8)} ${token.toUpperCase()}`;
         const balanceString = `${balance.div(ARKTOSHI).toFixed(8)} ${token.toUpperCase()}`;
@@ -69,11 +101,26 @@ export class Messages {
             .replace("#address#", address);
     }
 
+    /**
+     * @dev generate a deposit message
+     * @param address
+     * @param token
+     * @param platform
+     */
     public static depositMessage(address: string, token: string, platform: string): string {
         const message = Messages.replaceAll(_DEPOSIT_MESSAGE, "#token#", token);
         return message.replace("#platform#", platform).replace("#address#", address);
     }
 
+    /**
+     * @dev generate a transfer message
+     * @param receiver
+     * @param platform
+     * @param transactionId
+     * @param amount
+     * @param usdValue
+     * @param token
+     */
     public static transferMessage(
         receiver: string,
         platform: string,
@@ -94,6 +141,16 @@ export class Messages {
             .replace("#explorer#", explorer);
     }
 
+    /**
+     * @dev generate a message for the receiver of a transfer
+     * @param username
+     * @param platform
+     * @param transactionId
+     * @param amount
+     * @param usdValue
+     * @param token
+     * @param address
+     */
     public static transferReceiverMessage(
         username: string,
         platform: string,
@@ -116,6 +173,14 @@ export class Messages {
             .replace("#explorer#", explorer);
     }
 
+    /**
+     * @dev generate a TIP comment reply
+     * @param username
+     * @param transactionId
+     * @param amount
+     * @param usdValue
+     * @param token
+     */
     public static transferCommentReply(
         username: string,
         transactionId: string,
@@ -134,14 +199,31 @@ export class Messages {
             .replace("#explorer#", explorer);
     }
 
+    /**
+     * @dev generate a comment reply to a STICKERS mention
+     * @param username
+     * @param transactionId
+     */
     public static stickersCommentReply(username: string, transactionId: string): string {
         return _STICKERS_NOTIFICATION.replace("#username#", username).replace("#transactionId#", transactionId);
     }
 
+    /**
+     * @dev generate a message reply to the seller of Stickers
+     * @param stickerCode
+     * @param transactionId
+     */
     public static stickersMerchantReply(stickerCode: string, transactionId: string): string {
         return _STICKERS_CODE_NEWCODE.replace("#stickerCode#", stickerCode).replace("#transactionId#", transactionId);
     }
 
+    /**
+     * @dev generate a message to the sender of Stickers
+     * @param receiver
+     * @param transactionId
+     * @param amount
+     * @param usdValue
+     */
     public static stickersMessage(receiver: string, transactionId: string, amount: string, usdValue: string): string {
         return _TRANSACTION_STICKERS_MESSAGE
             .replace("#receiver#", receiver)
@@ -150,16 +232,34 @@ export class Messages {
             .replace("#transactionId#", transactionId);
     }
 
+    /**
+     * @dev generate a message to the receiver of stickers
+     * @param sender
+     * @param stickerCode
+     */
     public static stickersReceiverMessage(sender: string, stickerCode: string): string {
         const message = this.replaceAll(_STICKERS_CODE_MESSAGE, "#sender#", sender);
         return message.replace("#stickerCode#", stickerCode);
     }
 
+    /**
+     * @dev generate a message to show balance
+     * @param balance
+     * @param token
+     * @param usdValue
+     */
     public static balanceMessage(balance: string, token: string, usdValue: string): string {
         const balanceMessage = Messages.replaceAll(_BALANCE_MESSAGE, "#token#", token);
         return balanceMessage.replace("#balance#", balance).replace("#usdValue#", usdValue);
     }
 
+    /**
+     * @dev generate a withdraw message
+     * @param balance
+     * @param token
+     * @param usdValue
+     * @param transactionId
+     */
     public static withdrawMessage(balance: string, token: string, usdValue: string, transactionId: string): string {
         const explorer: string = this.getExplorer(token);
         token = token.toUpperCase();
@@ -171,6 +271,13 @@ export class Messages {
             .replace("#explorer#", explorer);
     }
 
+    /**
+     * @dev replace all occurences
+     * @param target
+     * @param search
+     * @param replacement
+     * @protected
+     */
     protected static replaceAll(target: string, search: string, replacement: string): string {
         return target.split(search).join(replacement);
     }

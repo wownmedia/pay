@@ -16,6 +16,11 @@ export class Config {
         }
     }
 
+    /**
+     * @dev Retrieve a sub-configuration from file
+     * @param subConfig {string}
+     * @returns {T} The subconfiguration requested
+     */
     public get<T = any>(subConfig: string): T {
         return this.configuration[subConfig];
     }

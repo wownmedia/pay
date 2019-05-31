@@ -8,6 +8,7 @@ import Joi from "joi";
 import { ApiResponse, APITransaction, ArkEcosystemWallet, TransactionResponse } from "./interfaces";
 import { Network } from "./network";
 import { ArkTransaction } from "./transaction";
+
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 
 const arkEcosystemConfig = config.get("arkEcosystem");
@@ -23,7 +24,15 @@ const walletSchema = Joi.object().keys({
         .required(),
 });
 
+/**
+ * @dev Basic ArkEcosystem wallet functions.
+ */
 export class ArkWallet {
+    /**
+     * @dev Generate a new ArkEcosystem Wallet
+     * @param token {string}    The ArkEcosystem token to generate a wallet for (e.g. ARK, DARK)
+     * @returns {ArkEcosystemWallet} The generated wallet
+     */
     public static generateWallet(token: string): ArkEcosystemWallet {
         const networkVersion = this.getArkEcosystemNetworkVersionForToken(token);
 
@@ -44,6 +53,11 @@ export class ArkWallet {
         };
     }
 
+    /**
+     * @dev Retrieve the configured network version for a token from the config
+     * @param token {string}    The ArkEcosystem token to retrieve the network version for
+     * @returns {number}        The retrieved network version
+     */
     public static getArkEcosystemNetworkVersionForToken(token: string): number {
         token = token.toLowerCase();
         if (
@@ -61,6 +75,11 @@ export class ArkWallet {
         return networkVersion.toNumber();
     }
 
+    /**
+     * @dev Retrieve the configured network transfer fee for a token from the config
+     * @param token {string}    The ArkEcosystem token to retrieve the transfer fee for
+     * @returns {BigNumber}        The retrieved transfer fee
+     */
     public static getArkEcosystemNetworkTransactionFee(token: string): BigNumber {
         token = token.toLowerCase();
         if (
@@ -78,6 +97,12 @@ export class ArkWallet {
         return transactionFee;
     }
 
+    /**
+     * @dev Retrieve the balance for a wallet
+     * @param wallet {string}   The wallet address
+     * @param token {string}    The ArkEcosystem token to retreive the wallet balance from
+     * @returns {Promise<BigNumber>} The balance in ArkToshi
+     */
     public static async getBalance(wallet: string, token: string): Promise<BigNumber> {
         let balance: BigNumber = new BigNumber(0);
         logger.info(`GETTING BALANCE: ${wallet} at ${token}`);
@@ -100,6 +125,14 @@ export class ArkWallet {
         return balance;
     }
 
+    /**
+     * @dev Generate and send a transfer
+     * @param sender {ArkEcosystemWallet}   The sender of the transfer
+     * @param receiver {ArkEcosystemWallet} The receiver of the transfer
+     * @param amount {BigNumber}            The amount to transfer
+     * @param vendorField {string}          The vendor field message
+     * @param token {string}                The ArkEcosystem token of the blockchain where to transfer
+     */
     public static async sendTransaction(
         sender: ArkEcosystemWallet,
         receiver: ArkEcosystemWallet,
