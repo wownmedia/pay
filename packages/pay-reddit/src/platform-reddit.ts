@@ -1,12 +1,15 @@
-import { Command, Commands } from "@cryptology.hk/pay-commands";
-import { config } from "@cryptology.hk/pay-config";
-import { Currency } from "@cryptology.hk/pay-currency";
-import { logger } from "@cryptology.hk/pay-logger";
-import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
-import { Parser } from "@cryptology.hk/pay-parser";
-import { Storage } from "@cryptology.hk/pay-storage";
-import { Username } from "@cryptology.hk/pay-user";
-import os from "os";
+import {
+    Command,
+    Commands,
+    config,
+    Currency,
+    logger,
+    Messenger,
+    Parser,
+    Reply,
+    Storage,
+    Username,
+} from "@cryptology.hk/pay-framework";
 import Snoowrap from "snoowrap";
 import { Author, RedditConfig, RedditMessage } from "./interfaces";
 
@@ -393,7 +396,7 @@ export class PlatformReddit {
             .composeMessage({
                 to: this.redditConfig.admin,
                 subject: "ARK Pay",
-                text: `ARK Pay Reddit Listener started for ${this.redditConfig.username} on ${os.hostname()}`,
+                text: `ARK Pay Reddit Listener started for ${this.redditConfig.username}`,
             })
             .then(() => {
                 logger.info(`ARK Pay Reddit listener START-notification sent to ${this.redditConfig.admin}`);

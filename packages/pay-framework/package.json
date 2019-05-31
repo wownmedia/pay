@@ -1,18 +1,14 @@
 {
-    "name": "@cryptology.hk/pay-reddit",
+    "name": "@cryptology.hk/pay-framework",
     "version": "2.2.0",
-    "description": "Interface with the Reddit platform for ARK Pay.",
+    "description": "Application Framework for ARK pay",
     "license": "MIT",
     "author": "Marc Schot",
     "files": [
-        "dist",
-        "bin"
+        "dist"
     ],
     "main": "dist/index",
     "types": "dist/index",
-    "bin": {
-        "reddit-listener": "./bin/reddit-listener"
-    },
     "scripts": {
         "build": "yarn clean && yarn compile",
         "build:watch": "yarn clean && yarn compile -w",
@@ -37,14 +33,24 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-framework": "^2.2.0",
+        "@arkecosystem/crypto": "^2.3.23",
+        "axios": "^0.18.0",
         "bignumber.js": "^9.0.0",
+        "bip39": "^3.0.2",
+        "coingecko-api": "^1.0.5",
+        "env-paths": "^2.2.0",
         "joi": "^14.3.1",
-        "snoowrap": "^1.15.2"
+        "moment": "^2.24.0",
+        "pino": "^5.12.6",
+        "pino-pretty": "^3.1.0",
+        "pg": "^7.11.0"
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",
-        "jest-extended": "^0.11.1"
+        "@types/pino": "^5.20.0",
+        "@types/pg": "^7.4.14",
+        "jest-extended": "^0.11.1",
+        "joi": "^14.3.1"
     },
     "engines": {
         "node": ">=10.x"

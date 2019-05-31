@@ -1,5 +1,4 @@
-import { logger } from "@cryptology.hk/pay-logger";
-import { Poller } from "@cryptology.hk/pay-poller";
+import { logger, Poller } from "@cryptology.hk/pay-framework";
 import { PlatformReddit } from "./platform-reddit";
 
 /**
