@@ -95,7 +95,6 @@ export class PlatformReddit {
         ) {
             throw new Error("Bad Reddit configuration.");
         }
-
         return parsedConfig;
     }
 
