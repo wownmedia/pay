@@ -2,13 +2,12 @@ import "jest-extended";
 
 // mock database
 import { payDatabase } from "../../src/core";
-
 import { Storage, Wallet } from "../../src/services";
 
 describe("pay-storage: Storage()", () => {
     describe("getWallet", () => {
         it("should return a valid wallet", async () => {
-            const payDatabaseMock = jest.spyOn(payDatabase, "query");
+            const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
                     rows: [{ address: "xxx", seed: "YYY" }],
@@ -20,7 +19,7 @@ describe("pay-storage: Storage()", () => {
         });
 
         it("should return null if the wallet is not found", async () => {
-            const payDatabaseMock = jest.spyOn(payDatabase, "query");
+            const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
                     rows: [],
@@ -41,7 +40,7 @@ describe("pay-storage: Storage()", () => {
             encryptedSeed: "YYY",
         };
         it("should correctly store a wallet to the DB", async () => {
-            const payDatabaseMock = jest.spyOn(payDatabase, "query");
+            const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
                     rows: [{ address: "xxx", seed: "YYY" }],
@@ -52,7 +51,7 @@ describe("pay-storage: Storage()", () => {
             payDatabaseMock.mockRestore();
         });
         it("should throw an error if it cant insert the new wallet", async () => {
-            const payDatabaseMock = jest.spyOn(payDatabase, "query");
+            const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
                     rows: {},
@@ -66,7 +65,7 @@ describe("pay-storage: Storage()", () => {
     describe("checkSubmission()", () => {
         const submission: string = "XXX";
         it("should correctly find an exisitng submission", async () => {
-            const payDatabaseMock = jest.spyOn(payDatabase, "query");
+            const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
                     rows: [{ submission: "XXX" }],
@@ -81,7 +80,7 @@ describe("pay-storage: Storage()", () => {
     describe("addSubmission()", () => {
         const submission: string = "XXX";
         it("should correctly find an exisitng submission", async () => {
-            const payDatabaseMock = jest.spyOn(payDatabase, "query");
+            const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
                     rows: [{ submission: "XXX" }],
