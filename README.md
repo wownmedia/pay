@@ -7,7 +7,7 @@ Currently ARK Pay is functional on Reddit, multiple platfarms are scheduled to b
 
 ##Installation / Configuration
 
--   Install ARK Pay from the NPMjs repository:
+-   Install the Reddit Listener from the NPMjs repository:
     `yarn global add @cryptology.hk/pay-reddit`
 
 -   Copy the example configuration file `example.pay-config.json` to `~/.config/ark-pay/pay-config.json` and edit it to match your configuration.
