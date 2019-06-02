@@ -3,7 +3,7 @@
 ##About
 ARK Pay is a service that (will) provide(s) a full 2nd layer payment system for ARK and bridgechains.
 
-Currently ARK Pay is functional on Reddit, multiple platfarms are scheduled to be added in the near future.
+Currently ARK Pay is functional on Reddit, multiple platforms are scheduled to be added in the near future.
 
 ##Installation / Configuration
 
