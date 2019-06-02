@@ -1,0 +1,74 @@
+{
+    "platforms": {
+        "reddit": {
+            "admin": "bot-admin-reddit-username",
+            "clientId": "reddit-client-id",
+            "clientSecret": "reddit-client-secret",
+            "username": "reddit-bot-username",
+            "password": "reddit-bot-password",
+            "usernamePrefix": "u/"
+        }
+    },
+
+    "database": {
+        "dbUser": "db-username",
+        "dbPassword": "db-password",
+        "host": "db-host",
+        "database": "db",
+        "port": 5432
+    },
+
+    "secureStorage": {
+        "encryptionKey": "32-character-token-to-encrypt-db-entries"
+    },
+
+    "arkEcosystem": {
+        "ark": {
+            "networkVersion": 23,
+            "minValue": 2000000,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "ip-node-1",
+                    "port": 4003
+                },
+                {
+                    "host": "ip-node-2",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "dark": {
+            "networkVersion": 30,
+            "minValue": 2000000,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "ip-node-1",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://dexplorer.ark.io"
+        }
+    },
+
+    "currency": {
+        "baseCurrency": "ark",
+        "acceptedCurrencies": ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"]
+    },
+
+    "parser": {
+        "seperator": "@"
+    },
+
+    "merchants": {
+        "stickers": {
+            "token": "ark",
+            "price": "200000000",
+            "payoutTo": "justins-ark-wallet",
+            "notify": { "username": "justins-reddit-username", "platform": "reddit" }
+        }
+    }
+}
