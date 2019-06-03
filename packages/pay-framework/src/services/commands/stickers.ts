@@ -1,10 +1,10 @@
 import BigNumber from "bignumber.js";
 import crypto from "crypto";
 import { config, logger } from "../../core";
+import { ArkEcosystemWallet, Reply, TransactionResponse, Username, Wallet, WalletBalance } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
 import { Currency } from "../currency";
-import { ArkEcosystemWallet, Reply, TransactionResponse, Username, Wallet, WalletBalance } from "../interfaces";
-import { Messenger } from "../messenger";
+import { Messenger } from "../messenger/messenger";
 import { Storage } from "../storage";
 import { Send } from "./send";
 

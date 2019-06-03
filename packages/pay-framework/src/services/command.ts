@@ -1,6 +1,6 @@
+import { Command, Reply } from "../interfaces";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
-import { Command, Reply } from "./interfaces";
-import { Messenger } from "./messenger";
+import { Messenger } from "./messenger/messenger";
 
 export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
 

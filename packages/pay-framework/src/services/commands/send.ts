@@ -1,8 +1,6 @@
 import BigNumber from "bignumber.js";
 import Joi from "joi";
 import { config, logger } from "../../core";
-import { ArkWallet } from "../ark-wallet";
-import { Currency } from "../currency";
 import {
     APITransaction,
     ArkEcosystemWallet,
@@ -12,8 +10,10 @@ import {
     Username,
     Wallet,
     WalletBalance,
-} from "../interfaces";
-import { Messenger } from "../messenger";
+} from "../../interfaces";
+import { ArkWallet } from "../ark-wallet";
+import { Currency } from "../currency";
+import { Messenger } from "../messenger/messenger";
 import { Storage } from "../storage";
 import { User } from "../user";
 

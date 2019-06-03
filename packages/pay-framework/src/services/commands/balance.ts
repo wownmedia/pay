@@ -1,8 +1,8 @@
 import BigNumber from "bignumber.js";
+import { Reply, Username } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
 import { Currency } from "../currency";
-import { Reply, Username } from "../interfaces";
-import { Messenger } from "../messenger";
+import { Messenger } from "../messenger/messenger";
 import { User } from "../user";
 
 export class Balance {

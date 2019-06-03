@@ -1,7 +1,7 @@
 import axios from "axios";
 import { config } from "../core";
 import { logger } from "../core";
-import { ApiResponse, Node, Parameters, TransactionResponse } from "./interfaces";
+import { ApiResponse, Node, Parameters, TransactionResponse } from "../interfaces";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 

@@ -1,7 +1,7 @@
 import { Address, configManager } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
-import { AmountCurrency, BaseCurrency, Command, Commands, Currency, CurrencySymbol, Transfer, Username } from "../";
-import { config } from "../core";
+import { AmountCurrency, BaseCurrency, Command, Commands, Currency, CurrencySymbol, Transfer, Username } from "../..";
+import { config } from "../../core";
 
 const configuration = config.get("parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";

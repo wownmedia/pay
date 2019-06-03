@@ -1,15 +1,15 @@
-export * from "./interfaces";
-export * from "./secure-storage";
-export * from "./storage";
+// @TODO: organise those
 export * from "./ark-wallet";
-export * from "./transaction";
+export * from "./command";
 export * from "./network";
 export * from "./poller";
-export * from "./currency";
-export * from "./enums";
+export * from "./transaction";
 export * from "./user";
-export * from "./messenger";
-export * from "./messages";
-export * from "./command";
-export * from "./commands";
-export * from "./parser";
+
+import * as Commands from "./commands";
+import * as Currency from "./currency";
+import * as Messenger from "./messenger";
+import * as Parser from "./parser";
+import * as Storage from "./storage";
+
+export { Parser, Currency, Storage, Commands, Messenger };
