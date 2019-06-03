@@ -1,6 +1,6 @@
 import crypto, { Cipher, Decipher } from "crypto";
 import Joi from "joi";
-import { config } from "../core";
+import { config } from "../../core";
 const secureStorageConfig = config.get("secureStorage");
 
 const IV_LENGTH = 16; // For AES, this is always 16

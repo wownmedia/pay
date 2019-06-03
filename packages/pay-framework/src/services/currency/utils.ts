@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
-import { config } from "../core";
+import { config } from "../../core";
+import { AmountCurrency, BaseCurrency } from "../../interfaces";
 import { CoinGeckoAPI } from "./coinGecko";
-import { AmountCurrency, BaseCurrency } from "./interfaces";
 
 BigNumber.config({ DECIMAL_PLACES: 8, ROUNDING_MODE: BigNumber.ROUND_DOWN });
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));

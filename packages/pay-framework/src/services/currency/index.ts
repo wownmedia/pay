@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
-import { config } from "../core";
-import { CurrencyUtils } from "./currencyUtils";
-import { AmountCurrency, BaseCurrency } from "./interfaces";
+import { config } from "../../core";
+import { AmountCurrency, BaseCurrency } from "../../interfaces";
+import { CurrencyUtils } from "./utils";
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const configuration = config.get("currency");

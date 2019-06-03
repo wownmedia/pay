@@ -1,5 +1,5 @@
-import { Command, Commands, Username } from "../";
-import { ParserUtils } from "./parserUtils";
+import { Command, Commands, Username } from "../..";
+import { ParserUtils } from "./utils";
 
 /**
  * Parse textual input for commands and parameters

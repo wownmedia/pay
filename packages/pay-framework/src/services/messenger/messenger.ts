@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
-import { config } from "../core";
-import { Reply, Username } from "./interfaces";
-import { Messages } from "./messages";
+import { Messages } from ".";
+import { config } from "../../core";
+import { Reply, Username } from "../../interfaces";
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
 const platforms = config.get("platforms");

@@ -1,6 +1,6 @@
-import { logger } from "../core";
-import { payDatabase } from "../core";
-import { Wallet } from "./interfaces";
+import { logger } from "../../core";
+import { payDatabase } from "../../core";
+import { Wallet } from "../../interfaces";
 
 export class Storage {
     public static async getWallet(username: string, platform: string, token: string): Promise<Wallet> {

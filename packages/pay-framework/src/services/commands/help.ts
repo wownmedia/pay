@@ -1,5 +1,5 @@
-import { Reply } from "../interfaces";
-import { Messenger } from "../messenger";
+import { Reply } from "../../interfaces";
+import { Messenger } from "../messenger/messenger";
 
 export class Help {
     /**

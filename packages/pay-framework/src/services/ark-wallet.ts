@@ -4,9 +4,9 @@ import { generateMnemonic } from "bip39";
 import Joi from "joi";
 import { config } from "../core";
 import { logger } from "../core";
-import { ApiResponse, APITransaction, ArkEcosystemWallet, TransactionResponse } from "./interfaces";
+import { ApiResponse, APITransaction, ArkEcosystemWallet, TransactionResponse } from "../interfaces";
 import { Network } from "./network";
-import { SecureStorage } from "./secure-storage";
+import { SecureStorage } from "./storage/secure-storage";
 import { ArkTransaction } from "./transaction";
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
