@@ -1,6 +1,6 @@
 import "jest-extended";
 
-import { Poller } from "../../src";
+import { Poller } from "../../src/services";
 const poller: Poller = new Poller(1);
 
 describe("pay-poller", () => {

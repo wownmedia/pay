@@ -32,8 +32,10 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { AmountCurrency, Currency, CurrencySymbol } from "../../src";
-import { CurrencyUtils } from "../../src/services/currencyUtils";
+import { CurrencySymbol } from "../../src/enums";
+import { AmountCurrency } from "../../src/interfaces";
+import { Currency } from "../../src/services/currency";
+import { CurrencyUtils } from "../../src/services/currency/utils";
 
 const arktoshi = Math.pow(10, 8);
 

@@ -1,6 +1,9 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { ArkWallet, Balance, Currency, Reply, User, Username } from "../../../src";
+import { Reply, Username } from "../../../src/interfaces";
+import { ArkWallet, User } from "../../../src/services";
+import { Balance } from "../../../src/services/commands";
+import { Currency } from "../../../src/services/currency";
 
 describe("pay-commands: Balance()", () => {
     it("getBalance() should be a function", () => {

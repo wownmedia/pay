@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { CoinGeckoAPI } from "../../src/services/coinGecko";
+import { CoinGeckoAPI } from "../../src/services/currency/coinGecko";
 
 describe("pay-currency: CoinGeckoAPI()", () => {
     describe("price()", () => {

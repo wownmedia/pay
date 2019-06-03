@@ -3,7 +3,7 @@ import { config, logger } from "../../core";
 import { ArkEcosystemWallet, Reply, TransactionResponse, Transfer, Wallet, WalletBalance } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
 import { Currency } from "../currency";
-import { Messenger } from "../messenger/messenger";
+import { Messenger } from "../messenger";
 import { Storage } from "../storage";
 import { Send } from "./send";
 

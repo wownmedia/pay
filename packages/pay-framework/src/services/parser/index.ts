@@ -1,4 +1,5 @@
-import { Command, Commands, Username } from "../..";
+import { Command, Username } from "../../interfaces";
+import { Commander } from "../command";
 import { ParserUtils } from "./utils";
 
 /**
@@ -77,7 +78,7 @@ export class Parser {
         // We allow multiple commands per PM.
         // Process Commands
         for (const item in commandBodyParts) {
-            if (commandBodyParts[item] && Commands.isValidCommand(commandBodyParts[item])) {
+            if (commandBodyParts[item] && Commander.isValidCommand(commandBodyParts[item])) {
                 const command: string = commandBodyParts[item].toUpperCase();
                 const index: number = parseInt(item, 10);
                 const argumentsBody: string[] = commandBodyParts.slice(index, index + 5);

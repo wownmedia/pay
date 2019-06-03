@@ -1,5 +1,5 @@
 import "jest-extended";
-import { Help } from "../../../src";
+import { Help } from "../../../src/services/commands";
 
 describe("pay-commands: Help()", () => {
     it("getHelp() should be a function", () => {

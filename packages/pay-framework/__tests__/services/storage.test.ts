@@ -2,7 +2,8 @@ import "jest-extended";
 
 // mock database
 import { payDatabase } from "../../src/core";
-import { Storage, Wallet } from "../../src/services";
+import { Wallet } from "../../src/interfaces";
+import { Storage } from "../../src/services/storage";
 
 describe("pay-storage: Storage()", () => {
     describe("getWallet", () => {

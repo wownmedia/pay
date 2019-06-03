@@ -1,7 +1,7 @@
 // Mock Config
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { config } from "../../src";
+import { config } from "../../src/core";
 const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     encryptionKey: "935bff586aeb4244452802e4cf87eaca",
@@ -41,7 +41,7 @@ configMock.mockImplementation(() => ({
         explorer: "https://dexplorer.ark.io",
     },
 }));
-import { ArkTransaction } from "../../src/";
+import { ArkTransaction } from "../../src/services";
 
 describe("pay-ark: Transaction()", () => {
     describe("generateTransferTransaction()", () => {

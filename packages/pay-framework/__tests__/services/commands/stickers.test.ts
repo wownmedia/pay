@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
 
-import { config } from "../../../src";
+import { config } from "../../../src/core";
 
 const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
@@ -24,7 +24,11 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { ArkWallet, Currency, Reply, Stickers, Storage, User, Username } from "../../../src";
+import { Reply, Username } from "../../../src/interfaces";
+import { ArkWallet, User } from "../../../src/services";
+import { Stickers } from "../../../src/services/commands";
+import { Currency } from "../../../src/services/currency";
+import { Storage } from "../../../src/services/storage";
 
 describe("pay-commands: Stickers()", () => {
     it("send() should be a function", () => {

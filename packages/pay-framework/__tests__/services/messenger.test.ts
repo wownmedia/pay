@@ -43,8 +43,8 @@ configMock.mockImplementation(() => ({
 }));
 
 import BigNumber from "bignumber.js";
-import { Username } from "../../src";
-import { Messenger, Reply } from "../../src";
+import { Reply, Username } from "../../src/interfaces";
+import { Messenger } from "../../src/services/messenger";
 
 describe("pay-messenger: Messenger()", () => {
     describe("helpMessage()", () => {

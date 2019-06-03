@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
+import { ArkEcosystemWallet } from "../../src/interfaces";
 
 // Mock Config
 import { config } from "../../src/core";
@@ -35,7 +36,7 @@ configMock.mockImplementation(() => ({
 }));
 
 // Mock Ark Network
-import { Network } from "../../src";
+import { Network } from "../../src/services";
 const networkMock = jest.spyOn(Network, "broadcastTransactions");
 networkMock.mockImplementation(() =>
     Promise.resolve([
@@ -52,7 +53,7 @@ networkMock.mockImplementation(() =>
     ]),
 );
 
-import { ArkEcosystemWallet, ArkWallet } from "../../src/";
+import { ArkWallet } from "../../src/services";
 
 describe("pay-ark: ArkWallet()", () => {
     describe("generateWallet()", () => {

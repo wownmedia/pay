@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { Command } from "../../src";
+import { Command } from "../../src/interfaces";
 
 // Mock Config
 import { config } from "../../src/core";
@@ -41,8 +41,8 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { Username } from "../../src";
-import { Parser } from "../../src";
+import { Username } from "../../src/interfaces";
+import { Parser } from "../../src/services/parser";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
 const sender: Username = {

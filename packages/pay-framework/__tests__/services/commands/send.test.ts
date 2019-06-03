@@ -64,7 +64,11 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { ArkWallet, Currency, Reply, Send, Storage, Transfer, User, Username } from "../../../src";
+import { Reply, Transfer, Username } from "../../../src/interfaces";
+import { ArkWallet, User } from "../../../src/services";
+import { Send } from "../../../src/services/commands";
+import { Currency } from "../../../src/services/currency";
+import { Storage } from "../../../src/services/storage";
 
 describe("pay-commands: Send()", () => {
     it("transfer() should be a function", () => {

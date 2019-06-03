@@ -22,7 +22,7 @@ configMock.mockImplementation(() => ({
         nodes: [],
     },
 }));
-import { Network } from "../../src";
+import { Network } from "../../src/services";
 
 describe("pay-ark: network()", () => {
     describe("broadcastTransactions", () => {

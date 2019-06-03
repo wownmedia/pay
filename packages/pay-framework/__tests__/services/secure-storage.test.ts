@@ -6,7 +6,7 @@ const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     encryptionKey: "935bff586aeb4244452802e4cf87eaca",
 }));
-import { SecureStorage } from "../../src/services";
+import { SecureStorage } from "../../src/services/storage/secure-storage";
 
 describe("pay-storage: SecureStorage()", () => {
     const encryptedSeed =

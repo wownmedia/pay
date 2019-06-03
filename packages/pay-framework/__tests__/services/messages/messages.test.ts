@@ -1,5 +1,5 @@
 import "jest-extended";
-import { Messages } from "../../../src";
+import { Messages } from "../../../src/services/messenger";
 
 describe("pay-messenger: /messages/Messages()", () => {
     describe("getExplorer()", () => {

@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { AmountCurrency, Command, config, Transfer, Username } from "../../src";
+import { config } from "../../src/core";
+import { AmountCurrency, Command, Transfer, Username } from "../../src/interfaces";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
 const amount = new BigNumber(10);
@@ -35,7 +36,7 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { ParserUtils } from "../../src/services/parserUtils";
+import { ParserUtils } from "../../src/services/parser/utils";
 
 describe("pay-Parser: ParserUtils()", () => {
     describe("parseAmount()", () => {

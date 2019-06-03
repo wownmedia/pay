@@ -23,7 +23,9 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { ArkWallet, Reply, Stickers, User, Username } from "../../../src";
+import { Reply, Username } from "../../../src/interfaces";
+import { ArkWallet, User } from "../../../src/services";
+import { Stickers } from "../../../src/services/commands";
 
 describe("pay-commands: Stickers() - Exceptions, Bad Price", () => {
     describe("send() - Exceptions, Bad Price", () => {

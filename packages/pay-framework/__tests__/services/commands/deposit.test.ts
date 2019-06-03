@@ -1,5 +1,7 @@
 import "jest-extended";
-import { Command, Deposit, User } from "../../../src";
+import { Command } from "../../../src/interfaces";
+import { User } from "../../../src/services";
+import { Deposit } from "../../../src/services/commands";
 
 describe("pay-commands: Deposit()", () => {
     it("getDeposit() should be a function", () => {

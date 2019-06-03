@@ -1,10 +1,10 @@
 import { Command, Reply } from "../interfaces";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
-import { Messenger } from "./messenger/messenger";
+import { Messenger } from "./messenger";
 
 export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
 
-export class Commands {
+export class Commander {
     /**
      * @dev Check if input is a valid command
      * @param command {string}  The input to check whether or not it is a valid command

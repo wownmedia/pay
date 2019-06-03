@@ -1,6 +1,6 @@
 import { logger } from "../../core";
 import { Command, Reply } from "../../interfaces";
-import { Messenger } from "../messenger/messenger";
+import { Messenger } from "../messenger";
 import { User } from "../user";
 
 export class Deposit {

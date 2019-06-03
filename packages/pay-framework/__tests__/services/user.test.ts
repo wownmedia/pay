@@ -30,8 +30,9 @@ configMock.mockImplementation(() => ({
         ],
     },
 }));
-import { Storage } from "../../src";
-import { User, Username } from "../../src";
+import { Username } from "../../src/interfaces";
+import { User } from "../../src/services";
+import { Storage } from "../../src/services/storage";
 
 describe("pay-user", () => {
     describe("getWalletAddress()", () => {

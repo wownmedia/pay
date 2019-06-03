@@ -1,7 +1,7 @@
 import { logger } from "../core";
-import { Username } from "../interfaces";
-import { ArkEcosystemWallet, ArkWallet } from "./";
-import { Storage, Wallet } from "./";
+import { ArkEcosystemWallet, Username, Wallet } from "../interfaces";
+import { ArkWallet } from "./ark-wallet";
+import { Storage } from "./storage";
 
 export class User {
     public static async getWalletAddress(user: Username, token: string): Promise<string> {

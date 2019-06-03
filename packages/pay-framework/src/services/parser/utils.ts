@@ -1,7 +1,10 @@
 import { Address, configManager } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
-import { AmountCurrency, BaseCurrency, Command, Commands, Currency, CurrencySymbol, Transfer, Username } from "../..";
 import { config } from "../../core";
+import { CurrencySymbol } from "../../enums";
+import { AmountCurrency, BaseCurrency, Command, Transfer, Username } from "../../interfaces";
+import { Commander } from "../command";
+import { Currency } from "../currency";
 
 const configuration = config.get("parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";
@@ -146,7 +149,7 @@ export class ParserUtils {
         commandSender: Username,
     ): Promise<Command> {
         command = command.toUpperCase();
-        if (!Commands.isValidCommand(command)) {
+        if (!Commander.isValidCommand(command)) {
             return null;
         }
 
@@ -287,7 +290,7 @@ export class ParserUtils {
      */
     public static isValidUser(user: Username): boolean {
         // A user can never be a command
-        if (Commands.isValidCommand(user.username)) {
+        if (Commander.isValidCommand(user.username)) {
             return false;
         }
 
@@ -380,11 +383,11 @@ export class ParserUtils {
         commandSender: Username,
     ): Promise<Command> {
         command = command.toUpperCase();
-        if (!Commands.isValidCommand(command)) {
+        if (!Commander.isValidCommand(command)) {
             return null;
         }
 
-        if (Commands.hasArguments(command)) {
+        if (Commander.hasArguments(command)) {
             return await ParserUtils.parseCommand(command, commandArguments, platform, commandSender);
         }
         return { command, commandSender };

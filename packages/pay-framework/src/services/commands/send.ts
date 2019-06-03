@@ -13,7 +13,7 @@ import {
 } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
 import { Currency } from "../currency";
-import { Messenger } from "../messenger/messenger";
+import { Messenger } from "../messenger";
 import { Storage } from "../storage";
 import { User } from "../user";
 

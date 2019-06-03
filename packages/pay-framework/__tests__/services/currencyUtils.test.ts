@@ -32,9 +32,9 @@ configMock.mockImplementation(() => ({
     },
 }));
 
-import { AmountCurrency, Currency } from "../../src";
-import { CoinGeckoAPI } from "../../src/services/coinGecko";
-import { CurrencyUtils } from "../../src/services/currencyUtils";
+import { AmountCurrency } from "../../src/interfaces";
+import { CoinGeckoAPI } from "../../src/services/currency/coinGecko";
+import { CurrencyUtils } from "../../src/services/currency/utils";
 
 describe("pay-currency: CurrencyUtils()", () => {
     describe("getCurrencyTicker()", () => {
