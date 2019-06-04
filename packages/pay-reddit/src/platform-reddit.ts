@@ -1,33 +1,25 @@
-import { Command, Commands } from "@cryptology.hk/pay-commands";
-import { config } from "@cryptology.hk/pay-config";
-import { Currency } from "@cryptology.hk/pay-currency";
-import { logger } from "@cryptology.hk/pay-logger";
-import { Messenger, Reply } from "@cryptology.hk/pay-messenger";
-import { Parser } from "@cryptology.hk/pay-parser";
-import { Storage } from "@cryptology.hk/pay-storage";
-import { Username } from "@cryptology.hk/pay-user";
-import os from "os";
+import { Core, Interfaces, Services } from "@cryptology.hk/pay-framework";
 import Snoowrap from "snoowrap";
 import { Author, RedditConfig, RedditMessage } from "./interfaces";
 
-const merchantsConfig = config.get("merchants");
+const merchantsConfig = Core.config.get("merchants");
 
 export class PlatformReddit {
     /**
      * @dev Prepare a Direct Message or Mention (parse it for commands)
-     * @param item {RedditMessage}  An unread message/mention received from Reddit
-     * @param sender {Username}     The sender of the message/poster of the comment with the mention
-     * @param receiver {Username}   The receiver
-     * @param arkPayUser {string}   The Reddit account that runs the bot.
-     * @returns {Command[]}         An array with all parsed commands
+     * @param item {RedditMessage}              An unread message/mention received from Reddit
+     * @param sender {Interfaces.Username}      The sender of the message/poster of the comment with the mention
+     * @param receiver {Interfaces.Username}    The receiver
+     * @param arkPayUser {string}               The Reddit account that runs the bot.
+     * @returns {Interfaces.Command[]}          An array with all parsed commands
      * @private
      */
     private static async prepareCommand(
         item: RedditMessage,
-        sender: Username,
-        receiver: Username,
+        sender: Interfaces.Username,
+        receiver: Interfaces.Username,
         arkPayUser: string,
-    ): Promise<Command[]> {
+    ): Promise<Interfaces.Command[]> {
         try {
             // Do we have a mention or a direct message
             const platform: string = "reddit";
@@ -36,8 +28,8 @@ export class PlatformReddit {
                 const parentId: string = item.parent_id;
                 const platform: string = "reddit";
                 // Mention
-                logger.info(`Reddit Mention received: ${id} replying to ${parentId}`);
-                const commands: Command[] = await Parser.parseMention(
+                Core.logger.info(`Reddit Mention received: ${id} replying to ${parentId}`);
+                const commands: Interfaces.Command[] = await Services.Parser.Parser.parseMention(
                     item.body,
                     arkPayUser,
                     platform,
@@ -51,11 +43,11 @@ export class PlatformReddit {
                 return commands;
             } else {
                 // Direct Messenger
-                logger.info(`Reddit Direct Message received: ${item.id}`);
-                return await Parser.parseDirectMessage(item.body, platform, sender);
+                Core.logger.info(`Reddit Direct Message received: ${item.id}`);
+                return await Services.Parser.Parser.parseDirectMessage(item.body, platform, sender);
             }
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
         }
         return [];
     }
@@ -66,7 +58,7 @@ export class PlatformReddit {
      * @private
      */
     private static loadConfig(): RedditConfig {
-        const platforms: any = config.get("platforms");
+        const platforms: any = Core.config.get("platforms");
         if (!platforms || !platforms.hasOwnProperty("reddit")) {
             throw new Error("Did not find the configuration for Reddit.");
         }
@@ -92,7 +84,6 @@ export class PlatformReddit {
         ) {
             throw new Error("Bad Reddit configuration.");
         }
-
         return parsedConfig;
     }
 
@@ -131,13 +122,13 @@ export class PlatformReddit {
      */
     private static async isNewSubmission(submissionId: string): Promise<boolean> {
         try {
-            if (await Storage.checkSubmission(submissionId)) {
+            if (await Services.Storage.Storage.checkSubmission(submissionId)) {
                 return false;
             }
-            return await Storage.addSubmission(submissionId);
+            return await Services.Storage.Storage.addSubmission(submissionId);
         } catch (e) {
             // Most likely a DB connection error
-            logger.error(e.message);
+            Core.logger.error(e.message);
         }
         return false;
     }
@@ -145,10 +136,10 @@ export class PlatformReddit {
     /**
      * @dev Retrieve the username to be notified when a merchant transaction is processed
      * @param command
-     * @returns {Username}  The username of the merchant that needs to be notified
+     * @returns {Interfaces.Username}  The username of the merchant that needs to be notified
      * @private
      */
-    private static getMerchantUsername(command: string): Username {
+    private static getMerchantUsername(command: string): Interfaces.Username {
         command = command.toLowerCase();
 
         if (!merchantsConfig.hasOwnProperty(command)) {
@@ -192,7 +183,7 @@ export class PlatformReddit {
             };
             this.platformConfig.config(parameters);
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
         }
     }
 
@@ -214,7 +205,7 @@ export class PlatformReddit {
                     }
 
                     // Check what we have
-                    const commands: Command[] = await this.processInboxItem(inbox[inboxIndex]);
+                    const commands: Interfaces.Command[] = await this.processInboxItem(inbox[inboxIndex]);
 
                     if (commands === null) {
                         // Nothing to do here, bad command, no connection to DB or it was processed already by an other server
@@ -224,8 +215,8 @@ export class PlatformReddit {
                     if (commands.length === 0 && inbox[inboxIndex].was_comment) {
                         // We received a mention without a command
                         // Reply to the comment with a "I was summoned but have no clue what you want from me" message
-                        const reply: Reply = Messenger.summonedMessage();
-                        logger.info(`Sending Summoned Reply to comment: ${inbox[inboxIndex].id}`);
+                        const reply: Interfaces.Reply = Services.Messenger.Messenger.summonedMessage();
+                        Core.logger.info(`Sending Summoned Reply to comment: ${inbox[inboxIndex].id}`);
                         await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
                     }
 
@@ -233,7 +224,7 @@ export class PlatformReddit {
                     for (const commandIndex in commands) {
                         if (commands[commandIndex]) {
                             try {
-                                const command: Command = commands[commandIndex];
+                                const command: Interfaces.Command = commands[commandIndex];
 
                                 // check receiver
                                 if (!(await this.checkReceiver(command))) {
@@ -241,12 +232,12 @@ export class PlatformReddit {
                                 }
 
                                 // Execute the command
-                                const reply: Reply = await Commands.executeCommand(command);
+                                const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
                                 const subject: string = `ArkPay: ${command.command}`;
 
                                 // Reply to the Sender of the command
                                 if (reply.hasOwnProperty("directMessageSender")) {
-                                    logger.info(
+                                    Core.logger.info(
                                         `Sending Direct Message to sender: ${command.commandSender.username} on reddit`,
                                     );
                                     await this.sendDirectMessage(
@@ -267,14 +258,14 @@ export class PlatformReddit {
                                         youGot = command.transfer.token;
                                     }
                                     const subject = `You've got ${youGot}!`;
-                                    let receiver: Username = command.commandReplyTo;
+                                    let receiver: Interfaces.Username = command.commandReplyTo;
                                     if (
                                         command.hasOwnProperty("transfer") &&
                                         command.transfer.hasOwnProperty("receiver")
                                     ) {
                                         receiver = command.transfer.receiver;
                                     }
-                                    logger.info(
+                                    Core.logger.info(
                                         `Sending Direct Message to receiver: ${receiver.username} on ${
                                             receiver.platform
                                         }`,
@@ -288,9 +279,11 @@ export class PlatformReddit {
 
                                 // Reply to a Merchant (that's you Justin)
                                 if (reply.hasOwnProperty("directMessageMerchant")) {
-                                    const merchant: Username = PlatformReddit.getMerchantUsername(command.command);
+                                    const merchant: Interfaces.Username = PlatformReddit.getMerchantUsername(
+                                        command.command,
+                                    );
                                     // todo check platform
-                                    logger.info(
+                                    Core.logger.info(
                                         `Sending Direct Message to merchant: ${merchant.username} on ${
                                             merchant.platform
                                         }`,
@@ -304,18 +297,18 @@ export class PlatformReddit {
 
                                 // Reply to a Post or Comment
                                 if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
-                                    logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
+                                    Core.logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
                                     await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
                                 }
                             } catch (e) {
-                                logger.error(e.message);
+                                Core.logger.error(e.message);
                             }
                         }
                     }
                 }
             }
         } catch (e) {
-            logger.warn(e.message);
+            Core.logger.warn(e.message);
         }
     }
 
@@ -327,19 +320,19 @@ export class PlatformReddit {
     public async isValidUser(username: string): Promise<boolean> {
         try {
             // A username can't be a command
-            if (Commands.isValidCommand(username.toUpperCase())) {
+            if (Services.Commander.isValidCommand(username.toUpperCase())) {
                 return false;
             }
 
             // A username can't be a currency
-            if (Currency.isValidCurrency(username.toUpperCase())) {
+            if (Services.Currency.Currency.isValidCurrency(username.toUpperCase())) {
                 return false;
             }
 
             const redditUser: any = await this.platformConfig.getUser(username).getTrophies();
             return redditUser && redditUser.hasOwnProperty("trophies");
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
             return false;
         }
     }
@@ -362,7 +355,7 @@ export class PlatformReddit {
                 return true;
             })
             .catch(e => {
-                logger.error(e.message);
+                Core.logger.error(e.message);
                 return false;
             });
     }
@@ -379,7 +372,7 @@ export class PlatformReddit {
             await submission.reply(reply);
             return true;
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
             return false;
         }
     }
@@ -393,14 +386,14 @@ export class PlatformReddit {
             .composeMessage({
                 to: this.redditConfig.admin,
                 subject: "ARK Pay",
-                text: `ARK Pay Reddit Listener started for ${this.redditConfig.username} on ${os.hostname()}`,
+                text: `ARK Pay Reddit Listener started for ${this.redditConfig.username}`,
             })
             .then(() => {
-                logger.info(`ARK Pay Reddit listener START-notification sent to ${this.redditConfig.admin}`);
+                Core.logger.info(`ARK Pay Reddit listener START-notification sent to ${this.redditConfig.admin}`);
                 return true;
             })
             .catch(e => {
-                logger.warn(e.message);
+                Core.logger.warn(e.message);
                 return false;
             });
     }
@@ -411,8 +404,8 @@ export class PlatformReddit {
      * @returns {Promise<boolean>}  True if receiver is valid on the platform
      * @private
      */
-    private async checkReceiver(command: Command): Promise<boolean> {
-        const checkReceiver: Username =
+    private async checkReceiver(command: Interfaces.Command): Promise<boolean> {
+        const checkReceiver: Interfaces.Username =
             command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")
                 ? command.transfer.receiver
                 : command.hasOwnProperty("commandReplyTo")
@@ -427,7 +420,7 @@ export class PlatformReddit {
         // todo platform independent: pay-platforms isValidUser(username, platform)
         const receiverOk: boolean = await this.isValidUser(checkReceiver.username);
         if (!receiverOk) {
-            logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
+            Core.logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
         }
         return receiverOk;
     }
@@ -435,17 +428,17 @@ export class PlatformReddit {
     /**
      * @dev  Process an item (message, mention) from the Bot's Inbox
      * @param {object} item The message or mention to process
-     * @returns {Promise<Command[]>}    An array with Commands
+     * @returns {Promise<Interfaces.Command[]>}    An array with Commands
      * @private
      */
-    private async processInboxItem(item: RedditMessage): Promise<Command[]> {
+    private async processInboxItem(item: RedditMessage): Promise<Interfaces.Command[]> {
         try {
             const needToProcessSubmission: boolean = await PlatformReddit.isNewSubmission(item.id);
             if (!needToProcessSubmission) {
                 return null;
             }
 
-            let receiver: Username = null;
+            let receiver: Interfaces.Username = null;
             if (item.was_comment && item.parent_id) {
                 // This is a Mention
                 await this.markCommentRead(item.id);
@@ -461,14 +454,14 @@ export class PlatformReddit {
                 await this.markMessageRead(item.id);
             }
 
-            const sender: Username = {
+            const sender: Interfaces.Username = {
                 username: item.author.name,
                 platform: "reddit",
             };
 
             return await PlatformReddit.prepareCommand(item, sender, receiver, this.redditConfig.username);
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
             return null;
         }
     }
@@ -516,7 +509,7 @@ export class PlatformReddit {
             const comment: any = await this.platformConfig.getComment(id);
             await this.platformConfig.markMessagesAsRead([comment]);
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
         }
     }
 
@@ -530,7 +523,7 @@ export class PlatformReddit {
             const privateMessage: any = await this.platformConfig.getMessage(id);
             await privateMessage.markAsRead();
         } catch (e) {
-            logger.error(e.message);
+            Core.logger.error(e.message);
         }
     }
 }
