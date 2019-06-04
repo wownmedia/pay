@@ -4,7 +4,7 @@ import { config } from "../../core";
 import { CurrencySymbol } from "../../enums";
 import { AmountCurrency, BaseCurrency, Command, Transfer, Username } from "../../interfaces";
 import { Commander } from "../command";
-import { Currency } from "../currency";
+import { Currency } from "../currency/";
 
 const configuration = config.get("parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";

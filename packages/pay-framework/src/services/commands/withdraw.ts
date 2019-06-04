@@ -2,9 +2,9 @@ import BigNumber from "bignumber.js";
 import { config, logger } from "../../core";
 import { ArkEcosystemWallet, Reply, TransactionResponse, Transfer, Wallet, WalletBalance } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
-import { Currency } from "../currency";
+import { Currency } from "../currency/";
 import { Messenger } from "../messenger";
-import { Storage } from "../storage";
+import { Storage } from "../storage/";
 import { Send } from "./send";
 
 const arkEcosystemConfig = config.get("arkEcosystem");

@@ -12,9 +12,9 @@ import {
     WalletBalance,
 } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
-import { Currency } from "../currency";
+import { Currency } from "../currency/";
 import { Messenger } from "../messenger";
-import { Storage } from "../storage";
+import { Storage } from "../storage/";
 import { User } from "../user";
 
 const arkEcosystemConfig = config.get("arkEcosystem");

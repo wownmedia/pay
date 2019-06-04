@@ -1,4 +1,4 @@
-import { logger, Poller } from "@cryptology.hk/pay-framework";
+import { Core, Services } from "@cryptology.hk/pay-framework";
 import { PlatformReddit } from "./platform-reddit";
 
 /**
@@ -7,10 +7,10 @@ import { PlatformReddit } from "./platform-reddit";
 const waitTime: number = 5000; // Poll Reddit every 5 seconds
 
 export class RedditListener {
-    private readonly poller: Poller;
+    private readonly poller: Services.Poller;
 
     constructor() {
-        this.poller = new Poller(waitTime);
+        this.poller = new Services.Poller(waitTime);
     }
 
     /**
@@ -20,7 +20,7 @@ export class RedditListener {
         try {
             const platformReddit: PlatformReddit = new PlatformReddit();
             const isoNow: string = new Date().toISOString();
-            logger.info(`Reddit Listener started - ${isoNow}`);
+            Core.logger.info(`Reddit Listener started - ${isoNow}`);
             await platformReddit.notifyAdmin();
 
             this.poller.onPoll(async () => {
@@ -31,7 +31,7 @@ export class RedditListener {
             // Initial start
             this.poller.poll();
         } catch (e) {
-            logger.error(e.messenger);
+            Core.logger.error(e.messenger);
         }
     }
 }
