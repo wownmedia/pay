@@ -34,6 +34,17 @@ configMock.mockImplementation(() => ({
             },
         ],
     },
+    pay: {
+        networkVersion: 30,
+        minValue: 2000000,
+        transactionFee: 300,
+        nodes: [
+            {
+                host: "localhost",
+                port: 4003,
+            },
+        ],
+    },
 }));
 
 import { ParserUtils } from "../../src/services/parser/utils";
@@ -1214,30 +1225,40 @@ describe("pay-Parser: ParserUtils()", () => {
     });
 
     describe("isValidAddress()", () => {
-        it("should correctly validate an ARK address", () => {
+        it("should correctly validate an ARK address", async () => {
             let address: string = "AGeYmgbg2LgGxRW2vNNJvQ88PknEJsYizC";
             const token: string = "ARK";
-            let result: boolean = ParserUtils.isValidAddress(address, token);
+            let result: boolean = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeTrue();
             address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            result = ParserUtils.isValidAddress(address, token);
+            result = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
 
-        it("should correctly validate a DARK address", () => {
+        it("should correctly validate a DARK address", async () => {
             let address: string = "D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib";
             const token: string = "DARK";
-            let result: boolean = ParserUtils.isValidAddress(address, token);
+            let result: boolean = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeTrue();
             address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            result = ParserUtils.isValidAddress(address, token);
+            result = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
 
-        it("should return false on other addresses", () => {
+        it("should correctly validate a PAY address", async () => {
+            let address: string = "D73ocXmtwgEWfUcibeTTvJiCaFMNyoWmhC";
+            const token: string = "PAY";
+            let result: boolean = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeTrue();
+            address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            result = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeFalse();
+        });
+
+        it("should return false on other addresses", async () => {
             const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
             const token: string = "NOTSUPPORTED";
-            const result = ParserUtils.isValidAddress(address, token);
+            const result = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
         });
     });

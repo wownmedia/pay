@@ -3,8 +3,10 @@ import BigNumber from "bignumber.js";
 import { config } from "../../core";
 import { CurrencySymbol } from "../../enums";
 import { AmountCurrency, BaseCurrency, Command, Transfer, Username } from "../../interfaces";
+import { ArkWallet } from "../ark-wallet";
 import { Commander } from "../command";
 import { Currency } from "../currency/";
+import { ArkTransaction } from "../transaction";
 
 const configuration = config.get("parser");
 const USERNAME_PLATFORM_SEPERATOR = configuration.seperator ? configuration.seperator : "@";
@@ -398,11 +400,23 @@ export class ParserUtils {
      * @param address
      * @param token
      */
-    public static isValidAddress(address: string, token: string): boolean {
+    public static async isValidAddress(address: string, token: string): Promise<boolean> {
         if (token === "ARK") {
             configManager.setFromPreset("mainnet");
         } else if (token === "DARK") {
             configManager.setFromPreset("devnet");
+        } else {
+            try {
+                const networkConfig = await ArkTransaction.getNetworkConfig(token);
+                if (networkConfig === null) {
+                    // Not a V2.4 network or newer
+                    const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
+                    return Address.validate(address, networkVersion);
+                }
+                configManager.setConfig(config);
+            } catch (e) {
+                return false;
+            }
         }
 
         return Address.validate(address);
@@ -504,7 +518,7 @@ export class ParserUtils {
             amount = arg4;
         }
 
-        if (ParserUtils.isValidAddress(address, token)) {
+        if (await ParserUtils.isValidAddress(address, token)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(currency, amount);
             const arkToshiValue =
                 amountCurrency !== null && amountCurrency.arkToshiValue.gt(0) ? amountCurrency.arkToshiValue : null;
