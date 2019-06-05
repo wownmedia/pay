@@ -72,7 +72,7 @@ export class PlatformReddit {
             password: redditConfiguration.hasOwnProperty("password") ? redditConfiguration.password : null,
             requestDelay: 3000,
             continueAfterRatelimitError: true,
-            networks: redditConfiguration.hasOwnProperty("networks") ? redditConfiguration.admin : ["ARK"],
+            networks: redditConfiguration.hasOwnProperty("networks") ? redditConfiguration.networks : ["ARK"],
         };
 
         if (

@@ -31,7 +31,7 @@ export class RedditListener {
             // Initial start
             this.poller.poll();
         } catch (e) {
-            Core.logger.error(e.messenger);
+            Core.logger.error(e.message);
         }
     }
 }
