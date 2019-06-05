@@ -406,13 +406,17 @@ export class ParserUtils {
         } else if (token === "DARK") {
             configManager.setFromPreset("devnet");
         } else {
-            const networkConfig = await ArkTransaction.getNetworkConfig(token);
-            if (networkConfig === null) {
-                // Not a V2.4 network or newer
-                const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
-                return Address.validate(address, networkVersion);
+            try {
+                const networkConfig = await ArkTransaction.getNetworkConfig(token);
+                if (networkConfig === null) {
+                    // Not a V2.4 network or newer
+                    const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
+                    return Address.validate(address, networkVersion);
+                }
+                configManager.setConfig(config);
+            } catch (e) {
+                return false;
             }
-            configManager.setConfig(config);
         }
 
         return Address.validate(address);
@@ -514,7 +518,7 @@ export class ParserUtils {
             amount = arg4;
         }
 
-        if (ParserUtils.isValidAddress(address, token)) {
+        if (await ParserUtils.isValidAddress(address, token)) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(currency, amount);
             const arkToshiValue =
                 amountCurrency !== null && amountCurrency.arkToshiValue.gt(0) ? amountCurrency.arkToshiValue : null;
