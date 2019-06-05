@@ -4,22 +4,17 @@ import { Wallet } from "../../interfaces";
 
 export class Storage {
     public static async getWallet(username: string, platform: string, token: string): Promise<Wallet> {
-        token = token.toLowerCase();
+        token = token.toUpperCase();
         platform = platform.toLowerCase();
 
-        // todo rename users table to ark
-        if (token === "ark") {
-            token = "users";
-        }
-
-        const query = `SELECT * FROM ${token} WHERE username = $1 AND platform = $2 LIMIT 1`;
-        const result = await payDatabase.query(query, [username, platform]);
+        const query = `SELECT * FROM users WHERE username = $1 AND platform = $2 AND token = $3 LIMIT 1`;
+        const result = await payDatabase.query(query, [username, platform, token]);
         let user = result.rows[0];
 
         // User does not exist, try lowercase version of the username (previously users were not stored in Lowercase)
         if (typeof user === "undefined") {
             username = username.toLowerCase();
-            const result = await payDatabase.query(query, [username, platform]);
+            const result = await payDatabase.query(query, [username, platform, token]);
             user = result.rows[0];
         }
 
@@ -34,17 +29,12 @@ export class Storage {
     }
 
     public static async setWallet(username: string, platform: string, token: string, wallet: Wallet): Promise<boolean> {
-        token = token.toLowerCase();
+        token = token.toUpperCase();
         platform = platform.toLowerCase();
         username = username.toLowerCase();
 
-        // todo rename users table to ark
-        if (token === "ark") {
-            token = "users";
-        }
-
-        const sql: string = `INSERT INTO ${token}(username, address, seed, platform) VALUES($1, $2, $3, $4) RETURNING *`;
-        const values = [username, wallet.address, wallet.encryptedSeed, platform];
+        const sql: string = `INSERT INTO users (username, address, seed, platform, token) VALUES($1, $2, $3, $4, $5) RETURNING *`;
+        const values = [username, wallet.address, wallet.encryptedSeed, platform, token];
 
         const res = await payDatabase.query(sql, values);
         if (typeof res.rows[0] === "undefined") {
