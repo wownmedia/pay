@@ -9,4 +9,5 @@ export interface TwitterConfig {
     accessToken: string;
     accessTokenSecret: string;
     networks: string[];
+    accountApiPort: number;
 }
