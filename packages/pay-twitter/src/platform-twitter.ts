@@ -60,6 +60,8 @@ export class PlatformTwitter {
     private static filterEvent(eventData, userId) {
         if (eventData.hasOwnProperty("type")) {
             Core.logger.info(`Event Received from ${userId}: ${eventData.type} : ${JSON.stringify(eventData)}`);
+        } else {
+            Core.logger.warn(JSON.stringify(eventData));
         }
     }
 
