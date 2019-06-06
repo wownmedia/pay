@@ -57,6 +57,12 @@ export class PlatformTwitter {
         return parsedConfig;
     }
 
+    private static filterEvent(eventData, userId) {
+        if (eventData.hasOwnProperty("type")) {
+            Core.logger.info(`Event Received from ${userId}: ${eventData.type} : ${JSON.stringify(eventData)}`);
+        }
+    }
+
     /**
      * @dev The configuration for the Twitter Account API
      */
@@ -121,9 +127,10 @@ export class PlatformTwitter {
             );
 
         // listen to any user activity
-        this.userActivityWebhook.on("event", (event, userId, data) =>
-            console.log(`Event: ${userId} => ${JSON.stringify(data)}`),
-        );
+        this.userActivityWebhook.on("event", (event, userId, data) => {
+            PlatformTwitter.filterEvent(data, userId);
+            // console.log(`Event: ${userId} => ${JSON.stringify(data)}`)
+        });
 
         // listen to unknown payload (in case of api new features)
         this.userActivityWebhook.on("unknown-event", rawData => console.log(`RawDATA: ${rawData}`));
