@@ -80,17 +80,28 @@ export class PlatformTwitter {
         } catch (e) {
             Core.logger.error(e.message);
         }
-    }
 
-    public startWebhookListener() {
+        // Register the actual webhook, this needs to be done only 1x per URL
         this.userActivityWebhook.register().then(
             results => {
                 Core.logger.info(`Webhook registered: ${results}`);
             },
             error => {
-                Core.logger.error(`Webhook registration error: ${error.message}`);
+                Core.logger.warn(`Webhook registration: ${error.message}`);
             },
         );
+    }
+
+    public startWebhookListener() {
+        this.userActivityWebhook
+            .unsubscribe({
+                userId: this.twitterConfig.userId,
+                accessToken: this.twitterConfig.accessToken,
+                accessTokenSecret: this.twitterConfig.accessTokenSecret,
+            })
+            .then(result => {
+                Core.logger.info("Unsubscribed from Webhook");
+            });
 
         this.userActivityWebhook
             .subscribe({
@@ -117,15 +128,17 @@ export class PlatformTwitter {
                     Core.logger.info(`Listening to events on Twitter Account API Webhook`);
                 },
                 error => {
-                    Core.logger.error(`Subscribing to webhook error: ${error.message}`);
+                    Core.logger.warn(`Subscribing to webhook: ${error.message}`);
                 },
             );
 
         // listen to any user activity
-        this.userActivityWebhook.on("event", (event, userId, data) => console.log(userId + JSON.stringify(data)));
+        this.userActivityWebhook.on("event", (event, userId, data) =>
+            console.log(`Event: ${userId} => ${JSON.stringify(data)}`),
+        );
 
         // listen to unknown payload (in case of api new features)
-        this.userActivityWebhook.on("unknown-event", rawData => console.log(rawData));
+        this.userActivityWebhook.on("unknown-event", rawData => console.log(`RawDATA: ${rawData}`));
         const server = http.createServer({}, app);
         server.listen(this.twitterConfig.accountApiPort);
     }
