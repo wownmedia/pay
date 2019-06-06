@@ -92,8 +92,8 @@ export class PlatformTwitter {
         );
     }
 
-    public startWebhookListener() {
-        this.userActivityWebhook
+    public async startWebhookListener() {
+        await this.userActivityWebhook
             .unsubscribe({
                 userId: this.twitterConfig.userId,
                 accessToken: this.twitterConfig.accessToken,
@@ -103,7 +103,7 @@ export class PlatformTwitter {
                 Core.logger.info("Unsubscribed from Webhook");
             });
 
-        this.userActivityWebhook
+        await this.userActivityWebhook
             .subscribe({
                 userId: this.twitterConfig.userId,
                 accessToken: this.twitterConfig.accessToken,
@@ -133,6 +133,10 @@ export class PlatformTwitter {
             );
 
         // listen to any user activity
+        this.userActivityWebhook.on("direct_message", (event, userId, data) =>
+            console.log(`DM: ${userId} => ${JSON.stringify(data)}`),
+        );
+
         this.userActivityWebhook.on("event", (event, userId, data) =>
             console.log(`Event: ${userId} => ${JSON.stringify(data)}`),
         );
