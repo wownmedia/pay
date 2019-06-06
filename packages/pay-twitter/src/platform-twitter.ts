@@ -111,21 +111,9 @@ export class PlatformTwitter {
             })
             .then(
                 userActivity => {
-                    userActivity
-                        .on("favorite", data => console.log(userActivity.id + " - favorite"))
-                        .on("tweet_create", data => console.log(userActivity.id + " - tweet_create"))
-                        .on("follow", data => console.log(userActivity.id + " - follow"))
-                        .on("mute", data => console.log(userActivity.id + " - mute"))
-                        .on("revoke", data => console.log(userActivity.id + " - revoke"))
-                        .on("direct_message", data => console.log(userActivity.id + " - direct_message"))
-                        .on("direct_message_indicate_typing", data =>
-                            console.log(userActivity.id + " - direct_message_indicate_typing"),
-                        )
-                        .on("direct_message_mark_read", data =>
-                            console.log(userActivity.id + " - direct_message_mark_read"),
-                        )
-                        .on("tweet_delete", data => console.log(userActivity.id + " - tweet_delete"));
-                    Core.logger.info(`Listening to events on Twitter Account API Webhook`);
+                    Core.logger.info(
+                        `Listening to events on Twitter Account API Webhook ${JSON.stringify(userActivity)}`,
+                    );
                 },
                 error => {
                     Core.logger.warn(`Subscribing to webhook: ${error.message}`);
@@ -133,10 +121,6 @@ export class PlatformTwitter {
             );
 
         // listen to any user activity
-        this.userActivityWebhook.on("direct_message", (event, userId, data) =>
-            console.log(`DM: ${userId} => ${JSON.stringify(data)}`),
-        );
-
         this.userActivityWebhook.on("event", (event, userId, data) =>
             console.log(`Event: ${userId} => ${JSON.stringify(data)}`),
         );
