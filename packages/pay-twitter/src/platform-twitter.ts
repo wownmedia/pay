@@ -2,8 +2,8 @@ import { Core, Interfaces, Services } from "@cryptology.hk/pay-framework";
 import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
-import twitterWebhooks from "twitter-webhooks";
-import { TwitterConfig } from "./interfaces";
+import twitterWebhooks, { UserActivity } from "twitter-webhooks";
+import { TwitterConfig, TwitterKnownWebhooks } from "./interfaces";
 
 const app = express();
 app.use(bodyParser.json());
@@ -62,7 +62,7 @@ export class PlatformTwitter {
      */
     private readonly twitterConfig: TwitterConfig;
 
-    private readonly userActivityWebhook;
+    private readonly userActivityWebhook: UserActivity;
 
     constructor() {
         try {
@@ -82,55 +82,83 @@ export class PlatformTwitter {
         }
     }
 
-    public async startWebhookListener() {
-        // Register the webhook url - just needed once per URL
-        try {
-            await this.userActivityWebhook.register();
-        } catch (e) {
-            Core.logger.warn(e.message);
-        }
+    public startWebhookListener() {
+        this.userActivityWebhook.register().then(
+            results => {
+                Core.logger.info(`Webhook registered: ${results}`);
+            },
+            error => {
+                Core.logger.error(`Webhook registration error: ${error.message}`);
+            },
+        );
 
-        // Subscribe for a particular user activity
-        try {
-            await this.userActivityWebhook.unsubscribe({
+        this.userActivityWebhook
+            .subscribe({
                 userId: this.twitterConfig.userId,
                 accessToken: this.twitterConfig.accessToken,
                 accessTokenSecret: this.twitterConfig.accessTokenSecret,
-            });
+            })
+            .then(
+                userActivity => {
+                    userActivity
+                        .on("favorite", data => console.log(userActivity.id + " - favorite"))
+                        .on("tweet_create", data => console.log(userActivity.id + " - tweet_create"))
+                        .on("follow", data => console.log(userActivity.id + " - follow"))
+                        .on("mute", data => console.log(userActivity.id + " - mute"))
+                        .on("revoke", data => console.log(userActivity.id + " - revoke"))
+                        .on("direct_message", data => console.log(userActivity.id + " - direct_message"))
+                        .on("direct_message_indicate_typing", data =>
+                            console.log(userActivity.id + " - direct_message_indicate_typing"),
+                        )
+                        .on("direct_message_mark_read", data =>
+                            console.log(userActivity.id + " - direct_message_mark_read"),
+                        )
+                        .on("tweet_delete", data => console.log(userActivity.id + " - tweet_delete"));
+                    Core.logger.info(`Listening to events on Twitter Account API Webhook`);
+                },
+                error => {
+                    Core.logger.error(`Subscribing to webhook error: ${error.message}`);
+                },
+            );
 
-            const userActivity = await this.userActivityWebhook.subscribe({
-                userId: this.twitterConfig.userId,
-                accessToken: this.twitterConfig.accessToken,
-                accessTokenSecret: this.twitterConfig.accessTokenSecret,
-            });
+        // listen to any user activity
+        this.userActivityWebhook.on("event", (event, userId, data) => console.log(userId + JSON.stringify(data)));
 
-            userActivity
-                .on("favorite", data => console.log(userActivity.id + " - favorite"))
-                .on("tweet_create", data => console.log(userActivity.id + " - tweet_create"))
-                .on("follow", data => console.log(userActivity.id + " - follow"))
-                .on("mute", data => console.log(userActivity.id + " - mute"))
-                .on("revoke", data => console.log(userActivity.id + " - revoke"))
-                .on("direct_message", data => console.log(userActivity.id + " - direct_message"))
-                .on("direct_message_indicate_typing", data =>
-                    console.log(userActivity.id + " - direct_message_indicate_typing"),
-                )
-                .on("direct_message_mark_read", data => console.log(userActivity.id + " - direct_message_mark_read"))
-                .on("tweet_delete", data => console.log(userActivity.id + " - tweet_delete"));
-
-            // listen to any user activity
-            this.userActivityWebhook.on("event", (event, userId, data) => console.log(userId + JSON.stringify(data)));
-
-            // listen to unknown payload (in case of api new features)
-            this.userActivityWebhook.on("unknown-event", rawData => console.log(rawData));
-
-            const server = http.createServer({}, app);
-            server.listen(this.twitterConfig.accountApiPort);
-        } catch (e) {
-            Core.logger.error(e.message);
-        }
+        // listen to unknown payload (in case of api new features)
+        this.userActivityWebhook.on("unknown-event", rawData => console.log(rawData));
+        const server = http.createServer({}, app);
+        server.listen(this.twitterConfig.accountApiPort);
     }
 
     public async notifyAdmin(): Promise<boolean> {
         return true;
+    }
+
+    private async checkActiveWebhooks() {
+        const activeWebhooks: TwitterKnownWebhooks = await this.userActivityWebhook.getWebhooks();
+        if (activeWebhooks.hasOwnProperty("environments") && activeWebhooks.environments.length > 0) {
+            // we have registered active webhooks, unregister the ones for our URL
+            for (const item in activeWebhooks.environments) {
+                if (
+                    activeWebhooks.environments[item] &&
+                    activeWebhooks.environments[item].environment_name === this.twitterConfig.environment
+                ) {
+                    const url: string = `${this.twitterConfig.serverUrl}${this.twitterConfig.route}`;
+                    for (const webhookItem in activeWebhooks.environments[item].webhooks) {
+                        if (
+                            activeWebhooks.environments[item].webhooks[webhookItem] &&
+                            activeWebhooks.environments[item].webhooks[webhookItem].url === url
+                        ) {
+                            // We have an active webhook registered for the one we try to register
+                            const webhookId: string = activeWebhooks.environments[item].webhooks[webhookItem].id;
+                            const unregistered = await this.userActivityWebhook.unregister({ webhookId });
+                            Core.logger.warn(
+                                `Webhook was already registered as ${webhookId}. Unregistered: ${unregistered}`,
+                            );
+                        }
+                    }
+                }
+            }
+        }
     }
 }

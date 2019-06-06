@@ -11,3 +11,19 @@ export interface TwitterConfig {
     networks: string[];
     accountApiPort: number;
 }
+
+export interface TwitterKnownWebhooks {
+    environments: TwitterEnvironments[];
+}
+
+export interface TwitterEnvironments {
+    environment_name: string;
+    webhooks: TwitterWebhooks[];
+}
+
+export interface TwitterWebhooks {
+    id: string;
+    url: string;
+    valid: boolean;
+    created_timestamp: string;
+}
