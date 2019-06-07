@@ -1,4 +1,4 @@
-import { Core, Services } from "@cryptology.hk/pay-framework";
+import { Core } from "@cryptology.hk/pay-framework";
 import { PlatformTwitter } from "./platform-twitter";
 
 export class TwitterListener {

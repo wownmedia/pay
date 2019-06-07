@@ -27,3 +27,32 @@ export interface TwitterWebhooks {
     valid: boolean;
     created_timestamp: string;
 }
+
+export interface TwitterAPIRequestOptions extends TwitterOauthJSON {
+    url?: string;
+    uri?: string;
+    method: string;
+    auth?: {
+        user: string;
+        pass: string;
+    };
+    headers?: any;
+    form?: any;
+}
+
+export interface TwitterAPIUserContext {
+    userId: string;
+    accessToken: string;
+    accessTokenSecret: string;
+}
+
+export interface TwitterOauthJSON {
+    json?: boolean;
+    oauth?: {
+        consumer_key: string;
+        consumer_secret: string;
+        token: string;
+        token_secret: string;
+        timestamp: string;
+    };
+}
