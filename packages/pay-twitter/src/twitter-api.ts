@@ -6,11 +6,12 @@ import Twitter from "twitter";
 // import { TwitterAPIUserContext, TwitterOauthJSON, TwitterAPIRequestOptions } from "../interfaces";
 
 export class TwitterApi {
-    private consumerSecret: string;
-    private consumerKey: string;
-    private accessToken: string;
-    private accessTokenSecret: string;
-    private environment: string;
+    private readonly consumerSecret: string;
+    private readonly consumerKey: string;
+    private readonly accessToken: string;
+    private readonly accessTokenSecret: string;
+    private readonly environment: string;
+    private readonly twitterClient: Twitter;
     private appBearerToken: string;
 
     constructor(config) {
@@ -28,39 +29,35 @@ export class TwitterApi {
                 resolve(undefined);
             });
         });
+
+        this.twitterClient = new Twitter({
+            consumer_key: this.consumerKey,
+            consumer_secret: this.consumerSecret,
+            access_token_key: this.accessToken,
+            access_token_secret: this.accessTokenSecret,
+        });
     }
 
     public async getUsername(userId: string): Promise<string> {
         try {
-            const twitterClient = new Twitter({
-                consumer_key: this.consumerKey,
-                consumer_secret: this.consumerSecret,
-                access_token_key: this.accessToken,
-                access_token_secret: this.accessTokenSecret,
-            });
-
             const getPath: string = "users/lookup.json";
             const parameter = {
                 user_id: userId,
             };
-            const username: string = twitterClient
+            return this.twitterClient
                 .get(getPath, parameter)
                 .then(users => {
-                    Core.logger.info(users[0].screen_name);
+                    if (users.lenght === 0 || !users[0].hasOwnProperty("screen_name")) {
+                        throw new Error("Bad username");
+                    }
                     return users[0].screen_name;
                 })
-                .catch((errors: any[]) => {
-                    for (const item in errors) {
-                        if (errors[item]) {
-                            Core.logger.warn(`getUsername: Code ${errors[item].code} - ${errors[item].message}`);
-                        }
-                    }
-                    return null;
+                .catch(error => {
+                    throw error;
                 });
-            return username;
         } catch (e) {
             Core.logger.error(e.message);
-            return "";
+            return null;
         }
     }
 
