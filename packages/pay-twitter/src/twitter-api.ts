@@ -44,18 +44,19 @@ export class TwitterApi {
                 user_id: userId,
             };
             let username: string = "test";
-            await twitterClient.get(getPath, parameter, (errors: any[], users: any[]) => {
-                if (errors) {
+            twitterClient
+                .get(getPath, parameter)
+                .then(users => {
+                    Core.logger.info(users[0].screen_name);
+                    username = users[0].screen_name;
+                })
+                .catch((errors: any[]) => {
                     for (const item in errors) {
                         if (errors[item]) {
                             Core.logger.warn(`getUsername: Code ${errors[item].code} - ${errors[item].message}`);
                         }
                     }
-                }
-                // todo
-                Core.logger.info(users[0].screen_name);
-                username = users[0].screen_name;
-            });
+                });
             return username;
         } catch (e) {
             Core.logger.error(e.message);
