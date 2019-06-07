@@ -30,7 +30,7 @@ export class TwitterApi {
         });
     }
 
-    public getUsername(userId: string): string {
+    public async getUsername(userId: string): Promise<string> {
         try {
             const twitterClient = new Twitter({
                 consumer_key: this.consumerKey,
@@ -52,7 +52,7 @@ export class TwitterApi {
                     }
                 }
                 // todo
-                Core.logger.info(JSON.stringify(users[0].name));
+                Core.logger.info(JSON.stringify(users[0]));
                 return users[0].name;
             });
         } catch (e) {

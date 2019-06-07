@@ -126,8 +126,8 @@ export class PlatformTwitter {
             );
 
         // listen to any user activity
-        this.userActivityWebhook.on("event", (event, userId, data) => {
-            this.filterEvent(data, userId);
+        this.userActivityWebhook.on("event", async (event, userId, data) => {
+            await this.filterEvent(data, userId);
             // console.log(`Event: ${userId} => ${JSON.stringify(data)}`)
         });
 
@@ -140,11 +140,11 @@ export class PlatformTwitter {
         return true;
     }
 
-    private filterEvent(eventData, userId) {
+    private async filterEvent(eventData, userId) {
         if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
             // Received a Direct Message
             const directMessage: TwitterDirectMessage = eventData;
-            const senderName: string = this.twitterApi.getUsername(directMessage.message_create.sender_id); // todo
+            const senderName: string = await this.twitterApi.getUsername(directMessage.message_create.sender_id); // todo
             Core.logger.info(
                 `Direct Message Received from ${senderName}: ${directMessage.message_create.message_data.text}`,
             );
