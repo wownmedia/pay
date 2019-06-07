@@ -148,6 +148,7 @@ export class PlatformTwitter {
             Core.logger.info(
                 `Direct Message Received from ${senderName}: ${directMessage.message_create.message_data.text}`,
             );
+            Core.logger.info(JSON.stringify(directMessage));
         } else if (
             eventData.hasOwnProperty("type") ||
             (eventData.hasOwnProperty("text") && eventData.hasOwnProperty("in_reply_to_user_id_str"))
