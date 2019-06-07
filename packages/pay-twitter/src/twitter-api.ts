@@ -43,12 +43,11 @@ export class TwitterApi {
             const parameter = {
                 user_id: userId,
             };
-            let username: string = "test";
-            twitterClient
+            const username: string = twitterClient
                 .get(getPath, parameter)
                 .then(users => {
                     Core.logger.info(users[0].screen_name);
-                    username = users[0].screen_name;
+                    return users[0].screen_name;
                 })
                 .catch((errors: any[]) => {
                     for (const item in errors) {
@@ -56,6 +55,7 @@ export class TwitterApi {
                             Core.logger.warn(`getUsername: Code ${errors[item].code} - ${errors[item].message}`);
                         }
                     }
+                    return null;
                 });
             return username;
         } catch (e) {
