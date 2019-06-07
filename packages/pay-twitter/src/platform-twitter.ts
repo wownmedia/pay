@@ -154,7 +154,7 @@ export class PlatformTwitter {
 
                 // Todo what we do with DMs
             }
-        } else if (eventData.hasOwnProperty("is_quote_status")) {
+        } else if (eventData.hasOwnProperty("is_quote_status") && eventData.is_quote_status === true) {
             // Received a mention in a comment with a quoted retweet
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
