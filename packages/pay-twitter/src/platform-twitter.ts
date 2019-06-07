@@ -149,7 +149,7 @@ export class PlatformTwitter {
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
                 Core.logger.info(
-                    `Direct Message Received from ${senderName}: ${directMessage.message_create.message_data.text}`,
+                    `Direct Message Received from @${senderName} => ${directMessage.message_create.message_data.text}`,
                 );
 
                 // Todo what we do with DMs
@@ -161,7 +161,7 @@ export class PlatformTwitter {
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
-                Core.logger.info(`Comment with Retweet from ${senderName}: ${eventData.text}`);
+                Core.logger.info(`Comment with Retweet from @${senderName} => ${eventData.text}`);
             }
 
             // Todo what we do with mentions
@@ -176,7 +176,7 @@ export class PlatformTwitter {
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
-                Core.logger.info(`Comment from ${senderName}: ${eventData.text}`);
+                Core.logger.info(`Comment from @${senderName} => ${eventData.text}`);
             }
 
             // Todo what we do with mentions
