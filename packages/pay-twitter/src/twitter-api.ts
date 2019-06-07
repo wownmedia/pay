@@ -44,7 +44,7 @@ export class TwitterApi {
                 user_id: userId,
             };
             let username: string = "test";
-            twitterClient.get(getPath, parameter, (errors: any[], users: any[]) => {
+            await twitterClient.get(getPath, parameter, (errors: any[], users: any[]) => {
                 if (errors) {
                     for (const item in errors) {
                         if (errors[item]) {
