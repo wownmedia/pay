@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
 import twitterWebhooks from "twitter-webhooks";
-import { TwitterConfig, TwitterKnownWebhooks } from "./interfaces";
+import { TwitterConfig, TwitterDirectMessage, TwitterKnownWebhooks } from "./interfaces";
 import { TwitterApi } from "./twitter-api";
 
 const app = express();
@@ -141,12 +141,18 @@ export class PlatformTwitter {
     }
 
     private filterEvent(eventData, userId) {
-        if (
+        if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
+            // Received a Direct Message
+            const directMessage: TwitterDirectMessage = eventData;
+            const senderName: string = this.twitterApi.getUsername(directMessage.message_create.target.sender_id); // todo
+            Core.logger.info(
+                `Direct Message Received from ${userId}: ${directMessage.message_create.target.message_data.text}`,
+            );
+        } else if (
             eventData.hasOwnProperty("type") ||
             (eventData.hasOwnProperty("text") && eventData.hasOwnProperty("in_reply_to_user_id_str"))
         ) {
-            this.twitterApi.getUsername(userId);
-            Core.logger.info(`Event Received from ${userId}: ${JSON.stringify(eventData)}`);
+            Core.logger.info(`Event Received for ${userId}: ${JSON.stringify(eventData)}`);
         }
     }
 }

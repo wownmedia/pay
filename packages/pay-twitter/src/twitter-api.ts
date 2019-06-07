@@ -30,7 +30,7 @@ export class TwitterApi {
         });
     }
 
-    public async getUsername(userId: string): Promise<string> {
+    public getUsername(userId: string): string {
         try {
             const twitterClient = new Twitter({
                 consumer_key: this.consumerKey,
@@ -43,7 +43,7 @@ export class TwitterApi {
             const parameter = {
                 user_id: userId,
             };
-            twitterClient.get(getPath, parameter, (errors: any[], users: any[]) => {
+            return twitterClient.get(getPath, parameter, (errors: any[], users: any[]) => {
                 if (errors) {
                     for (const item in errors) {
                         if (errors[item]) {
@@ -51,7 +51,9 @@ export class TwitterApi {
                         }
                     }
                 }
+                // todo
                 Core.logger.info(JSON.stringify(users[0].name));
+                return users[0].name;
             });
         } catch (e) {
             Core.logger.error(e.message);
