@@ -144,16 +144,42 @@ export class PlatformTwitter {
         if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
             // Received a Direct Message
             const directMessage: TwitterDirectMessage = eventData;
-            const senderName: string = await this.twitterApi.getUsername(directMessage.message_create.sender_id); // todo
-            Core.logger.info(
-                `Direct Message Received from ${senderName}: ${directMessage.message_create.message_data.text}`,
-            );
-            Core.logger.info(JSON.stringify(directMessage));
+            const senderName: string = await this.twitterApi.getUsername(directMessage.message_create.sender_id);
+
+            // Filter out our own sent messages
+            if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
+                Core.logger.info(
+                    `Direct Message Received from ${senderName}: ${directMessage.message_create.message_data.text}`,
+                );
+
+                // Todo what we do with DMs
+            }
+        } else if (eventData.hasOwnProperty("is_quote_status")) {
+            // Received a mention in a comment with a quoted retweet
+            // todo interface eventData
+            const senderName: string = eventData.user.screen_name;
+
+            // Filter out our own sent messages
+            if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
+                Core.logger.info(`Comment with Retweet from ${senderName}: ${eventData.text}`);
+            }
+
+            // Todo what we do with mentions
         } else if (
-            eventData.hasOwnProperty("type") ||
-            (eventData.hasOwnProperty("text") && eventData.hasOwnProperty("in_reply_to_user_id_str"))
+            eventData.hasOwnProperty("text") &&
+            eventData.hasOwnProperty("in_reply_to_screen_name") &&
+            eventData.in_reply_to_screen_name !== null
         ) {
-            Core.logger.info(`Event Received for ${userId}: ${JSON.stringify(eventData)}`);
+            // Received a mention in comment to a tweet
+            // todo interface eventData
+            const senderName: string = eventData.user.screen_name;
+
+            // Filter out our own sent messages
+            if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
+                Core.logger.info(`Comment from ${senderName}: ${eventData.text}`);
+            }
+
+            // Todo what we do with mentions
         }
     }
 }
