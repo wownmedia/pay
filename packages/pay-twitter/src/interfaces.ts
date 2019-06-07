@@ -19,15 +19,15 @@ export interface TwitterDirectMessage {
     message_create: {
         target: {
             recipient_id: string;
-            sender_id: string;
-            message_data: {
-                text: string;
-                entities: {
-                    hashtags: string[];
-                    symbols: string[];
-                    user_mentions: string[];
-                    urls: string[];
-                };
+        };
+        sender_id: string;
+        message_data: {
+            text: string;
+            entities: {
+                hashtags: string[];
+                symbols: string[];
+                user_mentions: string[];
+                urls: string[];
             };
         };
     };
