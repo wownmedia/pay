@@ -43,7 +43,7 @@ export class TwitterApi {
             const parameter = {
                 user_id: userId,
             };
-            twitterClient.get(getPath, parameter, (errors: any[], user, response) => {
+            twitterClient.get(getPath, parameter, (errors: any[], users: any[]) => {
                 if (errors) {
                     for (const item in errors) {
                         if (errors[item]) {
@@ -51,8 +51,7 @@ export class TwitterApi {
                         }
                     }
                 }
-                Core.logger.info(JSON.stringify(user));
-                Core.logger.info(JSON.stringify(response));
+                Core.logger.info(JSON.stringify(users[0].name));
             });
         } catch (e) {
             Core.logger.error(e.message);
