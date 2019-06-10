@@ -97,17 +97,6 @@ export class PlatformTwitter {
             },
         );
 
-        /*
-        await this.userActivityWebhook
-            .unsubscribe({
-                userId: this.twitterConfig.userId,
-                accessToken: this.twitterConfig.accessToken,
-                accessTokenSecret: this.twitterConfig.accessTokenSecret,
-            })
-            .then(result => {
-                Core.logger.info("Unsubscribed from Webhook");
-            });
-        */
         await this.userActivityWebhook
             .subscribe({
                 userId: this.twitterConfig.userId,
@@ -127,8 +116,8 @@ export class PlatformTwitter {
 
         // listen to any user activity
         this.userActivityWebhook.on("event", async (event, userId, data) => {
-            await this.filterEvent(data, userId);
-            // console.log(`Event: ${userId} => ${JSON.stringify(data)}`)
+            const commands: Interfaces.Command[] = await this.filterEvent(data, userId);
+            Core.logger.info(JSON.stringify(commands));
         });
 
         // Make sure there is a reverse HTTPS proxy in front of this port!
@@ -140,31 +129,60 @@ export class PlatformTwitter {
         return true;
     }
 
-    private async filterEvent(eventData, userId) {
+    private async filterEvent(eventData, userId): Promise<Interfaces.Command[]> {
+        const platform: string = "twitter";
+
         if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
             // Received a Direct Message
             const directMessage: TwitterDirectMessage = eventData;
             const senderName: string = await this.twitterApi.getUsername(directMessage.message_create.sender_id);
+            const sender: Interfaces.Username = {
+                username: senderName,
+                platform,
+            };
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
                 Core.logger.info(
                     `Direct Message Received from @${senderName} => ${directMessage.message_create.message_data.text}`,
                 );
-
-                // Todo what we do with DMs
+                return await Services.Parser.Parser.parseDirectMessage(
+                    directMessage.message_create.message_data.text,
+                    platform,
+                    sender,
+                );
             }
         } else if (eventData.hasOwnProperty("is_quote_status") && eventData.is_quote_status === true) {
             // Received a mention in a comment with a quoted retweet
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
+            const sender: Interfaces.Username = {
+                username: senderName,
+                platform,
+            };
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
                 Core.logger.info(`Comment with Retweet from @${senderName} => ${eventData.text}`);
-            }
 
-            // Todo what we do with mentions
+                const receiver: Interfaces.Username = {
+                    username: eventData.quoted_status.in_reply_to_screen_name,
+                    platform,
+                };
+
+                const commands: Interfaces.Command[] = await Services.Parser.Parser.parseMention(
+                    eventData.text,
+                    this.twitterConfig.userId,
+                    platform,
+                    sender,
+                    receiver,
+                    eventData.quoted_status_id_str,
+                );
+                if (commands === null) {
+                    return [];
+                }
+                return commands;
+            }
         } else if (
             eventData.hasOwnProperty("text") &&
             eventData.hasOwnProperty("in_reply_to_screen_name") &&
@@ -173,13 +191,34 @@ export class PlatformTwitter {
             // Received a mention in comment to a tweet
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
+            const sender: Interfaces.Username = {
+                username: senderName,
+                platform,
+            };
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
                 Core.logger.info(`Comment from @${senderName} => ${eventData.text}`);
-            }
+                const receiver: Interfaces.Username = {
+                    username: eventData.quoted_status.in_reply_to_screen_name,
+                    platform,
+                };
 
-            // Todo what we do with mentions
+                const commands: Interfaces.Command[] = await Services.Parser.Parser.parseMention(
+                    eventData.text,
+                    this.twitterConfig.userId,
+                    platform,
+                    sender,
+                    receiver,
+                    eventData.retweeted_status.id_str,
+                );
+                if (commands === null) {
+                    return [];
+                }
+                return commands;
+            }
         }
+
+        return [];
     }
 }
