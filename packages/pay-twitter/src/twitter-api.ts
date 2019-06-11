@@ -87,6 +87,9 @@ export class TwitterApi {
                     screen_name: username,
                     text: message,
                 })
+                .then(results => {
+                    Core.logger.info(JSON.stringify(results));
+                })
                 .catch(error => {
                     throw error;
                 });
@@ -117,7 +120,7 @@ export class TwitterApi {
 
              */
         } catch (e) {
-            Core.logger.error(e.message);
+            Core.logger.error(`SEND ERROR: ${e.message}`);
             return false;
         }
     }
