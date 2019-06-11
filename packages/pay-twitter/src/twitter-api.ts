@@ -37,7 +37,7 @@ export class TwitterApi {
             access_token_secret: this.accessTokenSecret,
         });
 
-        this.twitterClient.options.post_method = "form";
+        this.twitterClient.options.post_method = "formData";
     }
 
     public async getUsername(userId: string): Promise<string> {
