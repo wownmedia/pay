@@ -17,6 +17,7 @@ const baseCurrency: BaseCurrency = {
     units: ARKTOSHI,
 };
 const arkEcosystemConfig = config.get("arkEcosystem");
+const platforms = config.get("platforms");
 
 // Use a ParserUtils class to be able to add these methods to Unit testing without exposing them to the module
 export class ParserUtils {
@@ -308,8 +309,12 @@ export class ParserUtils {
         return !(!new BigNumber(user.username).isNaN() || !this.isValidPlatform(user.platform) || user.username === "");
     }
 
+    /**
+     * @dev Return true if the platform is in the configuration
+     * @param platform
+     */
     public static isValidPlatform(platform: string): boolean {
-        return platform === "reddit";
+        return platforms.hasOwnProperty(platform);
     }
 
     /**
