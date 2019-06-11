@@ -9,6 +9,8 @@ import { TwitterApi } from "./twitter-api";
 const app = express();
 app.use(bodyParser.json());
 
+const merchantsConfig = Core.config.get("merchants");
+
 export class PlatformTwitter {
     /**
      * @dev Load Twitter settings from the configuration file
@@ -56,6 +58,26 @@ export class PlatformTwitter {
             throw new Error("Bad Twitter configuration.");
         }
         return parsedConfig;
+    }
+
+    /**
+     * @dev Retrieve the username to be notified when a merchant transaction is processed
+     * @param command
+     * @returns {Interfaces.Username}  The username of the merchant that needs to be notified
+     * @private
+     */
+    private static getMerchantUsername(command: string): Interfaces.Username {
+        command = command.toLowerCase();
+
+        if (!merchantsConfig.hasOwnProperty(command)) {
+            throw TypeError(`Could not find merchant for ${command.toUpperCase()} in the configuration`);
+        }
+
+        if (!merchantsConfig[command].hasOwnProperty("notify")) {
+            throw TypeError(`Could not find merchant notify for ${command.toUpperCase()} in the configuration`);
+        }
+
+        return merchantsConfig[command].notify;
     }
 
     /**
@@ -117,9 +139,89 @@ export class PlatformTwitter {
         // listen to any user activity
         this.userActivityWebhook.on("event", async (event, userId, data) => {
             const commands: Interfaces.Command[] = await this.filterEvent(data, userId);
+
+            // todo reply summoned message
+
             if (commands.length > 0) {
                 Core.logger.info(JSON.stringify(commands));
+
                 // todo execute the commands
+                // Reply to them commands baby
+                for (const commandIndex in commands) {
+                    if (commands[commandIndex]) {
+                        try {
+                            const command: Interfaces.Command = commands[commandIndex];
+
+                            // todo check if receiver is valid
+                            // check receiver
+                            // if (!(await this.checkReceiver(command))) {
+                            //    return;
+                            // }
+
+                            // Execute the command
+                            const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
+                            // const subject: string = `ArkPay: ${command.command}`;
+
+                            // Reply to the Sender of the command
+                            if (reply.hasOwnProperty("directMessageSender")) {
+                                Core.logger.info(
+                                    `Sending Direct Message to sender: ${command.commandSender.username} on reddit`,
+                                );
+                                // await this.sendDirectMessage(
+                                //    command.commandSender.username,
+                                //    reply.directMessageSender,
+                                //    subject,
+                                // );
+                            }
+
+                            // Reply to the receiver of the command
+                            if (reply.hasOwnProperty("directMessageReceiver")) {
+                                // todo: check platform
+                                let youGot: string = command.command;
+                                if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("token")) {
+                                    youGot = command.transfer.token;
+                                }
+                                const subject = `You've got ${youGot}!`;
+                                let receiver: Interfaces.Username = command.commandReplyTo;
+                                if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")) {
+                                    receiver = command.transfer.receiver;
+                                }
+                                Core.logger.info(
+                                    `Sending Direct Message to receiver: ${receiver.username} on ${receiver.platform}`,
+                                );
+                                // await this.sendDirectMessage(
+                                //    receiver.username,
+                                //    reply.directMessageReceiver,
+                                //    subject,
+                                // );
+                            }
+
+                            // Reply to a Merchant (that's you Justin)
+                            if (reply.hasOwnProperty("directMessageMerchant")) {
+                                const merchant: Interfaces.Username = PlatformTwitter.getMerchantUsername(
+                                    command.command,
+                                );
+                                // todo check platform
+                                Core.logger.info(
+                                    `Sending Direct Message to merchant: ${merchant.username} on ${merchant.platform}`,
+                                );
+                                // await this.sendDirectMessage(
+                                //    merchant.username,
+                                //    reply.directMessageMerchant,
+                                //    subject,
+                                // );
+                            }
+
+                            // Reply to a Post or Comment
+                            // if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
+                            //    Core.logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
+                            //    await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
+                            // }
+                        } catch (e) {
+                            Core.logger.error(e.message);
+                        }
+                    }
+                }
             }
         });
 
