@@ -140,7 +140,7 @@ export class PlatformTwitter {
             const directMessage: TwitterDirectMessage = eventData;
 
             // Check if we have already processed this entry
-            if (await Services.Storage.Storage.isNewSubmission(directMessage.id)) {
+            if (!(await Services.Storage.Storage.isNewSubmission(directMessage.id))) {
                 return [];
             }
 
@@ -164,7 +164,7 @@ export class PlatformTwitter {
         } else if (eventData.hasOwnProperty("is_quote_status") && eventData.is_quote_status === true) {
             // Received a mention in a comment with a quoted retweet
             // Check if we have already processed this entry
-            if (await Services.Storage.Storage.isNewSubmission(eventData.id_str)) {
+            if (!(await Services.Storage.Storage.isNewSubmission(eventData.id_str))) {
                 return [];
             }
 
@@ -204,7 +204,7 @@ export class PlatformTwitter {
         ) {
             // Received a mention in comment to a tweet
             // Check if we have already processed this entry
-            if (await Services.Storage.Storage.isNewSubmission(eventData.id_str)) {
+            if (!(await Services.Storage.Storage.isNewSubmission(eventData.id_str))) {
                 return [];
             }
 
