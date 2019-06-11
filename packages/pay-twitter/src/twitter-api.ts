@@ -86,7 +86,7 @@ export class TwitterApi {
                 user_id: username, // USER_ID is parameter from directMsg object
                 text: message,
             });
-
+            return true;
             /*
             const postPath: string = "direct_messages/events/new.json";
             const parameter = {
