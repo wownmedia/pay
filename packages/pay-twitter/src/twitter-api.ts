@@ -100,7 +100,7 @@ export class TwitterApi {
                     Core.logger.info(JSON.stringify(results));
                 })
                 .catch(error => {
-                    Core.logger.error(`SEND ERROR: ${error}`);
+                    Core.logger.error(`SEND ERROR: ${JSON.stringify(error)}`);
                     throw error;
                 });
             return true;
