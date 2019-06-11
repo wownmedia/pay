@@ -82,6 +82,12 @@ export class TwitterApi {
 
     public async sendDirectMessage(username: string, message: string): Promise<boolean> {
         try {
+            this.twitterClient.post("direct_messages/new", {
+                user_id: username, // USER_ID is parameter from directMsg object
+                text: message,
+            });
+
+            /*
             const postPath: string = "direct_messages/events/new.json";
             const parameter = {
                 event: {
@@ -104,6 +110,8 @@ export class TwitterApi {
                 .catch(error => {
                     throw error;
                 });
+
+             */
         } catch (e) {
             Core.logger.error(e.message);
             return false;
