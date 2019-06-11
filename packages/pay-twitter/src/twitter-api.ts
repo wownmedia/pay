@@ -61,6 +61,60 @@ export class TwitterApi {
         }
     }
 
+    public async isValidUser(username: string): Promise<boolean> {
+        try {
+            const getPath: string = "users/lookup.json";
+            const parameter = {
+                screen_name: username,
+            };
+            return this.twitterClient
+                .get(getPath, parameter)
+                .then(users => {
+                    return users.lenght > 0;
+                })
+                .catch(error => {
+                    throw error;
+                });
+        } catch (e) {
+            return false;
+        }
+    }
+
+    public async sendDirectMessage(username: string, message: string): Promise<boolean> {
+        try {
+            const postPath: string = "direct_messages/events/new.json";
+            const parameter = {
+                event: {
+                    type: "message_create",
+                    message_create: {
+                        target: {
+                            recipient_id: "922102309676638208",
+                        },
+                        message_data: {
+                            text: message,
+                        },
+                    },
+                },
+            };
+            return this.twitterClient
+                .post(postPath, parameter)
+                .then(result => {
+                    return true;
+                })
+                .catch(error => {
+                    throw error;
+                });
+        } catch (e) {
+            Core.logger.error(e.message);
+            return false;
+        }
+    }
+
+    public async postCommentReply(commentID: string, message: string): Promise<boolean> {
+        // todo
+        return false;
+    }
+
     private async getAppBearerToken(): Promise<string> {
         try {
             const credentials: string = `${this.consumerKey}:${this.consumerSecret}`;

@@ -152,26 +152,23 @@ export class PlatformTwitter {
                         try {
                             const command: Interfaces.Command = commands[commandIndex];
 
-                            // todo check if receiver is valid
                             // check receiver
-                            // if (!(await this.checkReceiver(command))) {
-                            //    return;
-                            // }
+                            if (!(await this.checkReceiver(command))) {
+                                return;
+                            }
 
                             // Execute the command
                             const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
-                            // const subject: string = `ArkPay: ${command.command}`;
 
                             // Reply to the Sender of the command
                             if (reply.hasOwnProperty("directMessageSender")) {
                                 Core.logger.info(
                                     `Sending Direct Message to sender: ${command.commandSender.username} on twitter`,
                                 );
-                                // await this.sendDirectMessage(
-                                //    command.commandSender.username,
-                                //    reply.directMessageSender,
-                                //    subject,
-                                // );
+                                await this.twitterApi.sendDirectMessage(
+                                    command.commandSender.username,
+                                    reply.directMessageSender,
+                                );
                             }
 
                             // Reply to the receiver of the command
@@ -192,7 +189,6 @@ export class PlatformTwitter {
                                 // await this.sendDirectMessage(
                                 //    receiver.username,
                                 //    reply.directMessageReceiver,
-                                //    subject,
                                 // );
                             }
 
@@ -208,7 +204,6 @@ export class PlatformTwitter {
                                 // await this.sendDirectMessage(
                                 //    merchant.username,
                                 //    reply.directMessageMerchant,
-                                //    subject,
                                 // );
                             }
 
@@ -341,5 +336,32 @@ export class PlatformTwitter {
         }
 
         return [];
+    }
+
+    /**
+     * @dev Check if a receiver is valid on a platform
+     * @param command
+     * @returns {Promise<boolean>}  True if receiver is valid on the platform
+     * @private
+     */
+    private async checkReceiver(command: Interfaces.Command): Promise<boolean> {
+        const checkReceiver: Interfaces.Username =
+            command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")
+                ? command.transfer.receiver
+                : command.hasOwnProperty("commandReplyTo")
+                ? command.commandReplyTo
+                : null;
+
+        // No receiver, so always good
+        if (checkReceiver === null) {
+            return true;
+        }
+
+        // todo platform independent: pay-platforms isValidUser(username, platform)
+        const receiverOk: boolean = await this.twitterApi.isValidUser(checkReceiver.username);
+        if (!receiverOk) {
+            Core.logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
+        }
+        return receiverOk;
     }
 }
