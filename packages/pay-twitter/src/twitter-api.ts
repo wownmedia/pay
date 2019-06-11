@@ -83,9 +83,18 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<boolean> {
         try {
             await this.twitterClient
-                .post("direct_messages/new", {
-                    screen_name: username,
-                    text: message,
+                .post("direct_messages/events/new.json", {
+                    event: {
+                        type: "message_create",
+                        message_create: {
+                            target: {
+                                recipient_id: "922102309676638208",
+                            },
+                            message_data: {
+                                text: "Hello World!",
+                            },
+                        },
+                    },
                 })
                 .then(results => {
                     Core.logger.info(JSON.stringify(results));
