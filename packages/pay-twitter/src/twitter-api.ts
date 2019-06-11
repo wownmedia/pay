@@ -82,10 +82,14 @@ export class TwitterApi {
 
     public async sendDirectMessage(username: string, message: string): Promise<boolean> {
         try {
-            await this.twitterClient.post("direct_messages/new", {
-                screen_name: username, // USER_ID is parameter from directMsg object
-                text: message,
-            });
+            await this.twitterClient
+                .post("direct_messages/new", {
+                    screen_name: username,
+                    text: message,
+                })
+                .catch(error => {
+                    throw error;
+                });
             return true;
             /*
             const postPath: string = "direct_messages/events/new.json";
