@@ -35,6 +35,7 @@ export class TwitterApi {
             consumer_secret: this.consumerSecret,
             access_token_key: this.accessToken,
             access_token_secret: this.accessTokenSecret,
+            bearer_token: this.appBearerToken,
         });
     }
 
