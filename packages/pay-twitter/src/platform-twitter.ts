@@ -117,7 +117,10 @@ export class PlatformTwitter {
         // listen to any user activity
         this.userActivityWebhook.on("event", async (event, userId, data) => {
             const commands: Interfaces.Command[] = await this.filterEvent(data, userId);
-            Core.logger.info(JSON.stringify(commands));
+            if (commands.length > 0) {
+                Core.logger.info(JSON.stringify(commands));
+                // todo execute the commands
+            }
         });
 
         // Make sure there is a reverse HTTPS proxy in front of this port!
