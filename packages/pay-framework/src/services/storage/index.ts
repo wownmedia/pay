@@ -58,4 +58,23 @@ export class Storage {
         logger.info(`New submission ${submissionId} has been added to the database.`);
         return true;
     }
+
+    /**
+     * @dev Check if a message/mention was not processed before
+     * @param submissionId
+     * @returns {Promise<boolean>} True if the message was not processed already
+     * @public
+     */
+    public static async isNewSubmission(submissionId: string): Promise<boolean> {
+        try {
+            if (await this.checkSubmission(submissionId)) {
+                return false;
+            }
+            return await this.addSubmission(submissionId);
+        } catch (e) {
+            // Most likely a DB connection error
+            logger.error(e.message);
+        }
+        return false;
+    }
 }

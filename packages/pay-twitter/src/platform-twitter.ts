@@ -138,6 +138,12 @@ export class PlatformTwitter {
         if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
             // Received a Direct Message
             const directMessage: TwitterDirectMessage = eventData;
+
+            // Check if we have already processed this entry
+            if (await Services.Storage.Storage.isNewSubmission(directMessage.id)) {
+                return [];
+            }
+
             const senderName: string = await this.twitterApi.getUsername(directMessage.message_create.sender_id);
             const sender: Interfaces.Username = {
                 username: senderName,
@@ -157,6 +163,11 @@ export class PlatformTwitter {
             }
         } else if (eventData.hasOwnProperty("is_quote_status") && eventData.is_quote_status === true) {
             // Received a mention in a comment with a quoted retweet
+            // Check if we have already processed this entry
+            if (await Services.Storage.Storage.isNewSubmission(eventData.id_str)) {
+                return [];
+            }
+
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
             const sender: Interfaces.Username = {
@@ -192,6 +203,11 @@ export class PlatformTwitter {
             eventData.in_reply_to_screen_name !== null
         ) {
             // Received a mention in comment to a tweet
+            // Check if we have already processed this entry
+            if (await Services.Storage.Storage.isNewSubmission(eventData.id_str)) {
+                return [];
+            }
+
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
             const sender: Interfaces.Username = {
