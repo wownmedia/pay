@@ -83,7 +83,7 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<boolean> {
         try {
             await this.twitterClient.post("direct_messages/new", {
-                user_id: username, // USER_ID is parameter from directMsg object
+                screen_name: username, // USER_ID is parameter from directMsg object
                 text: message,
             });
             return true;
