@@ -165,7 +165,7 @@ export class PlatformTwitter {
                             // Reply to the Sender of the command
                             if (reply.hasOwnProperty("directMessageSender")) {
                                 Core.logger.info(
-                                    `Sending Direct Message to sender: ${command.commandSender.username} on reddit`,
+                                    `Sending Direct Message to sender: ${command.commandSender.username} on twitter`,
                                 );
                                 // await this.sendDirectMessage(
                                 //    command.commandSender.username,
