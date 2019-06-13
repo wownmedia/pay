@@ -32,6 +32,8 @@ export class TwitterApi {
             });
         });
 
+        Core.logger.info(`CK: ${this.consumerKey} CS: ${this.consumerSecret}`);
+        Core.logger.info(`AK: ${this.accessToken} AS: ${this.accessTokenSecret}`);
         this.twit = new Twit({
             consumer_key: this.consumerKey,
             consumer_secret: this.consumerSecret,
