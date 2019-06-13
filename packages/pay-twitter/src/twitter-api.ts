@@ -107,12 +107,12 @@ export class TwitterApi {
                                 recipient_id: "922102309676638208",
                             },
                             message_data: {
-                                text: "Hello World!",
+                                text: message,
                             },
                         },
                     },
                 },
-                (err, data, response) => {
+                (err, data) => {
                     console.log("logging data :", data);
                     console.log("logging error :", err);
                 },
