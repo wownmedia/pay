@@ -98,8 +98,20 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<boolean> {
         try {
             this.twit.post(
-                "direct_messages/new",
-                { screen_name: "CryptologyHk", text: "hello world! " },
+                "direct_messages/events/new",
+                {
+                    event: {
+                        type: "message_create",
+                        message_create: {
+                            target: {
+                                recipient_id: "922102309676638208",
+                            },
+                            message_data: {
+                                text: "Hello World!",
+                            },
+                        },
+                    },
+                },
                 (err, data, response) => {
                     console.log("logging data :", data);
                     console.log("logging error :", err);
