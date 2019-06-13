@@ -37,7 +37,7 @@ export class TwitterApi {
         this.twit = new Twit({
             consumer_key: this.consumerKey,
             consumer_secret: this.consumerSecret,
-            access_token_key: this.accessToken,
+            access_token: this.accessToken,
             access_token_secret: this.accessTokenSecret,
             timeout_ms: 5 * 1000, // optional HTTP request timeout to apply to all requests.
             strictSSL: false, // optional - requires SSL certificates to be valid.
