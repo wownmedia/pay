@@ -175,6 +175,7 @@ export class PlatformTwitter {
 
                             // check receiver
                             const receiverId = await this.checkReceiver(command);
+                            Core.logger.warn(`ReceiverId: ${receiverId}`);
                             if (receiverId === null) {
                                 return;
                             }
