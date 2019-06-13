@@ -1,5 +1,6 @@
 import { Core } from "@cryptology.hk/pay-framework";
 import axios from "axios";
+import Twit from "twit";
 import Twitter from "twitter";
 
 // import crypto from "crypto";
@@ -12,6 +13,7 @@ export class TwitterApi {
     private readonly accessTokenSecret: string;
     private readonly environment: string;
     private readonly twitterClient: Twitter;
+    private readonly twit: Twit;
     private appBearerToken: string;
 
     constructor(config) {
@@ -28,6 +30,15 @@ export class TwitterApi {
                 Core.logger.info(`appBearerToken: ${this.appBearerToken}`);
                 resolve(undefined);
             });
+        });
+
+        this.twit = new Twit({
+            consumer_key: this.consumerKey,
+            consumer_secret: this.consumerSecret,
+            access_token_key: this.accessToken,
+            access_token_secret: this.accessTokenSecret,
+            timeout_ms: 5 * 1000, // optional HTTP request timeout to apply to all requests.
+            strictSSL: false, // optional - requires SSL certificates to be valid.
         });
 
         this.twitterClient = new Twitter({
@@ -84,6 +95,16 @@ export class TwitterApi {
 
     public async sendDirectMessage(username: string, message: string): Promise<boolean> {
         try {
+            this.twit.post(
+                "direct_messages/new",
+                { screen_name: "cryptologyhk", text: "hello world! " },
+                (err, data, response) => {
+                    console.log("logging data :", data);
+                    console.log("logging error :", err);
+                },
+            );
+
+            /*
             await this.twitterClient
                 .post("direct_messages/events/new.json", {
                     event: {
@@ -105,6 +126,8 @@ export class TwitterApi {
                     Core.logger.error(`SEND ERROR: ${JSON.stringify(error)}`);
                     throw error;
                 });
+
+             */
             return true;
             /*
             const postPath: string = "direct_messages/events/new.json";
