@@ -78,10 +78,16 @@ export class TwitterApi {
 
     public async isValidUser(username: string): Promise<boolean> {
         try {
-            const getPath: string = "users/lookup.json";
+            const getPath: string = "users/lookup";
             const parameter = {
                 screen_name: username,
             };
+
+            this.twit.get(getPath, parameter, (err, data) => {
+                console.log("logging data :", data);
+                console.log("logging error :", err);
+            });
+
             return this.twitterClient
                 .get(getPath, parameter)
                 .then(users => {
