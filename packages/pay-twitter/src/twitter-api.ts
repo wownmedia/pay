@@ -76,28 +76,25 @@ export class TwitterApi {
         }
     }
 
-    public async isValidUser(username: string): Promise<boolean> {
+    public async getUserId(username: string): Promise<string> {
         try {
             const getPath: string = "users/lookup";
             const parameter = {
                 screen_name: username,
             };
 
-            this.twit.get(getPath, parameter, (err, data) => {
+            return this.twit.get(getPath, parameter, (err, data) => {
                 console.log("logging data :", data);
                 console.log("logging error :", err);
-            });
 
-            return this.twitterClient
-                .get(getPath, parameter)
-                .then(users => {
-                    return users.lenght > 0;
-                })
-                .catch(error => {
-                    throw error;
-                });
+                if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
+                    return data[0].id_str;
+                }
+
+                return null;
+            });
         } catch (e) {
-            return false;
+            return null;
         }
     }
 

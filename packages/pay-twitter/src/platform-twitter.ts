@@ -174,7 +174,8 @@ export class PlatformTwitter {
                             const command: Interfaces.Command = commands[commandIndex];
 
                             // check receiver
-                            if (!(await this.checkReceiver(command))) {
+                            const receiverId = await this.checkReceiver(command);
+                            if (receiverId === null) {
                                 return;
                             }
 
@@ -366,7 +367,7 @@ export class PlatformTwitter {
      * @returns {Promise<boolean>}  True if receiver is valid on the platform
      * @private
      */
-    private async checkReceiver(command: Interfaces.Command): Promise<boolean> {
+    private async checkReceiver(command: Interfaces.Command): Promise<string> {
         const checkReceiver: Interfaces.Username =
             command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")
                 ? command.transfer.receiver
@@ -376,14 +377,14 @@ export class PlatformTwitter {
 
         // No receiver, so always good
         if (checkReceiver === null) {
-            return true;
+            return "";
         }
 
         // todo platform independent: pay-platforms isValidUser(username, platform)
-        const receiverOk: boolean = await this.twitterApi.isValidUser(checkReceiver.username);
-        if (!receiverOk) {
+        const receiverID: string = await this.twitterApi.getUserId(checkReceiver.username);
+        if (receiverID === null) {
             Core.logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
         }
-        return receiverOk;
+        return receiverID;
     }
 }
