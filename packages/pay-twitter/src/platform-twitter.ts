@@ -80,6 +80,27 @@ export class PlatformTwitter {
         return merchantsConfig[command].notify;
     }
 
+    private static undoTextFormatting(text: string): string {
+        // remove **
+        text = PlatformTwitter.replaceAll(text, "**", "");
+
+        // remove `
+        text = PlatformTwitter.replaceAll(text, "`", " ");
+
+        return text;
+    }
+
+    /**
+     * @dev replace all occurences
+     * @param target
+     * @param search
+     * @param replacement
+     * @private
+     */
+    private static replaceAll(target: string, search: string, replacement: string): string {
+        return target.split(search).join(replacement);
+    }
+
     /**
      * @dev The configuration for the Twitter Account API
      */
@@ -165,10 +186,10 @@ export class PlatformTwitter {
                                 Core.logger.info(
                                     `Sending Direct Message to sender: ${command.commandSender.username} on twitter`,
                                 );
-                                await this.twitterApi.sendDirectMessage(
-                                    command.commandSender.username,
+                                const messageText: string = PlatformTwitter.undoTextFormatting(
                                     reply.directMessageSender,
                                 );
+                                await this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
                             }
 
                             // Reply to the receiver of the command
@@ -178,13 +199,14 @@ export class PlatformTwitter {
                                 if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("token")) {
                                     youGot = command.transfer.token;
                                 }
-                                const subject = `You've got ${youGot}!`;
                                 let receiver: Interfaces.Username = command.commandReplyTo;
                                 if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")) {
                                     receiver = command.transfer.receiver;
                                 }
                                 Core.logger.info(
-                                    `Sending Direct Message to receiver: ${receiver.username} on ${receiver.platform}`,
+                                    `Sending Tweet with mention of receiver: ${receiver.username} on ${
+                                        receiver.platform
+                                    }`,
                                 );
                                 // await this.sendDirectMessage(
                                 //    receiver.username,
