@@ -1,6 +1,6 @@
 import { Core } from "@cryptology.hk/pay-framework";
 import axios from "axios";
-import Twit from "twit-promise";
+import Twit from "twit";
 import Twitter from "twitter";
 
 // import crypto from "crypto";
@@ -32,6 +32,8 @@ export class TwitterApi {
             });
         });
 
+        Core.logger.info(`CK: ${this.consumerKey} CS: ${this.consumerSecret}`);
+        Core.logger.info(`AK: ${this.accessToken} AS: ${this.accessTokenSecret}`);
         this.twit = new Twit({
             consumer_key: this.consumerKey,
             consumer_secret: this.consumerSecret,
@@ -81,20 +83,15 @@ export class TwitterApi {
                 screen_name: username,
             };
 
-            return this.twit
-                .get(getPath, parameter)
-                .then(result => {
-                    Core.logger.warn(`getUserId ${JSON.stringify(result.data)}`);
-                    if (result.data.length > 0 && result.data[0].hasOwnProperty("id_str")) {
-                        return result.data[0].id_str;
-                    }
-                    return null;
-                })
-                .catch(error => {
-                    throw error;
-                });
+            return this.twit.get(getPath, parameter, (err, data) => {
+                console.log("getUserId :", data);
+                if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
+                    return data[0].id_str;
+                }
+
+                return null;
+            });
         } catch (e) {
-            Core.logger.error(e.message);
             return null;
         }
     }
@@ -102,8 +99,9 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<void> {
         try {
             const recipientId: string = await this.getUserId(username);
-            await this.twit
-                .post("direct_messages/events/new", {
+            this.twit.post(
+                "direct_messages/events/new",
+                {
                     event: {
                         type: "message_create",
                         message_create: {
@@ -115,13 +113,12 @@ export class TwitterApi {
                             },
                         },
                     },
-                })
-                .then(data => {
+                },
+                (err, data) => {
                     console.log("logging data :", data);
-                })
-                .catch(err => {
-                    console.log("error :", err);
-                });
+                    console.log("logging error :", err);
+                },
+            );
         } catch (e) {
             Core.logger.error(`SEND ERROR: ${e.message}`);
         }
