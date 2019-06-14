@@ -83,7 +83,7 @@ export class TwitterApi {
                 screen_name: username,
             };
 
-            return this.twit.get(getPath, parameter).then(data => {
+            return await this.twit.get(getPath, parameter).then(data => {
                 if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
                     return data[0].id_str;
                 }
@@ -97,7 +97,7 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<void> {
         try {
             const recipientId: string = await this.getUserId(username);
-            this.twit
+            await this.twit
                 .post("direct_messages/events/new", {
                     event: {
                         type: "message_create",
