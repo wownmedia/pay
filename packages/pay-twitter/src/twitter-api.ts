@@ -32,8 +32,6 @@ export class TwitterApi {
             });
         });
 
-        Core.logger.info(`CK: ${this.consumerKey} CS: ${this.consumerSecret}`);
-        Core.logger.info(`AK: ${this.accessToken} AS: ${this.accessTokenSecret}`);
         this.twit = new Twit({
             consumer_key: this.consumerKey,
             consumer_secret: this.consumerSecret,
@@ -83,13 +81,18 @@ export class TwitterApi {
                 screen_name: username,
             };
 
-            return await this.twit.get(getPath, parameter).then(result => {
-                Core.logger.warn(`getUserId ${JSON.stringify(result.data)}`);
-                if (result.data.length > 0 && result.data[0].hasOwnProperty("id_str")) {
-                    return result.data[0].id_str;
-                }
-                return null;
-            });
+            return this.twit
+                .get(getPath, parameter)
+                .then(result => {
+                    Core.logger.warn(`getUserId ${JSON.stringify(result.data)}`);
+                    if (result.data.length > 0 && result.data[0].hasOwnProperty("id_str")) {
+                        return result.data[0].id_str;
+                    }
+                    return null;
+                })
+                .catch(error => {
+                    throw error;
+                });
         } catch (e) {
             Core.logger.error(e.message);
             return null;
