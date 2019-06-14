@@ -78,20 +78,23 @@ export class TwitterApi {
 
     public async getUserId(username: string): Promise<string> {
         try {
-            const getPath: string = "users/lookup";
+            const getPath: string = "users/lookup.json";
             const parameter = {
                 screen_name: username,
             };
-
-            return this.twit.get(getPath, parameter, (err, data) => {
-                console.log("getUserId :", data);
-                if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
-                    return data[0].id_str;
-                }
-
-                return null;
-            });
+            return this.twitterClient
+                .get(getPath, parameter)
+                .then(users => {
+                    if (users.lenght === 0 || !users[0].hasOwnProperty("id_str")) {
+                        throw new Error("Bad username");
+                    }
+                    return users[0].id_str;
+                })
+                .catch(error => {
+                    throw error;
+                });
         } catch (e) {
+            Core.logger.error(e.message);
             return null;
         }
     }
