@@ -118,12 +118,15 @@ export class TwitterApi {
                     },
                 },
                 (err, data) => {
-                    console.log("logging data :", data);
-                    console.log("logging error :", err);
+                    if (!err) {
+                        Core.logger.info("Message Sent.");
+                    } else {
+                        throw new Error(`Could not deliver message to ${username}`);
+                    }
                 },
             );
         } catch (e) {
-            Core.logger.error(`SEND ERROR: ${e.message}`);
+            Core.logger.error(e.message);
         }
     }
 
