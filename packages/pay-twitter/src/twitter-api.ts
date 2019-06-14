@@ -118,6 +118,9 @@ export class TwitterApi {
                 })
                 .then(data => {
                     console.log("logging data :", data);
+                })
+                .catch(err => {
+                    console.log("error :", err);
                 });
         } catch (e) {
             Core.logger.error(`SEND ERROR: ${e.message}`);
