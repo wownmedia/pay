@@ -98,8 +98,9 @@ export class TwitterApi {
         }
     }
 
-    public async sendDirectMessage(username: string, message: string): Promise<boolean> {
+    public async sendDirectMessage(username: string, message: string): Promise<void> {
         try {
+            const recipientId: string = await this.getUserId(username);
             this.twit.post(
                 "direct_messages/events/new",
                 {
@@ -107,7 +108,7 @@ export class TwitterApi {
                         type: "message_create",
                         message_create: {
                             target: {
-                                recipient_id: "922102309676638208",
+                                recipient_id: recipientId,
                             },
                             message_data: {
                                 text: message,
@@ -120,60 +121,8 @@ export class TwitterApi {
                     console.log("logging error :", err);
                 },
             );
-
-            /*
-            await this.twitterClient
-                .post("direct_messages/events/new.json", {
-                    event: {
-                        type: "message_create",
-                        message_create: {
-                            target: {
-                                recipient_id: "922102309676638208",
-                            },
-                            message_data: {
-                                text: "Hello World!",
-                            },
-                        },
-                    },
-                })
-                .then(results => {
-                    Core.logger.info(JSON.stringify(results));
-                })
-                .catch(error => {
-                    Core.logger.error(`SEND ERROR: ${JSON.stringify(error)}`);
-                    throw error;
-                });
-
-             */
-            return true;
-            /*
-            const postPath: string = "direct_messages/events/new.json";
-            const parameter = {
-                event: {
-                    type: "message_create",
-                    message_create: {
-                        target: {
-                            recipient_id: "922102309676638208",
-                        },
-                        message_data: {
-                            text: message,
-                        },
-                    },
-                },
-            };
-            return this.twitterClient
-                .post(postPath, parameter)
-                .then(result => {
-                    return true;
-                })
-                .catch(error => {
-                    throw error;
-                });
-
-             */
         } catch (e) {
             Core.logger.error(`SEND ERROR: ${e.message}`);
-            return false;
         }
     }
 
