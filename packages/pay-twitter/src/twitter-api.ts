@@ -84,6 +84,7 @@ export class TwitterApi {
             };
 
             return await this.twit.get(getPath, parameter).then(data => {
+                Core.logger.warn(JSON.stringify(data));
                 if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
                     return data[0].id_str;
                 }
