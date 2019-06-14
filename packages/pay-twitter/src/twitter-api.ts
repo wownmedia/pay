@@ -1,6 +1,6 @@
 import { Core } from "@cryptology.hk/pay-framework";
 import axios from "axios";
-import Twit from "twit";
+import Twit from "twit-promise";
 import Twitter from "twitter";
 
 // import crypto from "crypto";
@@ -83,14 +83,10 @@ export class TwitterApi {
                 screen_name: username,
             };
 
-            return this.twit.get(getPath, parameter, (err, data) => {
-                console.log("logging data :", data);
-                console.log("logging error :", err);
-
+            return this.twit.get(getPath, parameter).then(data => {
                 if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
                     return data[0].id_str;
                 }
-
                 return null;
             });
         } catch (e) {
@@ -101,9 +97,8 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<void> {
         try {
             const recipientId: string = await this.getUserId(username);
-            this.twit.post(
-                "direct_messages/events/new",
-                {
+            this.twit
+                .post("direct_messages/events/new", {
                     event: {
                         type: "message_create",
                         message_create: {
@@ -115,12 +110,10 @@ export class TwitterApi {
                             },
                         },
                     },
-                },
-                (err, data) => {
+                })
+                .then(data => {
                     console.log("logging data :", data);
-                    console.log("logging error :", err);
-                },
-            );
+                });
         } catch (e) {
             Core.logger.error(`SEND ERROR: ${e.message}`);
         }
