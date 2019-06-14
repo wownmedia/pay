@@ -83,10 +83,10 @@ export class TwitterApi {
                 screen_name: username,
             };
 
-            return await this.twit.get(getPath, parameter).then(data => {
-                Core.logger.warn(JSON.stringify(data));
-                if (data.length > 0 && data[0].hasOwnProperty("id_str")) {
-                    return data[0].id_str;
+            return await this.twit.get(getPath, parameter).then(result => {
+                Core.logger.warn(JSON.stringify(result.data));
+                if (result.data.length > 0 && result.data[0].hasOwnProperty("id_str")) {
+                    return result.data[0].id_str;
                 }
                 return null;
             });
