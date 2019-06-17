@@ -193,7 +193,7 @@ export class PlatformTwitter {
                                 const messageText: string = PlatformTwitter.undoTextFormatting(
                                     reply.directMessageSender,
                                 );
-                                await this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
+                                this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
                             }
 
                             // Reply to the receiver of the command
@@ -215,7 +215,7 @@ export class PlatformTwitter {
                                 );
 
                                 const message = `@${receiver.username} ${reply.directMessageReceiver}`;
-                                await this.twitterApi.postCommentReply(message);
+                                this.twitterApi.postCommentReply(message);
                             }
 
                             // Reply to a Merchant (that's you Justin)
