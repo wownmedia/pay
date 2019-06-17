@@ -52,7 +52,7 @@ export class Commander {
         switch (command.command) {
             case "REWARD":
             case "HELP":
-                logger.info(`HELP requested`);
+                logger.info(`HELP requested: ${JSON.stringify(command)}`);
                 return Help.getHelp(command.command, command.smallFooter);
             case "DEPOSIT":
             case "ADDRESS":
