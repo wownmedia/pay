@@ -132,7 +132,7 @@ export class TwitterApi {
 
     public async postCommentReply(message: string): Promise<void> {
         try {
-            // todo await this.twit.post('statuses/update', { status: message });
+            await this.twit.post("statuses/update", { status: message });
             Core.logger.info(`postCommentReply: ${message}`);
         } catch (e) {
             Core.logger.error(`There was an error posting this tweet: ${e}`);
