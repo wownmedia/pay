@@ -337,7 +337,7 @@ export class PlatformTwitter {
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
                 Core.logger.info(`Comment from @${senderName} => ${eventData.text}`);
                 const receiver: Interfaces.Username = {
-                    username: eventData.quoted_status.in_reply_to_screen_name,
+                    username: eventData.in_reply_to_screen_name,
                     platform,
                 };
 
