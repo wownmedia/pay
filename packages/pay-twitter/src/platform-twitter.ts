@@ -172,10 +172,10 @@ export class PlatformTwitter {
                     if (commands[commandIndex]) {
                         try {
                             const command: Interfaces.Command = commands[commandIndex];
+                            command.smallFooter = true; // No large footers on Twitter, 140 Chars etc
 
                             // check receiver
                             const receiverId = await this.checkReceiver(command);
-                            Core.logger.warn(`ReceiverId: ${receiverId}`);
                             if (receiverId === null) {
                                 return;
                             }
@@ -238,7 +238,7 @@ export class PlatformTwitter {
                                 reply.hasOwnProperty("replyComment") &&
                                 !(data.hasOwnProperty("type") && data.type === "message_create")
                             ) {
-                                await this.twitterApi.postCommentReply(reply.replyComment);
+                                this.twitterApi.postCommentReply(reply.replyComment);
                             }
                         } catch (e) {
                             Core.logger.error(e.message);
