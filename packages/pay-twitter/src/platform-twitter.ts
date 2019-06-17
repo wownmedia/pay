@@ -199,40 +199,14 @@ export class PlatformTwitter {
                                     this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
                                 }
 
-                                // Reply to the receiver of the command
-                                /*
-                                if (reply.hasOwnProperty("directMessageReceiver")) {
-                                    Core.logger.info("Message for receiver");
-                                    // todo: check platform
-                                    let youGot: string = command.command;
-                                    if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("token")) {
-                                        youGot = command.transfer.token;
-                                    }
-                                    let receiver: Interfaces.Username = command.commandReplyTo;
-                                    if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")) {
-                                        receiver = command.transfer.receiver;
-                                    }
-                                    Core.logger.info(
-                                        `Sending Tweet with mention of receiver: ${receiver.username} on ${
-                                            receiver.platform
-                                            }`,
-                                    );
-
-                                    const message = PlatformTwitter.undoTextFormatting(
-                                        `@${receiver.username} ${reply.directMessageReceiver}`,
-                                    );
-                                    this.twitterApi.postCommentReply(message);
-                                }
-                                 */
-
                                 // Reply to a Post or Comment
                                 // todo REPLY TO TWEET!
                                 if (reply.hasOwnProperty("replyComment")) {
                                     const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
 
                                     Core.logger.info(`Sending Tweet with mention of receiver: ${receiverId}`);
-                                    if (data.id_str) {
-                                        this.twitterApi.replyTweet(message, data.id_str);
+                                    if (command.id) {
+                                        this.twitterApi.replyTweet(message, command.id);
                                     } else {
                                         this.twitterApi.postCommentReply(message);
                                     }
