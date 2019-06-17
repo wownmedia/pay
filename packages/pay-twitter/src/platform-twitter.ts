@@ -349,6 +349,8 @@ export class PlatformTwitter {
                     receiver,
                     eventData.id_str,
                 );
+                Core.logger(`Commands: ${JSON.stringify(commands)}`);
+
                 if (commands === null) {
                     return [];
                 }
