@@ -347,7 +347,7 @@ export class PlatformTwitter {
                     platform,
                     sender,
                     receiver,
-                    eventData.retweeted_status.id_str,
+                    eventData.id_str,
                 );
                 if (commands === null) {
                     return [];
