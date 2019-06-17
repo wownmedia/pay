@@ -9,6 +9,9 @@ export class Help {
      * @returns {Reply} Object with the specific help message to reply to a user per direct message
      */
     public static getHelp(command: string, short?: boolean): Reply {
-        return Messenger.helpMessage(command);
+        if (!short) {
+            short = false;
+        }
+        return Messenger.helpMessage(command, short);
     }
 }
