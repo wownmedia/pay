@@ -183,6 +183,8 @@ export class PlatformTwitter {
                             // Execute the command
                             const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
 
+                            Core.logger.info(`REPLY: ${JSON.stringify(reply)}`);
+
                             // Reply to the Sender of the command
                             if (reply.hasOwnProperty("directMessageSender")) {
                                 Core.logger.info(
