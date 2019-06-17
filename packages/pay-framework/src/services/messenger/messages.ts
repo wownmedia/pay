@@ -388,7 +388,7 @@ const _HELP =
     "**BALANCE** - To see your ArkTippr wallet balance\n\n " +
     "**DEPOSIT** or **ADDRESS** - To receive instructions on how to add to your balance\n\n " +
     "**WITHDRAW** - To receive instructions on how to withdraw funds to a different Ark wallet\n\n " +
-    "**TIP** - To receive instructions on how to publicly tip a Reddit user\n\n " +
+    "**TIP** - To receive instructions on how to publicly tip a user\n\n " +
     "**SEND** - To receive instructions on how to non-publicly send Ark to a user\n\n " +
     "**STICKERS** - To receive instructions on how to give a Reddit user an ArkStickers.com sticker code\n\n " +
     "[You can also visit the Usage page of the ArkTippr Wiki](https://np.reddit.com/r/arktippr/wiki/usage)\n\n ";
@@ -399,7 +399,7 @@ const _HELP_SHORT =
     "BALANCE - To see your ArkTippr wallet balance\n\n " +
     "DEPOSIT or ADDRESS - To receive instructions on how to add to your balance\n\n " +
     "WITHDRAW - To receive instructions on how to withdraw funds to a different Ark wallet\n\n " +
-    "TIP - To receive instructions on how to publicly tip a Reddit user\n\n " +
+    "TIP - To receive instructions on how to publicly tip a user\n\n " +
     "SEND - To receive instructions on how to non-publicly send Ark to a user\n\n ";
 
 const _HELP_WITHDRAW =
@@ -429,11 +429,11 @@ const _HELP_TIP =
 
 const _HELP_SEND =
     "\n\n " +
-    "Sometimes, you will want to send Ark to another Reddit user privately, without a public comment that everyone can see. " +
+    "Sometimes, you will want to send Ark to another user privately, without a public comment that everyone can see. " +
     "This is accomplished with the SEND command. It's more anonymous than Venmo, and more fun than Paypal :)\n\n " +
-    "To transfer Ark to a Reddit user privately, send ArkTippr a private message like this:\n\n " +
+    "To transfer Ark to a user privately, send ArkTippr a private message like this:\n\n " +
     "    SEND <username> <amount> [currency]\n\n " +
-    "`<username>` should be a **valid Reddit user**\n\n " +
+    "`<username>` should be a **valid user**\n\n " +
     "`<amount>` is the amount you like to send *(e.g. 10, 1.5)*\n\n " +
     "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
     "If no currency is declared, Ark is the default.\n\n ";
@@ -444,12 +444,12 @@ const _HELP_STICKERS =
     "When you use the STICKERS command, you will give that user (or yourself) a code redeemable at ArkStickers.com for a sticker set, and it never expires!\n\n " +
     "There are two ways to accomplish this:\n\n " +
     "**1) Publicly reply to a comment or post** \n\n " +
-    "To send a Reddit user an ArkStickers sticker code, comment on their post or reply to their comment with:\n\n " +
+    "To send a user an ArkStickers sticker code, comment on their post or reply to their comment with:\n\n " +
     "    STICKERS u/arktippr\n\n " +
     "This will do the following:\n\n " +
     "1 Send Ѧ2 ARK from your balance to ArkStickers.com Ark wallet\n\n " +
     "2 Generate an ArkStickers stickers code\n\n " +
-    "3 Send the code privately to the user in question via Reddit private message.\n\n " +
+    "3 Send the code privately to the user in question via private message.\n\n " +
     "They will receive a code that you paid for in their messages Inbox, and they can use their code on ArkStickers.com to get their stickers for free " +
     "(no Ark transaction required for them).\n\n " +
     "Everyone on Reddit will see that you gave them stickers!\n\n " +
@@ -460,7 +460,7 @@ const _HELP_STICKERS =
     "This will do the following:\n\n " +
     "1 Send Ѧ2 ARK from your balance to ArkStickers.com Ark wallet\n\n " +
     "2 Generate an ArkStickers stickers code\n\n " +
-    "3 Send the code privately to the user in question via Reddit private message.\n\n " +
+    "3 Send the code privately to the user in question via private message.\n\n " +
     "*(This method allows you to get a code sent to yourself if you want to.)* \n\n " +
     "They will receive a code that you paid for in their messages Inbox, and they can use their code on ArkStickers.com to get their stickers for free " +
     "(no Ark transaction required for them).\n\n " +

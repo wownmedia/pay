@@ -180,68 +180,58 @@ export class PlatformTwitter {
                                 return;
                             }
 
-                            // Execute the command
-                            const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
+                            // Execute the command, except if it is STICKERS, can't do that on Twitter
+                            if (command.command !== "STICKERS") {
+                                const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
 
-                            Core.logger.info(`REPLY: ${JSON.stringify(reply)}`);
+                                Core.logger.info(`REPLY: ${JSON.stringify(reply)}`);
 
-                            // Reply to the Sender of the command
-                            if (reply.hasOwnProperty("directMessageSender")) {
-                                Core.logger.info(
-                                    `Sending Direct Message to sender: ${command.commandSender.username} on twitter`,
-                                );
-                                const messageText: string = PlatformTwitter.undoTextFormatting(
-                                    reply.directMessageSender,
-                                );
-                                this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
-                            }
-
-                            // Reply to the receiver of the command
-                            if (reply.hasOwnProperty("directMessageReceiver")) {
-                                Core.logger.info("Message for receiver");
-                                // todo: check platform
-                                let youGot: string = command.command;
-                                if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("token")) {
-                                    youGot = command.transfer.token;
+                                // Reply to the Sender of the command
+                                if (reply.hasOwnProperty("directMessageSender")) {
+                                    Core.logger.info(
+                                        `Sending Direct Message to sender: ${
+                                            command.commandSender.username
+                                        } on twitter`,
+                                    );
+                                    const messageText: string = PlatformTwitter.undoTextFormatting(
+                                        reply.directMessageSender,
+                                    );
+                                    this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
                                 }
-                                let receiver: Interfaces.Username = command.commandReplyTo;
-                                if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")) {
-                                    receiver = command.transfer.receiver;
+
+                                // Reply to the receiver of the command
+                                /*
+                                if (reply.hasOwnProperty("directMessageReceiver")) {
+                                    Core.logger.info("Message for receiver");
+                                    // todo: check platform
+                                    let youGot: string = command.command;
+                                    if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("token")) {
+                                        youGot = command.transfer.token;
+                                    }
+                                    let receiver: Interfaces.Username = command.commandReplyTo;
+                                    if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")) {
+                                        receiver = command.transfer.receiver;
+                                    }
+                                    Core.logger.info(
+                                        `Sending Tweet with mention of receiver: ${receiver.username} on ${
+                                            receiver.platform
+                                            }`,
+                                    );
+
+                                    const message = PlatformTwitter.undoTextFormatting(
+                                        `@${receiver.username} ${reply.directMessageReceiver}`,
+                                    );
+                                    this.twitterApi.postCommentReply(message);
                                 }
-                                Core.logger.info(
-                                    `Sending Tweet with mention of receiver: ${receiver.username} on ${
-                                        receiver.platform
-                                    }`,
-                                );
+                                 */
 
-                                const message = PlatformTwitter.undoTextFormatting(
-                                    `@${receiver.username} ${reply.directMessageReceiver}`,
-                                );
-                                this.twitterApi.postCommentReply(message);
-                            }
+                                // Reply to a Post or Comment
+                                if (reply.hasOwnProperty("replyComment")) {
+                                    const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
 
-                            // Reply to a Merchant (that's you Justin)
-                            if (reply.hasOwnProperty("directMessageMerchant")) {
-                                const merchant: Interfaces.Username = PlatformTwitter.getMerchantUsername(
-                                    command.command,
-                                );
-                                // todo check platform
-                                Core.logger.info(
-                                    `Sending Direct Message to merchant: ${merchant.username} on ${merchant.platform}`,
-                                );
-                                // await this.sendDirectMessage(
-                                //    merchant.username,
-                                //    reply.directMessageMerchant,
-                                // );
-                            }
-
-                            // Reply to a Post or Comment
-                            if (
-                                reply.hasOwnProperty("replyComment") &&
-                                !(data.hasOwnProperty("type") && data.type === "message_create")
-                            ) {
-                                const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
-                                this.twitterApi.postCommentReply(message);
+                                    Core.logger.info(`Sending Tweet with mention of receiver: ${receiverId}`);
+                                    this.twitterApi.postCommentReply(message);
+                                }
                             }
                         } catch (e) {
                             Core.logger.error(e.message);

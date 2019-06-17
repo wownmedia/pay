@@ -69,7 +69,7 @@ export class Commander {
                 const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${
                     command.commandSender.platform
                 } >> ${command.transfer.receiver.username}@${command.transfer.receiver.platform} ${parentId}`;
-                return await Send.transfer(command.transfer, vendorField);
+                return await Send.transfer(command.transfer, vendorField, command.smallFooter);
             case "WITHDRAW":
                 // Check if the user requested WITHDRAW help:
                 if (!command.hasOwnProperty("transfer")) {
