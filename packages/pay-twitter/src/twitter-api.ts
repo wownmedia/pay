@@ -139,6 +139,18 @@ export class TwitterApi {
         }
     }
 
+    public async replyTweet(message: string, statusId: string): Promise<void> {
+        try {
+            await this.twit.post("statuses/update", {
+                status: message,
+                in_reply_to_status_id: statusId,
+            });
+            Core.logger.info(`postCommentReply: ${message}`);
+        } catch (e) {
+            Core.logger.error(`There was an error posting this tweet: ${e}`);
+        }
+    }
+
     private async getAppBearerToken(): Promise<string> {
         try {
             const credentials: string = `${this.consumerKey}:${this.consumerSecret}`;

@@ -231,11 +231,11 @@ export class PlatformTwitter {
                                     const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
 
                                     Core.logger.info(`Sending Tweet with mention of receiver: ${receiverId}`);
-                                    // if(data.id_str) {
-                                    //    this.twitterApi.replyTweet(message, data.id_str)
-                                    // } else {
-                                    this.twitterApi.postCommentReply(message);
-                                    // }
+                                    if (data.id_str) {
+                                        this.twitterApi.replyTweet(message, data.id_str);
+                                    } else {
+                                        this.twitterApi.postCommentReply(message);
+                                    }
                                 }
                             }
                         } catch (e) {
