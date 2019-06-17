@@ -145,7 +145,7 @@ export class TwitterApi {
                 status: message,
                 in_reply_to_status_id: statusId,
             });
-            Core.logger.info(`postCommentReply: ${message}`);
+            Core.logger.info(`replyTweet: ${message}`);
         } catch (e) {
             Core.logger.error(`There was an error posting this tweet: ${e}`);
         }
