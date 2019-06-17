@@ -288,10 +288,10 @@ const _EXPLORER = "https://explorer.ark.io";
 
 const _FOOTER =
     " \n\n --- \n\n " +
-    "[Use ArkTippr](https://np.reddit.com/r/arktippr/wiki/usage) | [FAQ](https://np.reddit.com/r/arktippr/wiki/faq) | [Ark.io](https://ark.io) | [Explore Ark](https://arkdirectory.com/) | [Terms of Use](https://np.reddit.com/r/arktippr/wiki/terms) | [r/arktippr](https://np.reddit.com/r/arktippr) \n\n " +
+    "[Use ArkTippr](https://arktippr.com) | [FAQ](https://np.reddit.com/r/arktippr/wiki/faq) | [Ark.io](https://ark.io) | [Explore Ark](https://arkdirectory.com/) | [Terms of Use](https://np.reddit.com/r/arktippr/wiki/terms) | [r/arktippr](https://np.reddit.com/r/arktippr) \n\n " +
     "Ark provides users, developers, and startups with innovative blockchain technologies. Point. Click. Blockchain.";
 
-const _SMALL_FOOTER = " \n\n " + "[ArkTippr](https://np.reddit.com/r/arktippr/wiki/usage) | [Ark.io](https://ark.io)";
+const _SMALL_FOOTER = " \n\n " + "https://arktippr.com | https://ark.io";
 
 const _SUMMONED_COMMENT =
     "ArkTippr tipbot here- I have been summoned, but I'm having trouble understanding what to do. " +
@@ -303,7 +303,7 @@ const _WITHDRAW_MESSAGE =
     "\n\n " +
     "You withdrew funds from your wallet successfully! \n\n " +
     "#amount# #token# ($#usdValue# USD) was transferred out of your #token# wallet.\n\n " +
-    "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
+    "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _BALANCE_MESSAGE =
     "\n\n " +
@@ -340,7 +340,7 @@ const _TRANSACTION_MESSAGE =
     "\n\n " +
     "Your #token# transaction to #receiver# on #platform# was successful!\n\n " +
     "You sent #amount# #token# ($#usdValue# USD) from your ArkTippr wallet.\n\n " +
-    "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
+    "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _TRANSACTION_RECEIVE_MESSAGE =
     "\n\n " +
@@ -351,8 +351,8 @@ const _TRANSACTION_RECEIVE_MESSAGE =
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _TIP_NOTIFICATION =
-    "#username#. You have received ` #amount# #token# ($#usdValue# USD) `! " +
-    "[Check on #token# blockchain](#explorer#/transaction/#transactionId#). ";
+    "#username#. You have received `#amount# #token# ($#usdValue# USD)`! " +
+    "Check on #token# blockchain: #explorer#/transaction/#transactionId#. ";
 
 const _STICKERS_NOTIFICATION =
     "#username#. You have received a free ArkStickers sticker set!\n\n " +
