@@ -102,7 +102,7 @@ export class TwitterApi {
     public async sendDirectMessage(username: string, message: string): Promise<void> {
         try {
             const recipientId: string = await this.getUserId(username);
-            this.twit.post(
+            await this.twit.post(
                 "direct_messages/events/new",
                 {
                     event: {
@@ -130,9 +130,13 @@ export class TwitterApi {
         }
     }
 
-    public async postCommentReply(commentID: string, message: string): Promise<boolean> {
-        // todo
-        return false;
+    public async postCommentReply(message: string): Promise<void> {
+        try {
+            // todo await this.twit.post('statuses/update', { status: message });
+            Core.logger.info(`postCommentReply: ${message}`);
+        } catch (e) {
+            Core.logger.error(`There was an error posting this tweet: ${e}`);
+        }
     }
 
     private async getAppBearerToken(): Promise<string> {

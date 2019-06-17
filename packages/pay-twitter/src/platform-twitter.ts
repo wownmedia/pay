@@ -210,10 +210,9 @@ export class PlatformTwitter {
                                         receiver.platform
                                     }`,
                                 );
-                                // await this.sendDirectMessage(
-                                //    receiver.username,
-                                //    reply.directMessageReceiver,
-                                // );
+
+                                const message = `@${receiver.username} ${reply.directMessageReceiver}`;
+                                await this.twitterApi.postCommentReply(message);
                             }
 
                             // Reply to a Merchant (that's you Justin)
@@ -232,10 +231,12 @@ export class PlatformTwitter {
                             }
 
                             // Reply to a Post or Comment
-                            // if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
-                            //    Core.logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
-                            //    await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
-                            // }
+                            if (
+                                reply.hasOwnProperty("replyComment") &&
+                                !(data.hasOwnProperty("type") && data.type === "message_create")
+                            ) {
+                                await this.twitterApi.postCommentReply(reply.replyComment);
+                            }
                         } catch (e) {
                             Core.logger.error(e.message);
                         }
