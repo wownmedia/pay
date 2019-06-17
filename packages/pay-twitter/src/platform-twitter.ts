@@ -326,7 +326,7 @@ export class PlatformTwitter {
                     platform,
                     sender,
                     receiver,
-                    eventData.id_str,
+                    eventData.in_reply_to_status_id_str,
                 );
                 Core.logger.info(`Commands: ${JSON.stringify(commands)}`);
 
