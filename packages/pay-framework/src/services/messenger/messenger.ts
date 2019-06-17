@@ -10,10 +10,14 @@ export class Messenger {
     /**
      * @dev Generate a HELP message to send to the user who requested HELP
      * @param command {string} The command to provide HELP about
+     * @param short {boolean} Return a short format message
      * @returns {Reply} Object containing help message for sender
      */
-    public static helpMessage(command: string): Reply {
-        const directMessageSender: string = Messages.helpMessage(command);
+    public static helpMessage(command: string, short?: boolean): Reply {
+        if (!short) {
+            short = false;
+        }
+        const directMessageSender: string = Messages.helpMessage(command, short);
         return { directMessageSender };
     }
 

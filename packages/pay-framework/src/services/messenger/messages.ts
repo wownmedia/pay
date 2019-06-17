@@ -8,8 +8,9 @@ export class Messages {
     /**
      * @dev Generate a HELP message
      * @param command
+     * @param short
      */
-    public static helpMessage(command: string): string {
+    public static helpMessage(command: string, short?: boolean): string {
         switch (command.toUpperCase()) {
             case "WITHDRAW":
                 return _HELP_WITHDRAW;
@@ -21,7 +22,7 @@ export class Messages {
                 return _HELP_STICKERS;
             case "HELP":
             default:
-                return _HELP;
+                return short ? _HELP_SHORT : _HELP;
         }
     }
 
@@ -388,9 +389,18 @@ const _HELP =
     "**DEPOSIT** or **ADDRESS** - To receive instructions on how to add to your balance\n\n " +
     "**WITHDRAW** - To receive instructions on how to withdraw funds to a different Ark wallet\n\n " +
     "**TIP** - To receive instructions on how to publicly tip a Reddit user\n\n " +
-    "**SEND** - To receive instructions on how to non-publicly send Ark to a Reddit user\n\n " +
+    "**SEND** - To receive instructions on how to non-publicly send Ark to a user\n\n " +
     "**STICKERS** - To receive instructions on how to give a Reddit user an ArkStickers.com sticker code\n\n " +
     "[You can also visit the Usage page of the ArkTippr Wiki](https://np.reddit.com/r/arktippr/wiki/usage)\n\n ";
+
+const _HELP_SHORT =
+    "\n\n " +
+    "Send me a direct message containing one (or more) of the following commands:\n\n " +
+    "BALANCE - To see your ArkTippr wallet balance\n\n " +
+    "DEPOSIT or ADDRESS - To receive instructions on how to add to your balance\n\n " +
+    "WITHDRAW - To receive instructions on how to withdraw funds to a different Ark wallet\n\n " +
+    "TIP - To receive instructions on how to publicly tip a Reddit user\n\n " +
+    "SEND - To receive instructions on how to non-publicly send Ark to a user\n\n ";
 
 const _HELP_WITHDRAW =
     "\n\n " +

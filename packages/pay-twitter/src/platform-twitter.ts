@@ -214,7 +214,9 @@ export class PlatformTwitter {
                                     }`,
                                 );
 
-                                const message = `@${receiver.username} ${reply.directMessageReceiver}`;
+                                const message = PlatformTwitter.undoTextFormatting(
+                                    `@${receiver.username} ${reply.directMessageReceiver}`,
+                                );
                                 this.twitterApi.postCommentReply(message);
                             }
 
@@ -238,7 +240,8 @@ export class PlatformTwitter {
                                 reply.hasOwnProperty("replyComment") &&
                                 !(data.hasOwnProperty("type") && data.type === "message_create")
                             ) {
-                                this.twitterApi.postCommentReply(reply.replyComment);
+                                const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
+                                this.twitterApi.postCommentReply(message);
                             }
                         } catch (e) {
                             Core.logger.error(e.message);

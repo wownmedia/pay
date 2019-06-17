@@ -51,7 +51,7 @@ export class Commander {
         switch (command.command) {
             case "REWARD":
             case "HELP":
-                return Help.getHelp(command.command);
+                return Help.getHelp(command.command, command.smallFooter);
             case "DEPOSIT":
             case "ADDRESS":
                 return await Deposit.getDeposit(command);
