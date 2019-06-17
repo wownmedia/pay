@@ -196,6 +196,7 @@ export class PlatformTwitter {
 
                             // Reply to the receiver of the command
                             if (reply.hasOwnProperty("directMessageReceiver")) {
+                                Core.logger.info("Message for receiver");
                                 // todo: check platform
                                 let youGot: string = command.command;
                                 if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("token")) {
