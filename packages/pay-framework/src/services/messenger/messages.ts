@@ -405,13 +405,13 @@ const _HELP_SHORT =
 
 const _HELP_WITHDRAW =
     "\n\n" +
-    "You can withdraw all the Ark in your ArkTippr wallet to a different wallet:\n\n" +
+    "You can withdraw the ARK (or supported BridgeChain tokens) in your ArkTippr wallet to a different wallet:\n\n" +
     "**To withdraw the total balance:** \n\n" +
     "WITHDRAW [token] <address> \n\n" +
     "You can also withdraw only some of the Ark in your ArkTippr wallet to a different wallet:\n\n" +
     "**To withdraw a partial balance:** \n\n" +
     "WITHDRAW [token] <address> [amount] \n\n" +
-    "`[token]` is the Ark Ecosystem token that you like to withdraw (e.g. ARK, XQR). If no token is declared, Ark is the default. \n\n" +
+    "`[token]` is the Ark Ecosystem token that you like to withdraw (e.g. ARK, XQR). If no token is declared, ARK is the default. \n\n" +
     "`<address>` should be a **valid wallet that you control**. WITHDRAW is irreversible so make sure the address is correct.\n\n" +
     "`[amount]` is the amount you like to withdraw *(e.g. 10, 1.5)* \n\n";
 
