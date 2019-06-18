@@ -57,12 +57,22 @@ export class Messenger {
      * @param amount {BigNumber}    Amount sender requested to transfer
      * @param token {string}        Token of the ArkEcosystem blockchain that is used in the command
      * @param address {string}      Wallet address of the Sender
+     * @param isComment {boolean}   True if the command comes from a comment and not a DM
      * @returns {Reply} Object with reply to send per direct message for sender and a reply to post to a comment
      */
-    public static senderLowBalance(balance: BigNumber, amount: BigNumber, token: string, address: string): Reply {
+    public static senderLowBalance(
+        balance: BigNumber,
+        amount: BigNumber,
+        token: string,
+        address: string,
+        isComment?: boolean,
+    ): Reply {
         const directMessageSender: string = Messages.senderLowBalance(balance, amount, token, address);
         const replyComment: string = Messages.errorComment();
-        return { directMessageSender, replyComment };
+        if (isComment) {
+            return { directMessageSender, replyComment };
+        }
+        return { directMessageSender };
     }
 
     /**
