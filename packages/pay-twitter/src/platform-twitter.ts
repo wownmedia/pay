@@ -247,14 +247,13 @@ export class PlatformTwitter {
             return null;
         }
 
-        const platform: string = "twitter";
-
         const messageId: string = eventData.hasOwnProperty("id_str") ? eventData.id_str : eventData.id.toString();
         // Check if we have already processed this entry
         if (!(await Services.Storage.Storage.isNewSubmission(messageId))) {
             return null;
         }
 
+        const platform: string = "twitter";
         if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
             // Received a Direct Message
             const directMessage: TwitterDirectMessage = eventData;
@@ -290,7 +289,7 @@ export class PlatformTwitter {
                 Core.logger.info(`Comment with Retweet from @${senderName} => ${eventData.text}`);
 
                 const receiver: Interfaces.Username = {
-                    username: eventData.quoted_status.in_reply_to_screen_name,
+                    username: eventData.quoted_status.user.screen_name,
                     platform,
                 };
 
