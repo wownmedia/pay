@@ -85,7 +85,7 @@ export class PlatformTwitter {
         text = PlatformTwitter.replaceAll(text, "**", "");
 
         // remove `
-        text = PlatformTwitter.replaceAll(text, "`", " ");
+        text = PlatformTwitter.replaceAll(text, "`", "");
 
         return text;
     }
