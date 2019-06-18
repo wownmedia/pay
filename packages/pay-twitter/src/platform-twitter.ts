@@ -196,8 +196,6 @@ export class PlatformTwitter {
                             if (command.command !== "STICKERS") {
                                 const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
 
-                                Core.logger.info(`REPLY: ${JSON.stringify(reply)}`);
-
                                 // Reply to the Sender of the command
                                 if (reply.hasOwnProperty("directMessageSender")) {
                                     Core.logger.info(
@@ -211,16 +209,14 @@ export class PlatformTwitter {
                                     this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
                                 }
 
-                                // Reply to a Post or Comment
-                                // todo REPLY TO TWEET!
+                                // (Reply to) a Tweet
                                 if (reply.hasOwnProperty("replyComment")) {
                                     const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
-
                                     Core.logger.info(`Sending Tweet with mention of receiver: ${receiverId}`);
                                     if (command.id) {
                                         this.twitterApi.replyTweet(message, command.id);
                                     } else {
-                                        this.twitterApi.postCommentReply(message);
+                                        this.twitterApi.tweet(message);
                                     }
                                 }
                             }

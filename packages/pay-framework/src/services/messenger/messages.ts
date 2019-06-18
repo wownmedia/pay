@@ -301,8 +301,8 @@ const _ERROR_MESSAGE = "\n\n" + "Sorry, something went wrong executing your comm
 
 const _WITHDRAW_MESSAGE =
     "\n\n " +
-    "You withdrew funds from your wallet successfully! \n\n " +
-    "#amount# #token# ($#usdValue# USD) was transferred out of your #token# wallet.\n\n " +
+    "You withdrew funds from your wallet successfully! \n\n" +
+    "#amount# #token# ($#usdValue# USD) was transferred out of your #token# wallet. \n\n" +
     "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _BALANCE_MESSAGE =
@@ -339,8 +339,8 @@ const _DEPOSIT_MESSAGE =
 
 const _TRANSACTION_MESSAGE =
     "\n\n " +
-    "Your #token# transaction to #receiver# on #platform# was successful!\n\n " +
-    "You sent #amount# #token# ($#usdValue# USD) from your ArkTippr wallet.\n\n " +
+    "Your #token# transaction to #receiver# on #platform# was successful!\n\n" +
+    "You sent #amount# #token# ($#usdValue# USD) from your ArkTippr wallet.\n\n" +
     "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _TRANSACTION_RECEIVE_MESSAGE =

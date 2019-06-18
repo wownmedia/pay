@@ -14,7 +14,6 @@ export class TwitterApi {
     private readonly environment: string;
     private readonly twitterClient: Twitter;
     private readonly twit: Twit;
-    private appBearerToken: string;
 
     constructor(config) {
         this.consumerSecret = config.consumerSecret;
@@ -23,17 +22,7 @@ export class TwitterApi {
         this.accessTokenSecret = config.accessTokenSecret;
         this.environment = config.environment;
 
-        // Retrieve a Bearer token from Twitter, a bit of a hack way since it's an async in a constructor
-        const temp = new Promise(resolve => {
-            this.getAppBearerToken().then(result => {
-                this.appBearerToken = result;
-                Core.logger.info(`appBearerToken: ${this.appBearerToken}`);
-                resolve(undefined);
-            });
-        });
-
-        Core.logger.info(`CK: ${this.consumerKey} CS: ${this.consumerSecret}`);
-        Core.logger.info(`AK: ${this.accessToken} AS: ${this.accessTokenSecret}`);
+        // To send messages and tweets
         this.twit = new Twit({
             consumer_key: this.consumerKey,
             consumer_secret: this.consumerSecret,
@@ -43,14 +32,13 @@ export class TwitterApi {
             strictSSL: false, // optional - requires SSL certificates to be valid.
         });
 
+        // To retrieve information about users
         this.twitterClient = new Twitter({
             consumer_key: this.consumerKey,
             consumer_secret: this.consumerSecret,
             access_token_key: this.accessToken,
             access_token_secret: this.accessTokenSecret,
         });
-
-        this.twitterClient.options.post_method = "formData";
     }
 
     public async getUsername(userId: string): Promise<string> {
@@ -130,7 +118,7 @@ export class TwitterApi {
         }
     }
 
-    public async postCommentReply(message: string): Promise<void> {
+    public async tweet(message: string): Promise<void> {
         try {
             await this.twit.post("statuses/update", { status: message });
             Core.logger.info(`postCommentReply: ${message}`);
@@ -150,54 +138,4 @@ export class TwitterApi {
             Core.logger.error(`There was an error posting this tweet: ${e}`);
         }
     }
-
-    private async getAppBearerToken(): Promise<string> {
-        try {
-            const credentials: string = `${this.consumerKey}:${this.consumerSecret}`;
-            const credentialsBase64Encoded: string = Buffer.from(credentials).toString("base64");
-            const response = await axios.request({
-                url: "https://api.twitter.com/oauth2/token",
-                method: "POST",
-                headers: {
-                    Authorization: `Basic ${credentialsBase64Encoded}`,
-                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-                },
-                data: "grant_type=client_credentials",
-            });
-            return response.data.access_token;
-        } catch (e) {
-            Core.logger.error(e.message);
-            return "";
-        }
-    }
-    /*
-    public async registerURL(): Promise<boolean> {
-        try {
-            const twitterClient = new Twitter({
-                consumer_key: this.consumerKey,
-                consumer_secret: this.consumerSecret,
-                access_token_key: this.accessToken,
-                access_token_secret: this.accessTokenSecret
-            });
-
-            const url: string = `/account_activity/all/${this.environment}/webhooks.json`;
-            twitterClient.post(url, {url: `${this.serverUrl}${this.route}`}, (errors: any[], response) => {
-                if (errors) {
-                    for (let item in errors) {
-                        if (errors[item]) {
-                            Core.logger.warn(`Register Webhook URL: Code ${errors[item].code} - ${errors[item].message}`);
-                        }
-                    }
-                }
-                Core.logger.info(`Response: ${JSON.stringify(response)}`);
-            });
-
-            return true;
-        } catch (e) {
-            Core.logger.warn(`Registering Webhook URL: ${e}`);
-            return false;
-        }
-    }
-
-     */
 }
