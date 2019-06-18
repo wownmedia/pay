@@ -428,7 +428,7 @@ const _HELP_TIP =
 
 const _HELP_SEND =
     "\n\n" +
-    "Sometimes, you will want to send ARK (or a supported BridgeChain token) to another user." +
+    "Sometimes, you will want to send ARK (or a supported BridgeChain token) to another user. " +
     "This is accomplished with the SEND command. It's more anonymous than Venmo, and more fun than Paypal :)\n\n" +
     "To transfer Ark to a user privately, send ArkTippr a private message like this:\n\n" +
     "SEND <username> <amount> [currency]\n\n" +
