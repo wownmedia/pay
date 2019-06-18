@@ -170,8 +170,9 @@ export class PlatformTwitter {
                 // We received a mention without a command
                 // Reply to the comment with a "I was summoned but have no clue what you want from me" message
                 const reply: Interfaces.Reply = Services.Messenger.Messenger.summonedMessage();
+                const message = `@${data.user.screen_name} - ${reply.replyComment}`;
                 Core.logger.info(`Sending Summoned Reply to comment: ${data.id_str}`);
-                await this.twitterApi.replyTweet(reply.replyComment, data.id_str);
+                await this.twitterApi.replyTweet(message, data.id_str);
             }
 
             if (commands.length > 0) {
