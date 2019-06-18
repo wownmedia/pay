@@ -427,15 +427,15 @@ const _HELP_TIP =
     "`[~]` enables a smaller footer on the public reply ArkTippr posts on a tip comment. \n\n ";
 
 const _HELP_SEND =
-    "\n\n " +
-    "Sometimes, you will want to send Ark to another user privately, without a public comment that everyone can see. " +
-    "This is accomplished with the SEND command. It's more anonymous than Venmo, and more fun than Paypal :)\n\n " +
-    "To transfer Ark to a user privately, send ArkTippr a private message like this:\n\n " +
-    "    SEND <username> <amount> [currency]\n\n " +
-    "`<username>` should be a **valid user**\n\n " +
-    "`<amount>` is the amount you like to send *(e.g. 10, 1.5)*\n\n " +
-    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
-    "If no currency is declared, Ark is the default.\n\n ";
+    "\n\n" +
+    "Sometimes, you will want to send ARK (or a supported BridgeChain token) to another user." +
+    "This is accomplished with the SEND command. It's more anonymous than Venmo, and more fun than Paypal :)\n\n" +
+    "To transfer Ark to a user privately, send ArkTippr a private message like this:\n\n" +
+    "SEND <username> <amount> [currency]\n\n" +
+    "`<username>` should be a **valid user**\n\n" +
+    "`<amount>` is the amount you like to send *(e.g. 10, 1.5)*\n\n" +
+    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies)." +
+    "If no currency is declared, ARK is the default.\n\n";
 
 const _HELP_STICKERS =
     "\n\n " +
