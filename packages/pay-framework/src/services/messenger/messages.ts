@@ -291,13 +291,13 @@ const _FOOTER =
     "[Use ArkTippr](https://arktippr.com) | [FAQ](https://np.reddit.com/r/arktippr/wiki/faq) | [Ark.io](https://ark.io) | [Explore Ark](https://arkdirectory.com/) | [Terms of Use](https://np.reddit.com/r/arktippr/wiki/terms) | [r/arktippr](https://np.reddit.com/r/arktippr) \n\n " +
     "Ark provides users, developers, and startups with innovative blockchain technologies. Point. Click. Blockchain.";
 
-const _SMALL_FOOTER = " \n\n " + "https://arktippr.com | https://ark.io";
+const _SMALL_FOOTER = " \n\n" + "https://arktippr.com | https://ark.io";
 
 const _SUMMONED_COMMENT =
     "ArkTippr tipbot here- I have been summoned, but I'm having trouble understanding what to do. " +
     "I do enjoy a zero before a decimal if that's the issue!";
 
-const _ERROR_MESSAGE = "\n\n " + "Sorry, something went wrong executing your command. Please try again later.\n\n ";
+const _ERROR_MESSAGE = "\n\n" + "Sorry, something went wrong executing your command. Please try again later.\n\n ";
 
 const _WITHDRAW_MESSAGE =
     "\n\n " +
@@ -322,11 +322,11 @@ const _ERROR_COMMENT =
 
 const _SEND_NO_BALANCE_MESSAGE =
     "\n\n " +
-    "Unfortunately, your #token# wallet does not have a sufficient balance for this transaction.\n\n " +
-    "You tried to send #amount# but your wallet only contains #balance#. " +
-    "Perhaps the transaction failed due to not accounting for the network transaction fee.\n\n " +
-    "Your #token# wallet address is ` #address# ` \n\n " +
-    "Add #token# to your balance at that address and retry.\n\n " +
+    "Unfortunately, your #token# wallet does not have a sufficient balance for this transaction.\n\n" +
+    "You tried to send #amount# but your wallet only contains #balance#.\n\n" +
+    "Perhaps the transaction failed due to not accounting for the network transaction fee.\n\n" +
+    "Your #token# wallet address is `#address#` \n\n" +
+    "Add #token# to your balance at that address and retry.\n\n" +
     "Thank you!\n\n ";
 
 const _DEPOSIT_MESSAGE =
