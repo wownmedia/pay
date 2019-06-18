@@ -166,7 +166,7 @@ export class PlatformTwitter {
                 return;
             }
 
-            if (commands.length === 0 && !data.hasOwnProperty("message_create")) {
+            if (commands.length === 0 && !data.hasOwnProperty("type")) {
                 // We received a mention without a command
                 // Reply to the comment with a "I was summoned but have no clue what you want from me" message
                 const reply: Interfaces.Reply = Services.Messenger.Messenger.summonedMessage();
