@@ -395,12 +395,12 @@ const _HELP =
 
 const _HELP_SHORT =
     "\n\n " +
-    "Send me a direct message containing one (or more) of the following commands:\n\n " +
-    "BALANCE - To see your ArkTippr wallet balance\n\n " +
-    "DEPOSIT or ADDRESS - To receive instructions on how to add to your balance\n\n " +
-    "WITHDRAW - To receive instructions on how to withdraw funds to a different Ark wallet\n\n " +
-    "TIP - To receive instructions on how to publicly tip a user\n\n " +
-    "SEND - To receive instructions on how to non-publicly send Ark to a user\n\n ";
+    "Send me a direct message containing one (or more) of the following commands:\n\n" +
+    "BALANCE - To see your ArkTippr wallet balance\n\n" +
+    "DEPOSIT or ADDRESS - To receive instructions on how to add to your balance\n\n" +
+    "WITHDRAW - To receive instructions on how to withdraw funds to a different Ark wallet\n\n" +
+    "TIP - To receive instructions on how to publicly tip a user\n\n" +
+    "SEND - To receive instructions on how to non-publicly send Ark to a user\n\n";
 
 const _HELP_WITHDRAW =
     "\n\n " +
