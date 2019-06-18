@@ -306,9 +306,9 @@ const _WITHDRAW_MESSAGE =
     "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _BALANCE_MESSAGE =
-    "\n\n " +
-    "Your ArkTippr #token# wallet balance is: #balance# #token# ($#usdValue# USD).\n\n " +
-    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply ` WITHDRAW #token# `.\n\n ";
+    "\n\n" +
+    "Your ArkTippr #token# wallet balance is: #balance# #token# ($#usdValue# USD).\n\n" +
+    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply `WITHDRAW #token#`.\n\n";
 
 const _MINIMAL_TRANSACTION_VALUE =
     "\n\n " +
