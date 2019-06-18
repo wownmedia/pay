@@ -242,6 +242,11 @@ export class PlatformTwitter {
     }
 
     private async filterEvent(eventData, userId): Promise<Interfaces.Command[]> {
+        // filter out activity pushes (while a user is typing etc)
+        if (!eventData.hasOwnProperty("id")) {
+            return null;
+        }
+
         const platform: string = "twitter";
 
         const messageId: string = eventData.hasOwnProperty("id_str") ? eventData.id_str : eventData.id.toString();
