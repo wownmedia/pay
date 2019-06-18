@@ -244,8 +244,9 @@ export class PlatformTwitter {
     private async filterEvent(eventData, userId): Promise<Interfaces.Command[]> {
         const platform: string = "twitter";
 
+        const messageId: string = eventData.hasOwnProperty("id_str") ? eventData.id_str : eventData.id.toString();
         // Check if we have already processed this entry
-        if (!(await Services.Storage.Storage.isNewSubmission(eventData.id_str))) {
+        if (!(await Services.Storage.Storage.isNewSubmission(messageId))) {
             return null;
         }
 
