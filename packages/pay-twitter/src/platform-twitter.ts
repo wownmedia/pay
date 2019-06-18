@@ -171,7 +171,7 @@ export class PlatformTwitter {
                 // Reply to the comment with a "I was summoned but have no clue what you want from me" message
                 const reply: Interfaces.Reply = Services.Messenger.Messenger.summonedMessage();
                 Core.logger.info(`Sending Summoned Reply to comment: ${data.id_str}`);
-                await this.twitterApi.replyTweet(data.id_str, reply.replyComment);
+                await this.twitterApi.replyTweet(reply.replyComment, data.id_str);
             }
 
             if (commands.length > 0) {
@@ -243,15 +243,14 @@ export class PlatformTwitter {
     private async filterEvent(eventData, userId): Promise<Interfaces.Command[]> {
         const platform: string = "twitter";
 
+        // Check if we have already processed this entry
+        if (!(await Services.Storage.Storage.isNewSubmission(eventData.id_str))) {
+            return null;
+        }
+
         if (eventData.hasOwnProperty("type") && eventData.type === "message_create") {
             // Received a Direct Message
             const directMessage: TwitterDirectMessage = eventData;
-
-            // Check if we have already processed this entry
-            if (!(await Services.Storage.Storage.isNewSubmission(directMessage.id))) {
-                return [];
-            }
-
             const senderName: string = await this.twitterApi.getUsername(directMessage.message_create.sender_id);
             const sender: Interfaces.Username = {
                 username: senderName,
@@ -271,10 +270,6 @@ export class PlatformTwitter {
             }
         } else if (eventData.hasOwnProperty("is_quote_status") && eventData.is_quote_status === true) {
             // Received a mention in a comment with a quoted retweet
-            // Check if we have already processed this entry
-            if (!(await Services.Storage.Storage.isNewSubmission(eventData.id_str))) {
-                return [];
-            }
 
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
@@ -311,10 +306,6 @@ export class PlatformTwitter {
             eventData.in_reply_to_screen_name !== null
         ) {
             // Received a mention in comment to a tweet
-            // Check if we have already processed this entry
-            if (!(await Services.Storage.Storage.isNewSubmission(eventData.id_str))) {
-                return [];
-            }
 
             // todo interface eventData
             const senderName: string = eventData.user.screen_name;
@@ -348,7 +339,7 @@ export class PlatformTwitter {
             }
         }
 
-        return [];
+        return null;
     }
 
     /**
