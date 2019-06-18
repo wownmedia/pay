@@ -329,12 +329,12 @@ const _SEND_NO_BALANCE_MESSAGE =
     "Thank you!\n\n ";
 
 const _DEPOSIT_MESSAGE =
-    "\n\n " +
-    "Your #token# address is:\n\n " +
-    "**#address#**\n\n " +
-    "Every #platform# user has their own unique #token# wallet address, and this one is yours!\n\n " +
-    "Add to your #token# wallet balance by sending #token# to this address.\n\n " +
-    "You can also add this address to any official #token# wallet in Watch-Only mode, to track your balance.\n\n ";
+    "\n\n" +
+    "Your #token# address is:\n\n" +
+    "**#address#**\n\n" +
+    "Every #platform# user has their own unique #token# wallet address, and this one is yours!\n\n" +
+    "Add to your #token# wallet balance by sending #token# to this address.\n\n" +
+    "You can also add this address to any official #token# wallet in Watch-Only mode, to track your balance.\n\n";
 
 const _TRANSACTION_MESSAGE =
     "\n\n " +
