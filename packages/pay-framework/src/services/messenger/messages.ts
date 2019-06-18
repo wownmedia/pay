@@ -309,7 +309,7 @@ const _BALANCE_MESSAGE =
     "\n\n" +
     "Your ArkTippr #token# wallet balance is: \n\n" +
     "#balance# #token# ($#usdValue# USD).\n\n" +
-    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply `WITHDRAW #token#`.\n\n";
+    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply: `WITHDRAW #token#`.\n\n";
 
 const _MINIMAL_TRANSACTION_VALUE =
     "\n\n " +
@@ -404,18 +404,16 @@ const _HELP_SHORT =
     "SEND - To receive instructions on how to non-publicly send Ark to a user\n\n";
 
 const _HELP_WITHDRAW =
-    "\n\n " +
-    "You can withdraw all the Ark in your ArkTippr wallet to a different wallet:\n\n " +
-    "**To withdraw the total balance:** \n\n " +
-    "    WITHDRAW [token] <address> \n\n " +
-    "You can also withdraw only some of the Ark in your ArkTippr wallet to a different wallet:\n\n " +
-    "**To withdraw a partial balance:** \n\n " +
-    "    WITHDRAW [token] <address> [amount] [currency] \n\n " +
-    "`[token]` is the Ark Ecosystem token that you like to withdraw (e.g. ARK, XQR). If no token is declared, Ark is the default. \n\n " +
-    "`<address>` should be a **valid wallet that you control**. WITHDRAW is irreversible so make sure the address is correct.\n\n " +
-    "`[amount]` is the amount you like to withdraw *(e.g. 10, 1.5)* \n\n " +
-    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies) " +
-    "If no currency is declared, Ark is the default. \n\n ";
+    "\n\n" +
+    "You can withdraw all the Ark in your ArkTippr wallet to a different wallet:\n\n" +
+    "**To withdraw the total balance:** \n\n" +
+    "WITHDRAW [token] <address> \n\n" +
+    "You can also withdraw only some of the Ark in your ArkTippr wallet to a different wallet:\n\n" +
+    "**To withdraw a partial balance:** \n\n" +
+    "WITHDRAW [token] <address> [amount] \n\n" +
+    "`[token]` is the Ark Ecosystem token that you like to withdraw (e.g. ARK, XQR). If no token is declared, Ark is the default. \n\n" +
+    "`<address>` should be a **valid wallet that you control**. WITHDRAW is irreversible so make sure the address is correct.\n\n" +
+    "`[amount]` is the amount you like to withdraw *(e.g. 10, 1.5)* \n\n";
 
 const _HELP_TIP =
     "\n\n " +
