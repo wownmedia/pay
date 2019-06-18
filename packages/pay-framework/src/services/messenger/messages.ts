@@ -15,7 +15,7 @@ export class Messages {
             case "WITHDRAW":
                 return _HELP_WITHDRAW;
             case "TIP":
-                return _HELP_TIP;
+                return short ? _HELP_TIP_SHORT : _HELP_TIP;
             case "SEND":
                 return _HELP_SEND;
             case "STICKERS":
@@ -416,15 +416,25 @@ const _HELP_WITHDRAW =
     "`[amount]` is the amount you like to withdraw *(e.g. 10, 1.5)* \n\n";
 
 const _HELP_TIP =
-    "\n\n " +
-    "To tip a user as a reward for good content, simply reply to the specific comment or post with: \n\n " +
-    "    <amount> [currency] u/arktippr\n\n " +
-    "This will transfer the `<amount> [currency]` converted to Ark from your ArkTippr Ark wallet to theirs - on-chain!\n\n " +
-    "If the other user did not set up an ArkTippr Ark wallet yet, it still works. The Ark is waiting for them on the blockchain!\n\n " +
-    "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n " +
-    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
-    "If no currency is declared, Ark is the default. \n\n " +
+    "\n\n" +
+    "To tip a user as a reward for good content, simply reply to the specific comment or post with: \n\n" +
+    "<amount> [currency] u/arktippr\n\n " +
+    "This will transfer the `<amount> [currency]` converted to ARK from your ArkTippr Ark wallet to theirs - on-chain!\n\n" +
+    "If the other user did not set up an ArkTippr Ark wallet yet, it still works. The ARK is waiting for them on the blockchain!\n\n" +
+    "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n" +
+    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies)." +
+    "If no currency is declared, ARK is the default. \n\n" +
     "`[~]` enables a smaller footer on the public reply ArkTippr posts on a tip comment. \n\n ";
+
+const _HELP_TIP_SHORT =
+    "\n\n" +
+    "To tip a user as a reward for good content, simply reply to or retweet the specific comment or tweet with: \n\n" +
+    "<amount> [currency] @ArkTippr\n\n " +
+    "This will transfer the `<amount> [currency]` converted to ARK from your ArkTippr ARK wallet to theirs - on-chain!\n\n" +
+    "If the other user did not set up an ArkTippr ARK wallet yet, it still works. The ARK is waiting for them on the blockchain!\n\n" +
+    "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n" +
+    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies)." +
+    "If no currency is declared, ARK is the default. \n\n";
 
 const _HELP_SEND =
     "\n\n" +
@@ -434,7 +444,7 @@ const _HELP_SEND =
     "SEND <username> <amount> [currency]\n\n" +
     "`<username>` should be a **valid user**\n\n" +
     "`<amount>` is the amount you like to send *(e.g. 10, 1.5)*\n\n" +
-    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies)." +
+    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
     "If no currency is declared, ARK is the default.\n\n";
 
 const _HELP_STICKERS =
