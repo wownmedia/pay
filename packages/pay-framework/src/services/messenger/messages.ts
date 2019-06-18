@@ -422,7 +422,7 @@ const _HELP_TIP =
     "This will transfer the `<amount> [currency]` converted to ARK from your ArkTippr Ark wallet to theirs - on-chain!\n\n" +
     "If the other user did not set up an ArkTippr Ark wallet yet, it still works. The ARK is waiting for them on the blockchain!\n\n" +
     "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n" +
-    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies)." +
+    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
     "If no currency is declared, ARK is the default. \n\n" +
     "`[~]` enables a smaller footer on the public reply ArkTippr posts on a tip comment. \n\n ";
 
