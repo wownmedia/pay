@@ -161,7 +161,18 @@ export class PlatformTwitter {
         this.userActivityWebhook.on("event", async (event, userId, data) => {
             const commands: Interfaces.Command[] = await this.filterEvent(data, userId);
 
-            // todo reply summoned message
+            if (commands === null) {
+                // Nothing to do here, bad command, no connection to DB or it was processed already by an other server
+                return;
+            }
+
+            if (commands.length === 0 && !data.hasOwnProperty("message_create")) {
+                // We received a mention without a command
+                // Reply to the comment with a "I was summoned but have no clue what you want from me" message
+                const reply: Interfaces.Reply = Services.Messenger.Messenger.summonedMessage();
+                Core.logger.info(`Sending Summoned Reply to comment: ${data.id_str}`);
+                await this.twitterApi.replyTweet(data.id_str, reply.replyComment);
+            }
 
             if (commands.length > 0) {
                 Core.logger.info(JSON.stringify(commands));

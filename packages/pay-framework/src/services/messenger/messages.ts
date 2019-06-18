@@ -313,7 +313,7 @@ const _BALANCE_MESSAGE =
 
 const _MINIMAL_TRANSACTION_VALUE =
     "\n\n " +
-    "You tried to execute a transaction below the minimum amount, #minValue#.\n\n " +
+    "You tried to execute a transaction below the minimum amount, #minValue#.\n\n" +
     "Please try again, with an amount of #minValue# or higher. Cheers!\n\n ";
 
 const _ERROR_COMMENT =
