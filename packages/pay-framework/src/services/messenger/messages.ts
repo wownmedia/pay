@@ -307,7 +307,8 @@ const _WITHDRAW_MESSAGE =
 
 const _BALANCE_MESSAGE =
     "\n\n" +
-    "Your ArkTippr #token# wallet balance is: #balance# #token# ($#usdValue# USD).\n\n" +
+    "Your ArkTippr #token# wallet balance is: \n\n" +
+    "#balance# #token# ($#usdValue# USD).\n\n" +
     "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply `WITHDRAW #token#`.\n\n";
 
 const _MINIMAL_TRANSACTION_VALUE =
