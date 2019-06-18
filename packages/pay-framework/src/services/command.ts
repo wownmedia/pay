@@ -63,7 +63,7 @@ export class Commander {
             case "TIP":
                 // Check if the user requested SEND/TIP help:
                 if (!command.hasOwnProperty("commandReplyTo")) {
-                    return Help.getHelp(command.command);
+                    return Help.getHelp(command.command, command.smallFooter);
                 }
                 const parentId: string = command.hasOwnProperty("id") ? command.id : "";
                 const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${
