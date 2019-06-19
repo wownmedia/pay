@@ -1,10 +1,6 @@
 import { Core } from "@cryptology.hk/pay-framework";
-import axios from "axios";
 import Twit from "twit";
 import Twitter from "twitter";
-
-// import crypto from "crypto";
-// import { TwitterAPIUserContext, TwitterOauthJSON, TwitterAPIRequestOptions } from "../interfaces";
 
 export class TwitterApi {
     private readonly consumerSecret: string;
@@ -105,7 +101,7 @@ export class TwitterApi {
                         },
                     },
                 },
-                (err, data) => {
+                err => {
                     if (!err) {
                         Core.logger.info("Message Sent.");
                     } else {

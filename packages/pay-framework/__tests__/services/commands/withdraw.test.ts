@@ -73,7 +73,7 @@ describe("pay-commands: Withdraw()", () => {
                 arkToshiValue: new BigNumber(2100000000),
             };
             const result: Reply = await Withdraw.transfer(transfer);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });

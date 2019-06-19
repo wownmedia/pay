@@ -117,7 +117,7 @@ describe("pay-messenger: Messenger()", () => {
             const amount: BigNumber = new BigNumber(2);
             const token = "ARK";
             const address = "abcd";
-            const result: Reply = Messenger.senderLowBalance(balance, amount, token, address);
+            const result: Reply = Messenger.senderLowBalance(balance, amount, token, address, true);
             expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
             expect(result.directMessageSender).toBeString();
             expect(result.replyComment).toBeString();

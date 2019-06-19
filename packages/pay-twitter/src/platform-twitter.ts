@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
 import twitterWebhooks from "twitter-webhooks";
-import { TwitterConfig, TwitterDirectMessage, TwitterKnownWebhooks } from "./interfaces";
+import { TwitterConfig, TwitterDirectMessage } from "./interfaces";
 import { TwitterApi } from "./twitter-api";
 
 const app = express();
@@ -231,10 +231,6 @@ export class PlatformTwitter {
         // Make sure there is a reverse HTTPS proxy in front of this port!
         const server = http.createServer({}, app);
         server.listen(this.twitterConfig.accountApiPort);
-    }
-
-    public async notifyAdmin(): Promise<boolean> {
-        return true;
     }
 
     private async filterEvent(eventData, userId): Promise<Interfaces.Command[]> {

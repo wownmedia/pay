@@ -110,3 +110,20 @@ export interface Wallet {
     encryptedSeed: string;
     seed?: string;
 }
+
+export interface TwitterCfg {
+    consumerKey: string;
+    consumerSecret: string;
+    accessToken: string;
+    accessTokenSecret: string;
+}
+
+export interface RedditCfg {
+    userAgent: string;
+    clientId: string;
+    clientSecret: string;
+    username: string;
+    password: string;
+    requestDelay: number;
+    continueAfterRatelimitError: boolean;
+}

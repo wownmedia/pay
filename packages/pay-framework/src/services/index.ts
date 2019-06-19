@@ -5,6 +5,7 @@ export * from "./network";
 export * from "./poller";
 export * from "./transaction";
 export * from "./user";
+export * from "./platform";
 
 import * as Commands from "./commands";
 import * as Currency from "./currency/";
