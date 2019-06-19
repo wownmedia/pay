@@ -107,6 +107,7 @@ export class PlatformTwitter {
     private readonly twitterConfig: TwitterConfig;
     private readonly twitterApi: TwitterApi;
     private readonly userActivityWebhook;
+    private platform: Services.Platform;
 
     constructor() {
         try {
@@ -124,6 +125,8 @@ export class PlatformTwitter {
                 environment: this.twitterConfig.environment,
                 app,
             });
+
+            this.platform = new Services.Platform();
         } catch (e) {
             Core.logger.error(e.message);
         }
@@ -187,8 +190,7 @@ export class PlatformTwitter {
                             command.smallFooter = true; // No large footers on Twitter, 140 Chars etc
 
                             // check receiver
-                            const receiverId = await this.checkReceiver(command);
-                            if (receiverId === null) {
+                            if (!(await this.checkReceiver(command))) {
                                 return;
                             }
 
@@ -209,10 +211,24 @@ export class PlatformTwitter {
                                     this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
                                 }
 
+                                // Reply to the receiver of the command
+                                let receiver: Interfaces.Username = command.commandReplyTo;
+                                if (command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")) {
+                                    receiver = command.transfer.receiver;
+                                }
+                                if (reply.hasOwnProperty("directMessageReceiver") && receiver.platform !== "twitter") {
+                                    Core.logger.info(
+                                        `Sending Direct Message to receiver: ${receiver.username} on ${
+                                            receiver.platform
+                                        }`,
+                                    );
+                                    await this.platform.notifyReceiver(receiver, reply);
+                                }
+
                                 // (Reply to) a Tweet
-                                if (reply.hasOwnProperty("replyComment")) {
+                                if (reply.hasOwnProperty("replyComment") && receiver.platform === "twitter") {
                                     const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
-                                    Core.logger.info(`Sending Tweet with mention of receiver: ${receiverId}`);
+                                    Core.logger.info(`Sending Tweet with mention of receiver: ${receiver.username}`);
                                     if (command.id) {
                                         this.twitterApi.replyTweet(message, command.id);
                                     } else {
@@ -346,7 +362,7 @@ export class PlatformTwitter {
      * @returns {Promise<boolean>}  True if receiver is valid on the platform
      * @private
      */
-    private async checkReceiver(command: Interfaces.Command): Promise<string> {
+    private async checkReceiver(command: Interfaces.Command): Promise<boolean> {
         const checkReceiver: Interfaces.Username =
             command.hasOwnProperty("transfer") && command.transfer.hasOwnProperty("receiver")
                 ? command.transfer.receiver
@@ -356,14 +372,13 @@ export class PlatformTwitter {
 
         // No receiver, so always good
         if (checkReceiver === null) {
-            return "";
+            return true;
         }
 
-        // todo platform independent: pay-platforms isValidUser(username, platform)
-        const receiverID: string = await this.twitterApi.getUserId(checkReceiver.username);
-        if (receiverID === null) {
+        const receiverOk: boolean = await this.platform.isValidUser(checkReceiver);
+        if (receiverOk === null) {
             Core.logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
         }
-        return receiverID;
+        return receiverOk;
     }
 }
