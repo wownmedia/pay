@@ -160,6 +160,7 @@ export class Platform {
     }
 
     public async tweet(message: string): Promise<void> {
+        logger.info(`TWEETING: ${message}`); // todo
         try {
             await this.twitter.post("statuses/update", { status: message });
             logger.info(`postCommentReply: ${message}`);
