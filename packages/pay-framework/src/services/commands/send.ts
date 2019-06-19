@@ -46,7 +46,7 @@ export class Send {
     public static async transfer(
         transfer: Transfer,
         vendorField: string,
-        smallFooter: boolean = false,
+        smallFooter: boolean = true,
         isComment?: boolean,
     ): Promise<Reply> {
         try {
