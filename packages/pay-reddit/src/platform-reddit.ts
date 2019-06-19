@@ -158,6 +158,8 @@ export class PlatformReddit {
      */
     public readonly platformConfig: Snoowrap;
 
+    private platform: Services.Platform;
+
     /**
      * @dev The configuration for the Snoowrap API
      */
@@ -182,6 +184,7 @@ export class PlatformReddit {
                 continueAfterRatelimitError: this.redditConfig.continueAfterRatelimitError,
             };
             this.platformConfig.config(parameters);
+            this.platform = new Services.Platform();
         } catch (e) {
             Core.logger.error(e.message);
         }
@@ -270,11 +273,16 @@ export class PlatformReddit {
                                             receiver.platform
                                         }`,
                                     );
+
+                                    await this.platform.notifyReceiver(receiver, reply);
+
+                                    /*
                                     await this.sendDirectMessage(
                                         receiver.username,
                                         reply.directMessageReceiver,
                                         subject,
                                     );
+                                    */
                                 }
 
                                 // Reply to a Merchant (that's you Justin)

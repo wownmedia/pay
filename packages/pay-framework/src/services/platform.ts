@@ -125,6 +125,8 @@ export class Platform {
 
     public async notifyReceiver(receiver: Username, reply: Reply): Promise<boolean> {
         try {
+            logger.info(`Sending Message to receiver: ${receiver.username} on ${receiver.platform}`);
+
             switch (receiver.platform) {
                 case "reddit":
                     // Notify a Reddit User
