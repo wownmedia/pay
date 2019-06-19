@@ -191,6 +191,16 @@ export class Platform {
             });
     }
 
+    public async isValidUser(user: Username): Promise<boolean> {
+        switch (user.platform) {
+            case "reddit":
+                return await this.isValidRedditUser(user.username);
+            case "twitter":
+                return (await this.getTwitterUserId(user.username)) !== null;
+        }
+        return false;
+    }
+
     /**
      * @dev Check if a username is a valid user on Reddit
      * @param username {string}     The username to check

@@ -425,8 +425,7 @@ export class PlatformReddit {
             return true;
         }
 
-        // todo platform independent: pay-platforms isValidUser(username, platform)
-        const receiverOk: boolean = await this.isValidUser(checkReceiver.username);
+        const receiverOk: boolean = await this.platform.isValidUser(checkReceiver);
         if (!receiverOk) {
             Core.logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
         }
