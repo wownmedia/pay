@@ -227,12 +227,15 @@ export class PlatformTwitter {
 
                                 // (Reply to) a Tweet
                                 if (reply.hasOwnProperty("replyComment") && receiver.platform === "twitter") {
-                                    const message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
+                                    let message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
                                     Core.logger.info(`Sending Tweet with mention of receiver: ${receiver.username}`);
                                     if (command.id) {
                                         this.twitterApi.replyTweet(message, command.id);
                                     } else {
-                                        this.twitterApi.tweet(`@${receiver.username} ${message}`);
+                                        if (!message.startsWith(`@${receiver.username}`)) {
+                                            message = `@${receiver.username} ${message}`;
+                                        }
+                                        this.twitterApi.tweet(message);
                                     }
                                 }
                             }
