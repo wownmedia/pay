@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { config } from "../../core";
+import { Username } from "../../interfaces";
 const arkEcoSytemConfig = config.get("arkEcosystem");
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
@@ -176,14 +177,16 @@ export class Messages {
 
     /**
      * @dev generate a TIP comment reply
-     * @param username
+     * @param receiver
+     * @param sender
      * @param transactionId
      * @param amount
      * @param usdValue
      * @param token
      */
     public static transferCommentReply(
-        username: string,
+        receiver: string,
+        sender: string,
         transactionId: string,
         amount: string,
         usdValue: string,
@@ -193,7 +196,8 @@ export class Messages {
         token = token.toUpperCase();
         const message: string = this.replaceAll(_TIP_NOTIFICATION, "#token#", token);
         return message
-            .replace("#username#", username)
+            .replace("#username#", receiver)
+            .replace("#sender#", sender)
             .replace("#amount#", amount)
             .replace("#usdValue#", usdValue)
             .replace("#transactionId#", transactionId)
@@ -352,7 +356,7 @@ const _TRANSACTION_RECEIVE_MESSAGE =
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _TIP_NOTIFICATION =
-    "#username# you have received `#amount# #token# ($#usdValue# USD)`! " +
+    "#username#, #sender# has sent you `#amount# #token# ($#usdValue# USD)`! " +
     "Check on #token# blockchain: #explorer#/transaction/#transactionId#. ";
 
 const _STICKERS_NOTIFICATION =

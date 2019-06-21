@@ -170,8 +170,13 @@ export class Messenger {
             token,
             address,
         );
+        const senderPlatform: string =
+            receiver.platform === sender.platform
+                ? senderUsernamePrefix + sender.username
+                : `${senderUsernamePrefix}${sender.username} at ${sender.platform}`;
         let replyComment: string = Messages.transferCommentReply(
             receiverUsernamePrefix + receiver.username,
+            senderPlatform,
             transactionId,
             amount,
             usdValueConverted,

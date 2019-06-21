@@ -39,8 +39,12 @@ configMock.mockImplementation(() => ({
             },
         ],
     },
-    reddit: {},
-    twitter: {},
+    reddit: {
+        usernamePrefix: "u/",
+    },
+    twitter: {
+        usernamePrefix: "@",
+    },
 }));
 
 import { Username } from "../../src/interfaces";
@@ -151,7 +155,7 @@ describe("pay-Parser: Parser()", () => {
                 const result: Command[] = await Parser.parseMention(
                     inputText,
                     mentionUser,
-                    platform,
+                    "twitter",
                     sender,
                     receiver,
                     id,
@@ -167,7 +171,7 @@ describe("pay-Parser: Parser()", () => {
                 const result: Command[] = await Parser.parseMention(
                     inputText,
                     mentionUser,
-                    platform,
+                    "twitter",
                     sender,
                     receiver,
                     id,
@@ -183,7 +187,7 @@ describe("pay-Parser: Parser()", () => {
                 const result: Command[] = await Parser.parseMention(
                     inputText,
                     mentionUser,
-                    platform,
+                    "twitter",
                     sender,
                     receiver,
                     id,

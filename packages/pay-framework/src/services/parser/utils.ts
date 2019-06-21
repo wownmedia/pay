@@ -325,7 +325,7 @@ export class ParserUtils {
      */
     public static findMentionedArkPayUser(mentionedUser: string, mentionParts: string[]): number {
         mentionedUser = mentionedUser.toUpperCase();
-        // todo
+        // todo remove logging
         logger.info(`first index: ${mentionParts.indexOf(mentionedUser)} for ${mentionedUser}`);
         logger.info(`last index: ${mentionParts.lastIndexOf(mentionedUser)}`);
         logger.info(`parts: ${JSON.stringify(mentionParts)}`);
@@ -337,11 +337,10 @@ export class ParserUtils {
 
         if (index === -1) {
             // Really? I know it is there, we got triggered by a mention after all, try uppercase...
-            // Start from the back of the array
             for (const item in mentionParts) {
-                if (typeof mentionParts !== "undefined") {
-                    const index: number = mentionParts.length - parseInt(item, 10);
-                    const checkForUser: string = mentionParts[index].toUpperCase();
+                if (typeof mentionParts[item] !== "undefined") {
+                    const checkForUser: string = mentionParts[item].toUpperCase();
+                    const index = parseInt(item, 10);
                     if (checkForUser.includes(mentionedUser) && index > 0) {
                         logger.info(`index: ${index}`);
                         return index;
