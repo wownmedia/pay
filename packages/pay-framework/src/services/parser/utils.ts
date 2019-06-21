@@ -1,6 +1,6 @@
-import { Address, configManager } from "@arkecosystem/crypto";
+import { Identities, Managers } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
-import { config } from "../../core";
+import { config, logger } from "../../core";
 import { CurrencySymbol } from "../../enums";
 import { AmountCurrency, BaseCurrency, Command, Transfer, Username } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
@@ -202,6 +202,7 @@ export class ParserUtils {
         const command = "SEND";
         const receiver: Username = ParserUtils.parseUsername(arg1, platform);
         const validUser: boolean = ParserUtils.isValidUser(receiver);
+
         if (validUser) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
@@ -407,24 +408,24 @@ export class ParserUtils {
      */
     public static async isValidAddress(address: string, token: string): Promise<boolean> {
         if (token === "ARK") {
-            configManager.setFromPreset("mainnet");
+            Managers.configManager.setFromPreset("mainnet");
         } else if (token === "DARK") {
-            configManager.setFromPreset("devnet");
+            Managers.configManager.setFromPreset("devnet");
         } else {
             try {
                 const networkConfig = await ArkTransaction.getNetworkConfig(token);
                 if (networkConfig === null) {
                     // Not a V2.4 network or newer
                     const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
-                    return Address.validate(address, networkVersion);
+                    return Identities.Address.validate(address, networkVersion);
                 }
-                configManager.setConfig(config);
+                Managers.configManager.setConfig(networkConfig);
             } catch (e) {
                 return false;
             }
         }
 
-        return Address.validate(address);
+        return Identities.Address.validate(address);
     }
 
     /**
@@ -557,7 +558,6 @@ export class ParserUtils {
         const requestedRewards: Transfer[] = [];
         let bodyParts: string[] = ParserUtils.splitMessageToParts(mentionBody, true);
         bodyParts = bodyParts.slice(mentionIndex + 1);
-
         for (const item in bodyParts) {
             if (typeof bodyParts[item] !== "undefined") {
                 const index: number = parseInt(item, 10);

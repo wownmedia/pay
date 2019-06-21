@@ -39,6 +39,8 @@ configMock.mockImplementation(() => ({
             },
         ],
     },
+    reddit: {},
+    twitter: {},
 }));
 
 import { Username } from "../../src/interfaces";

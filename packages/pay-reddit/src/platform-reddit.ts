@@ -252,15 +252,6 @@ export class PlatformReddit {
 
                                 // Reply to the receiver of the command
                                 if (reply.hasOwnProperty("directMessageReceiver")) {
-                                    // todo: check platform
-                                    let youGot: string = command.command;
-                                    if (
-                                        command.hasOwnProperty("transfer") &&
-                                        command.transfer.hasOwnProperty("token")
-                                    ) {
-                                        youGot = command.transfer.token;
-                                    }
-                                    const subject = `You've got ${youGot}!`;
                                     let receiver: Interfaces.Username = command.commandReplyTo;
                                     if (
                                         command.hasOwnProperty("transfer") &&
@@ -268,21 +259,7 @@ export class PlatformReddit {
                                     ) {
                                         receiver = command.transfer.receiver;
                                     }
-                                    Core.logger.info(
-                                        `Sending Direct Message to receiver: ${receiver.username} on ${
-                                            receiver.platform
-                                        }`,
-                                    );
-
                                     await this.platform.notifyReceiver(receiver, reply);
-
-                                    /*
-                                    await this.sendDirectMessage(
-                                        receiver.username,
-                                        reply.directMessageReceiver,
-                                        subject,
-                                    );
-                                    */
                                 }
 
                                 // Reply to a Merchant (that's you Justin)

@@ -7,6 +7,10 @@ import { Commander } from "./command";
 import { Currency } from "./currency";
 
 export class Platform {
+    /**
+     * @dev Remove all text formatting from the message
+     * @param text
+     */
     public static undoTextFormatting(text: string): string {
         // remove **
         text = Platform.replaceAll(text, "**", "");
@@ -17,6 +21,9 @@ export class Platform {
         return text;
     }
 
+    /**
+     * @dev Load the Reddit config from file
+     */
     private static loadRedditConfig(): RedditCfg {
         const platforms: any = config.get("platforms");
         if (!platforms || !platforms.hasOwnProperty("reddit")) {
@@ -39,6 +46,9 @@ export class Platform {
         return parsedConfig;
     }
 
+    /**
+     * @dev Load the Twitter config from file
+     */
     private static loadTwitterConfig(): TwitterCfg {
         const platforms: any = config.get("platforms");
         if (!platforms || !platforms.hasOwnProperty("twitter")) {
@@ -78,9 +88,9 @@ export class Platform {
         return target.split(search).join(replacement);
     }
 
-    private twitter: Twit;
-    private twitterClient: Twitter;
-    private reddit: Snoowrap;
+    private twitter: Twit; // Twitter client to Post
+    private twitterClient: Twitter; // Twitter client to get with Promise
+    private reddit: Snoowrap; // Reddit client
 
     constructor() {
         try {
@@ -101,7 +111,7 @@ export class Platform {
             };
             this.reddit.config(parameters);
 
-            // to post Tweets
+            // Used to post Tweets
             this.twitter = new Twit({
                 consumer_key: twitterConfig.consumerKey,
                 consumer_secret: twitterConfig.consumerSecret,
@@ -111,7 +121,7 @@ export class Platform {
                 strictSSL: false, // optional - requires SSL certificates to be valid.
             });
 
-            // To retrieve information about users
+            // Used to retrieve information about users
             this.twitterClient = new Twitter({
                 consumer_key: twitterConfig.consumerKey,
                 consumer_secret: twitterConfig.consumerSecret,
@@ -123,6 +133,12 @@ export class Platform {
         }
     }
 
+    /**
+     * @dev Notify a receiver on a platform
+     * @param receiver {Username}
+     * @param reply {Reply}
+     * @returns {Promise<boolean>}  True if no error occurs
+     */
     public async notifyReceiver(receiver: Username, reply: Reply): Promise<boolean> {
         try {
             logger.info(`Sending Message to receiver: ${receiver.username} on ${receiver.platform}`);
@@ -147,7 +163,8 @@ export class Platform {
                     if (twitterUserId !== null) {
                         const message: string = Platform.undoTextFormatting(reply.replyComment);
                         logger.info(`Sending Tweet with mention of receiver: ${receiver.username}`);
-                        this.tweet(message);
+                        await this.tweet(message);
+                        return true;
                     } else {
                         logger.error(`Not a valid Twitter user: ${receiver.username}`);
                     }
@@ -159,8 +176,11 @@ export class Platform {
         return false;
     }
 
+    /**
+     * @dev Send a Twitter user a notification of received funds via Tweet
+     * @param message  {string}
+     */
     public async tweet(message: string): Promise<void> {
-        logger.info(`TWEETING: ${message}`); // todo
         try {
             await this.twitter.post("statuses/update", { status: message });
             logger.info(`postCommentReply: ${message}`);
@@ -192,6 +212,11 @@ export class Platform {
             });
     }
 
+    /**
+     * @dev Chec k if a users exists on the platform
+     * @param user {Username}
+     * @returns {Promise<boolean>} True if the username exists on the platform
+     */
     public async isValidUser(user: Username): Promise<boolean> {
         switch (user.platform) {
             case "reddit":
@@ -227,17 +252,22 @@ export class Platform {
         }
     }
 
-    public async getTwitterUserId(username: string): Promise<string> {
+    /**
+     * @dev Retrieve a Twitter user id for a Twitter screen name
+     * @param screenName {string}
+     * @returns {Promise<string>} User Id
+     */
+    public async getTwitterUserId(screenName: string): Promise<string> {
         try {
             const getPath: string = "users/lookup.json";
             const parameter = {
-                screen_name: username,
+                screen_name: screenName,
             };
             return this.twitterClient
                 .get(getPath, parameter)
                 .then(users => {
                     if (users.lenght === 0 || !users[0].hasOwnProperty("id_str")) {
-                        throw new Error("Bad username");
+                        throw new Error("Bad screen name");
                     }
                     return users[0].id_str;
                 })

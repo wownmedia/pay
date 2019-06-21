@@ -22,6 +22,8 @@ configMock.mockImplementation(() => ({
             },
         ],
     },
+    reddit: {},
+    twitter: {},
 }));
 
 import { Reply, Username } from "../../../src/interfaces";
@@ -36,7 +38,7 @@ describe("pay-commands: Stickers()", () => {
     });
 
     describe("send()", () => {
-        it("should return an error Reply when sender does nopt have sufficient balance", async () => {
+        it("should return an error Reply when sender does not have sufficient balance", async () => {
             // Mock User.getWalletAddress()
             const getWalletAddressMock = jest.spyOn(User, "getWalletAddress");
             getWalletAddressMock.mockImplementation(() => Promise.resolve("XXX"));
