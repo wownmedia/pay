@@ -1,6 +1,9 @@
+import { config } from "../../core";
 import { Command, Username } from "../../interfaces";
 import { Commander } from "../command";
 import { ParserUtils } from "./utils";
+
+const platforms = config.get("platforms");
 
 /**
  * Parse textual input for commands and parameters
@@ -36,7 +39,10 @@ export class Parser {
         try {
             // Split up the mention so we can parse it for commands
             const mentionBodyParts: string[] = ParserUtils.splitMessageToParts(mentionBody, false);
-            arkPayUser = arkPayUser.toUpperCase();
+            const prefix: string = platforms.hasOwnProperty(platform.toLowerCase())
+                ? platforms[platform.toLowerCase()].usernamePrefix
+                : "";
+            arkPayUser = `${prefix}${arkPayUser.toUpperCase()}`;
             const mentionIndex: number = ParserUtils.findMentionedArkPayUser(arkPayUser, mentionBodyParts);
             const command: string = mentionBodyParts[mentionIndex - 1];
 

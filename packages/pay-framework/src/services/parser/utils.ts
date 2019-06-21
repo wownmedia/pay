@@ -325,7 +325,11 @@ export class ParserUtils {
      */
     public static findMentionedArkPayUser(mentionedUser: string, mentionParts: string[]): number {
         mentionedUser = mentionedUser.toUpperCase();
-        const index: number = mentionParts.indexOf(mentionedUser);
+        // todo
+        logger.info(`first index: ${mentionParts.indexOf(mentionedUser)} for ${mentionedUser}`);
+        logger.info(`last index: ${mentionParts.lastIndexOf(mentionedUser)}`);
+        logger.info(`parts: ${JSON.stringify(mentionParts)}`);
+        const index: number = mentionParts.lastIndexOf(mentionedUser);
 
         if (index === 0) {
             throw TypeError("Mentioned user as first entry in the message: where is the command?");
@@ -333,11 +337,14 @@ export class ParserUtils {
 
         if (index === -1) {
             // Really? I know it is there, we got triggered by a mention after all, try uppercase...
+            // Start from the back of the array
             for (const item in mentionParts) {
                 if (typeof mentionParts !== "undefined") {
-                    const checkForUser: string = mentionParts[item].toUpperCase();
-                    if (checkForUser.includes(mentionedUser) && parseInt(item, 10) > 0) {
-                        return parseInt(item, 10);
+                    const index: number = mentionParts.length - parseInt(item, 10);
+                    const checkForUser: string = mentionParts[index].toUpperCase();
+                    if (checkForUser.includes(mentionedUser) && index > 0) {
+                        logger.info(`index: ${index}`);
+                        return index;
                     }
                 }
             }

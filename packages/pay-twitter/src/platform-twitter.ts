@@ -162,7 +162,7 @@ export class PlatformTwitter {
 
         // listen to any user activity
         this.userActivityWebhook.on("event", async (event, userId, data) => {
-            const commands: Interfaces.Command[] = await this.filterEvent(data, userId);
+            const commands: Interfaces.Command[] = await this.filterEvent(data);
 
             if (commands === null) {
                 // Nothing to do here, bad command, no connection to DB or it was processed already by an other server
@@ -249,7 +249,7 @@ export class PlatformTwitter {
         server.listen(this.twitterConfig.accountApiPort);
     }
 
-    private async filterEvent(eventData, userId): Promise<Interfaces.Command[]> {
+    public async filterEvent(eventData): Promise<Interfaces.Command[]> {
         // filter out activity pushes (while a user is typing etc)
         if (!eventData.hasOwnProperty("id")) {
             return null;
