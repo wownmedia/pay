@@ -232,7 +232,7 @@ export class PlatformTwitter {
                                     if (command.id) {
                                         this.twitterApi.replyTweet(message, command.id);
                                     } else {
-                                        this.twitterApi.tweet(message);
+                                        this.twitterApi.tweet(`@${receiver.username} ${message}`);
                                     }
                                 }
                             }
