@@ -260,6 +260,7 @@ export class PlatformTwitter {
 
         const messageId: string = eventData.hasOwnProperty("id_str") ? eventData.id_str : eventData.id.toString();
         // Check if we have already processed this entry
+        Core.logger.info(`messageId: ${messageId}`); // todo
         if (!(await Services.Storage.Storage.isNewSubmission(messageId))) {
             return null;
         }
