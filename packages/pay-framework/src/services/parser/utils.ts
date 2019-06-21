@@ -315,6 +315,7 @@ export class ParserUtils {
      * @param platform
      */
     public static isValidPlatform(platform: string): boolean {
+        platform = platform.toLowerCase();
         return platforms.hasOwnProperty(platform);
     }
 
