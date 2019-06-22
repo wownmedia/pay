@@ -356,7 +356,7 @@ const _TRANSACTION_RECEIVE_MESSAGE =
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _TIP_NOTIFICATION =
-    "#username#, #sender# has sent you `#amount# #token# ($#usdValue# USD)`! " +
+    "#username# #sender# has sent you `#amount# #token# ($#usdValue# USD)`! " +
     "Check on #token# blockchain: #explorer#/transaction/#transactionId#. ";
 
 const _STICKERS_NOTIFICATION =
