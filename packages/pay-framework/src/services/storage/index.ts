@@ -51,7 +51,12 @@ export class Storage {
         const result = await payDatabase.query(query, [submissionId]);
         const submission = result.rows[0];
         logger.info(`check submission: ${JSON.stringify(submission)}`);
-        return typeof submission !== "undefined";
+        if (typeof submission === "undefined") {
+            return false;
+        }
+
+        // todo check claim
+        return true;
     }
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
@@ -78,10 +83,18 @@ export class Storage {
      */
     public static async isNewSubmission(submissionId: string): Promise<boolean> {
         try {
+            // Check if there isn't an entry yet for this submission
             if (await this.checkSubmission(submissionId)) {
                 return false;
             }
-            return await this.addSubmission(submissionId);
+
+            // Claim the submission
+            if (!(await this.addSubmission(submissionId))) {
+                return false;
+            }
+
+            // Check if this server's claim is valid
+            return await this.checkSubmission(submissionId);
         } catch (e) {
             // Most likely a DB connection error
             logger.error(e.message);
