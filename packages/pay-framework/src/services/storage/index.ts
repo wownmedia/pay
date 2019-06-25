@@ -100,7 +100,10 @@ export class Storage {
             }
 
             // Check if this server's claim is valid
-            return await this.checkSubmission(submissionId);
+            if (await this.checkSubmission(submissionId)) {
+                logger.info(`Claim to Submission ${submissionId} will be executed by this server.`);
+                return true;
+            }
         } catch (e) {
             // Most likely a DB connection error
             logger.error(e.message);
