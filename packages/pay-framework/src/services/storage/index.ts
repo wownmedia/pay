@@ -50,6 +50,7 @@ export class Storage {
         const query: string = "SELECT * FROM submissions WHERE submission = $1 LIMIT 1";
         const result = await payDatabase.query(query, [submissionId]);
         const submission = result.rows[0];
+        logger.info(`check submission: ${JSON.stringify(submission)}`);
         return typeof submission !== "undefined";
     }
 
