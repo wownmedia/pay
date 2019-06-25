@@ -59,7 +59,7 @@ export class Storage {
             throw new Error("Bad server configuration: No seed.");
         }
         const signedMessage: Interfaces.IMessage = Signature.sign(submissionId, serverConfig.seed);
-        const sql = "INSERT INTO submissions(submission, public_key, ) VALUES($1, $2, $3) RETURNING *";
+        const sql = "INSERT INTO submissions(submission, public_key, signature) VALUES($1, $2, $3) RETURNING *";
         const values = [submissionId, signedMessage.publicKey, signedMessage.signature];
 
         await payDatabase.query(sql, values);
