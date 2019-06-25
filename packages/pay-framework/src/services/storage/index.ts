@@ -1,4 +1,4 @@
-import { Interfaces } from "@arkecosystem/crypto";
+import { Crypto, Identities, Interfaces } from "@arkecosystem/crypto";
 import { config, logger, payDatabase } from "../../core";
 import { Wallet } from "../../interfaces";
 import { Signature } from "../signature";
@@ -61,8 +61,8 @@ export class Storage {
         if (!serverConfig.hasOwnProperty("seed")) {
             throw new Error("Bad server configuration: No seed.");
         }
-        const signedMessage: Interfaces.IMessage = Signature.sign(submissionId, serverConfig.seed);
-        return Signature.verify(submissionId, submission.signature, signedMessage.publicKey);
+        const publicKey: string = Identities.PublicKey.fromPassphrase(serverConfig.seed);
+        return Signature.verify(submissionId, submission.signature, publicKey);
     }
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
@@ -101,7 +101,7 @@ export class Storage {
 
             // Check if this server's claim is valid
             if (await this.checkSubmission(submissionId)) {
-                logger.info(`Claim to Submission ${submissionId} will be executed by this server.`);
+                logger.info(`Submission ${submissionId} will be executed by this server.`);
                 return true;
             }
         } catch (e) {
