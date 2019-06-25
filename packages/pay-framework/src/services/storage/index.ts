@@ -47,16 +47,22 @@ export class Storage {
     }
 
     public static async checkSubmission(submissionId: string): Promise<boolean> {
+        submissionId = submissionId.substring(0, 32);
         const query: string = "SELECT * FROM submissions WHERE submission = $1 LIMIT 1";
         const result = await payDatabase.query(query, [submissionId]);
         const submission = result.rows[0];
-        logger.info(`check submission: ${JSON.stringify(submission)}`);
+
+        // A new submission
         if (typeof submission === "undefined") {
             return false;
         }
 
-        // todo check claim
-        return true;
+        // the Submission exists, check the claim to execute by this server
+        if (!serverConfig.hasOwnProperty("seed")) {
+            throw new Error("Bad server configuration: No seed.");
+        }
+        const signedMessage: Interfaces.IMessage = Signature.sign(submissionId, serverConfig.seed);
+        return Signature.verify(submissionId, submission.signature, signedMessage.publicKey);
     }
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
