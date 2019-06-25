@@ -80,16 +80,6 @@ export class PlatformTwitter {
         return merchantsConfig[command].notify;
     }
 
-    private static undoTextFormatting(text: string): string {
-        // remove **
-        text = PlatformTwitter.replaceAll(text, "**", "");
-
-        // remove `
-        text = PlatformTwitter.replaceAll(text, "`", "");
-
-        return text;
-    }
-
     /**
      * @dev replace all occurences
      * @param target
@@ -205,7 +195,7 @@ export class PlatformTwitter {
                                             command.commandSender.username
                                         } on twitter`,
                                     );
-                                    const messageText: string = PlatformTwitter.undoTextFormatting(
+                                    const messageText: string = Services.Platform.undoTextFormatting(
                                         reply.directMessageSender,
                                     );
                                     this.twitterApi.sendDirectMessage(command.commandSender.username, messageText);
@@ -227,7 +217,7 @@ export class PlatformTwitter {
 
                                 // (Reply to) a Tweet
                                 if (reply.hasOwnProperty("replyComment") && receiver.platform === "twitter") {
-                                    let message: string = PlatformTwitter.undoTextFormatting(reply.replyComment);
+                                    let message: string = Services.Platform.undoTextFormatting(reply.replyComment);
                                     Core.logger.info(`Sending Tweet with mention of receiver: ${receiver.username}`);
                                     if (command.id) {
                                         this.twitterApi.replyTweet(message, command.id);
@@ -235,7 +225,7 @@ export class PlatformTwitter {
                                         if (!message.startsWith(`@${receiver.username}`)) {
                                             message = `@${receiver.username} ${message}`;
                                         }
-                                        this.twitterApi.tweet(message);
+                                        this.platform.tweet(message);
                                     }
                                 }
                             }
@@ -260,7 +250,6 @@ export class PlatformTwitter {
 
         const messageId: string = eventData.hasOwnProperty("id_str") ? eventData.id_str : eventData.id.toString();
         // Check if we have already processed this entry
-        Core.logger.info(`messageId: ${messageId}`); // todo
         if (!(await Services.Storage.Storage.isNewSubmission(messageId))) {
             return null;
         }

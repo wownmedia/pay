@@ -1,4 +1,4 @@
-import { Core } from "@cryptology.hk/pay-framework";
+import { Core, Services } from "@cryptology.hk/pay-framework";
 import Twit from "twit";
 import Twitter from "twitter";
 
@@ -10,6 +10,7 @@ export class TwitterApi {
     private readonly environment: string;
     private readonly twitterClient: Twitter;
     private readonly twit: Twit;
+    private platform: Services.Platform;
 
     constructor(config) {
         this.consumerSecret = config.consumerSecret;
@@ -35,6 +36,8 @@ export class TwitterApi {
             access_token_key: this.accessToken,
             access_token_secret: this.accessTokenSecret,
         });
+
+        this.platform = new Services.Platform();
     }
 
     public async getUsername(userId: string): Promise<string> {
@@ -60,32 +63,9 @@ export class TwitterApi {
         }
     }
 
-    public async getUserId(username: string): Promise<string> {
-        try {
-            const getPath: string = "users/lookup.json";
-            const parameter = {
-                screen_name: username,
-            };
-            return this.twitterClient
-                .get(getPath, parameter)
-                .then(users => {
-                    if (users.lenght === 0 || !users[0].hasOwnProperty("id_str")) {
-                        throw new Error("Bad username");
-                    }
-                    return users[0].id_str;
-                })
-                .catch(error => {
-                    throw error;
-                });
-        } catch (e) {
-            Core.logger.error(e.message);
-            return null;
-        }
-    }
-
     public async sendDirectMessage(username: string, message: string): Promise<void> {
         try {
-            const recipientId: string = await this.getUserId(username);
+            const recipientId: string = await this.platform.getTwitterUserId(username);
             await this.twit.post(
                 "direct_messages/events/new",
                 {
@@ -111,15 +91,6 @@ export class TwitterApi {
             );
         } catch (e) {
             Core.logger.error(e.message);
-        }
-    }
-
-    public async tweet(message: string): Promise<void> {
-        try {
-            await this.twit.post("statuses/update", { status: message });
-            Core.logger.info(`postCommentReply: ${message}`);
-        } catch (e) {
-            Core.logger.error(`There was an error posting this tweet: ${e}`);
         }
     }
 

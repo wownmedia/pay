@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS submissions (
-  submission varchar(30) PRIMARY KEY
+  submission varchar(32) PRIMARY KEY
 );

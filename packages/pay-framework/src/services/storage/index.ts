@@ -51,6 +51,7 @@ export class Storage {
     }
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
+        submissionId = submissionId.substring(0, 32);
         const sql = "INSERT INTO submissions(submission) VALUES($1) RETURNING *";
         const values = [submissionId];
 
