@@ -1,6 +1,9 @@
-import { logger } from "../../core";
-import { payDatabase } from "../../core";
+import { Interfaces } from "@arkecosystem/crypto";
+import { config, logger, payDatabase } from "../../core";
 import { Wallet } from "../../interfaces";
+import { Signature } from "../signature";
+
+const serverConfig = config.get("server");
 
 export class Storage {
     public static async getWallet(username: string, platform: string, token: string): Promise<Wallet> {
@@ -52,11 +55,17 @@ export class Storage {
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
         submissionId = submissionId.substring(0, 32);
-        const sql = "INSERT INTO submissions(submission) VALUES($1) RETURNING *";
-        const values = [submissionId];
+        if (!serverConfig.hasOwnProperty("seed")) {
+            throw new Error("Bad server configuration: No seed.");
+        }
+        const signedMessage: Interfaces.IMessage = Signature.sign(submissionId, serverConfig.seed);
+        const sql = "INSERT INTO submissions(submission, public_key, ) VALUES($1, $2, $3) RETURNING *";
+        const values = [submissionId, signedMessage.publicKey, signedMessage.signature];
 
         await payDatabase.query(sql, values);
-        logger.info(`New submission ${submissionId} has been added to the database.`);
+        logger.info(
+            `New submission ${submissionId} has been added to the database for public Key: ${signedMessage.publicKey}.`,
+        );
         return true;
     }
 
