@@ -26,7 +26,7 @@ export class Network {
                             transactions,
                         },
                         {
-                            headers: { "API-Version": 2 },
+                            headers: { "Content-Type": "application/json" },
                         },
                     );
                     results.push({ node: nodes[item], response: response.data });
