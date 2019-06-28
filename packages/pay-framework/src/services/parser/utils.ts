@@ -339,7 +339,6 @@ export class ParserUtils {
                     const checkForUser: string = mentionParts[item].toUpperCase();
                     const index = parseInt(item, 10);
                     if (checkForUser.includes(mentionedUser) && index > 0) {
-                        logger.info(`index: ${index}`);
                         return index;
                     }
                 }
