@@ -169,9 +169,6 @@ export class PlatformTwitter {
             // }
 
             if (commands.length > 0) {
-                Core.logger.info(JSON.stringify(commands));
-
-                // todo execute the commands
                 // Reply to them commands baby
                 for (const commandIndex in commands) {
                     if (commands[commandIndex]) {
@@ -266,9 +263,7 @@ export class PlatformTwitter {
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
-                Core.logger.info(
-                    `Direct Message Received from @${senderName} => ${directMessage.message_create.message_data.text}`,
-                );
+                Core.logger.info(`Direct Message Received from @${senderName}`);
                 return await Services.Parser.Parser.parseDirectMessage(
                     directMessage.message_create.message_data.text,
                     platform,
@@ -287,7 +282,7 @@ export class PlatformTwitter {
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
-                Core.logger.info(`Comment with Retweet from @${senderName} => ${eventData.text}`);
+                Core.logger.info(`Comment with Retweet from @${senderName}`);
 
                 const receiver: Interfaces.Username = {
                     username: eventData.quoted_status.user.screen_name,
@@ -323,7 +318,7 @@ export class PlatformTwitter {
 
             // Filter out our own sent messages
             if (this.twitterConfig.userId.toLowerCase() !== senderName.toLowerCase()) {
-                Core.logger.info(`Comment from @${senderName} => ${eventData.text}`);
+                Core.logger.info(`Comment from @${senderName}`);
                 const receiver: Interfaces.Username = {
                     username: eventData.in_reply_to_screen_name,
                     platform,
@@ -337,7 +332,6 @@ export class PlatformTwitter {
                     receiver,
                     eventData.in_reply_to_status_id_str,
                 );
-                Core.logger.info(`Commands: ${JSON.stringify(commands)}`);
 
                 if (commands === null) {
                     return [];

@@ -8,8 +8,9 @@ import { Currency } from "./currency";
 
 export class Platform {
     /**
-     * @dev Remove all text formatting from the message
-     * @param text
+     * @dev Remove all text formatting from the message (Twitter does not support markup)
+     * @param text {string}
+     * @returns {string} text without the markup elements
      */
     public static undoTextFormatting(text: string): string {
         // remove **
@@ -78,7 +79,7 @@ export class Platform {
     }
 
     /**
-     * @dev replace all occurences
+     * @dev replace all occurrences in a string
      * @param target
      * @param search
      * @param replacement

@@ -18,7 +18,7 @@
         "prettier": "prettier --write \"./*.{ts,js,json,md}\" \"./packages/**/*.{ts,js,json,md}\"",
         "setup": "yarn && yarn clean && yarn bootstrap && yarn build",
         "snyk": "./node_modules/.bin/snyk protect",
-        "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
+        "test": "snyk test && cross-env CORE_ENV=test jest --runInBand --forceExit",
         "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
         "version": "cross-env-shell ./scripts/version.sh",
         "deps:missing": "node ./scripts/deps/missing.js"
@@ -76,7 +76,7 @@
         "request": "^2.88.0",
         "request-promise": "^4.2.4",
         "rimraf": "^2.6.3",
-        "snyk": "^1.151.2",
+        "snyk": "^1.185.5",
         "ts-jest": "^24.0.2",
         "tslint": "^5.16.0",
         "tslint-config-prettier": "^1.18.0",
