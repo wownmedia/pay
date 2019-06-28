@@ -77,7 +77,6 @@ export class Stickers extends Send {
         stickerCode: string,
         smallFooter: boolean,
     ): Promise<Reply> {
-        logger.info("in send");
         const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
         const walletSender: Wallet = await Storage.getWallet(sender.username, sender.platform, token);
 

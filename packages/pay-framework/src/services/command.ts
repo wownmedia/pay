@@ -1,4 +1,3 @@
-import { logger } from "../core";
 import { Command, Reply } from "../interfaces";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
 import { Messenger } from "./messenger";
@@ -52,7 +51,6 @@ export class Commander {
         switch (command.command) {
             case "REWARD":
             case "HELP":
-                logger.info(`HELP requested: ${JSON.stringify(command)}`);
                 return Help.getHelp(command.command, command.smallFooter);
             case "DEPOSIT":
             case "ADDRESS":

@@ -326,10 +326,6 @@ export class ParserUtils {
      */
     public static findMentionedArkPayUser(mentionedUser: string, mentionParts: string[]): number {
         mentionedUser = mentionedUser.toUpperCase();
-        // todo remove logging
-        logger.info(`first index: ${mentionParts.indexOf(mentionedUser)} for ${mentionedUser}`);
-        logger.info(`last index: ${mentionParts.lastIndexOf(mentionedUser)}`);
-        logger.info(`parts: ${JSON.stringify(mentionParts)}`);
         const index: number = mentionParts.lastIndexOf(mentionedUser);
 
         if (index === 0) {
