@@ -45,6 +45,8 @@ configMock.mockImplementation(() => ({
             },
         ],
     },
+    reddit: {},
+    twitter: {},
 }));
 
 import { ParserUtils } from "../../src/services/parser/utils";

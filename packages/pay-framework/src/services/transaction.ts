@@ -1,4 +1,4 @@
-import { configManager, transactionBuilder } from "@arkecosystem/crypto";
+import { Managers, Transactions } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { config } from "../core";
@@ -30,15 +30,14 @@ export class ArkTransaction {
         // Load network specific config
         const config = await this.getNetworkConfig(token);
         if (config !== null) {
-            configManager.setConfig(config);
+            Managers.configManager.setConfig(config);
         }
 
-        let transaction = transactionBuilder
-            .transfer()
-            .amount(amount.toNumber())
+        let transaction = Transactions.BuilderFactory.transfer()
+            .amount(amount.toFixed(0))
             .recipientId(recipientId)
             .vendorField(vendorField)
-            .fee(fee.toNumber());
+            .fee(fee.toFixed(0));
 
         // todo: Remove this workaround for pre 2.4 networks that have a different epoch than ARK Devnet
         const epoch: string = this.getArkEcosystemEpochForToken(token);

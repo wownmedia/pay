@@ -1,6 +1,9 @@
-import { logger } from "../../core";
-import { payDatabase } from "../../core";
+import { Crypto, Identities, Interfaces } from "@arkecosystem/crypto";
+import { config, logger, payDatabase } from "../../core";
 import { Wallet } from "../../interfaces";
+import { Signature } from "../signature";
+
+const serverConfig = config.get("server");
 
 export class Storage {
     public static async getWallet(username: string, platform: string, token: string): Promise<Wallet> {
@@ -44,18 +47,67 @@ export class Storage {
     }
 
     public static async checkSubmission(submissionId: string): Promise<boolean> {
+        submissionId = submissionId.substring(0, 32);
         const query: string = "SELECT * FROM submissions WHERE submission = $1 LIMIT 1";
         const result = await payDatabase.query(query, [submissionId]);
         const submission = result.rows[0];
-        return typeof submission !== "undefined";
+
+        // A new submission
+        if (typeof submission === "undefined") {
+            return false;
+        }
+
+        // the Submission exists, check the claim to execute by this server
+        if (!serverConfig.hasOwnProperty("seed")) {
+            throw new Error("Bad server configuration: No seed.");
+        }
+        const publicKey: string = Identities.PublicKey.fromPassphrase(serverConfig.seed);
+        return Signature.verify(submissionId, submission.signature, publicKey);
     }
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
-        const sql = "INSERT INTO submissions(submission) VALUES($1) RETURNING *";
-        const values = [submissionId];
+        submissionId = submissionId.substring(0, 32);
+        if (!serverConfig.hasOwnProperty("seed")) {
+            throw new Error("Bad server configuration: No seed.");
+        }
+        const signedMessage: Interfaces.IMessage = Signature.sign(submissionId, serverConfig.seed);
+        const sql = "INSERT INTO submissions(submission, public_key, signature) VALUES($1, $2, $3) RETURNING *";
+        const values = [submissionId, signedMessage.publicKey, signedMessage.signature];
 
         await payDatabase.query(sql, values);
-        logger.info(`New submission ${submissionId} has been added to the database.`);
+        logger.info(
+            `New submission ${submissionId} has been added to the database for public Key: ${signedMessage.publicKey}.`,
+        );
         return true;
+    }
+
+    /**
+     * @dev Check if a message/mention was not processed before
+     * @param submissionId
+     * @returns {Promise<boolean>} True if the message was not processed already
+     * @public
+     */
+    public static async isNewSubmission(submissionId: string): Promise<boolean> {
+        try {
+            // Check if there isn't an entry yet for this submission
+            if (await this.checkSubmission(submissionId)) {
+                return false;
+            }
+
+            // Claim the submission
+            if (!(await this.addSubmission(submissionId))) {
+                return false;
+            }
+
+            // Check if this server's claim is valid
+            if (await this.checkSubmission(submissionId)) {
+                logger.info(`Submission ${submissionId} will be executed by this server.`);
+                return true;
+            }
+        } catch (e) {
+            // Most likely a DB connection error
+            logger.error(e.message);
+        }
+        return false;
     }
 }

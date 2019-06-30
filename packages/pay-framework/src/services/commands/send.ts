@@ -40,12 +40,14 @@ export class Send {
      * @param transfer {Transfer}   A parsed transfer
      * @param vendorField {string}  The text to place in the vendor field
      * @param smallFooter {boolean} True when user requested a small footer instead of a regular footer
+     * @param isComment {boolean}   True if the SEND comes from a comment instead of a DM
      * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
      */
     public static async transfer(
         transfer: Transfer,
         vendorField: string,
-        smallFooter: boolean = false,
+        smallFooter: boolean = true,
+        isComment?: boolean,
     ): Promise<Reply> {
         try {
             // Check if not sending to self
@@ -70,6 +72,7 @@ export class Send {
                     transfer.arkToshiValue,
                     transfer.token,
                     senderBalance.address,
+                    isComment,
                 );
             }
 

@@ -1,4 +1,4 @@
-import { crypto } from "@arkecosystem/crypto";
+import { Identities } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
 import { generateMnemonic } from "bip39";
 import Joi from "joi";
@@ -38,8 +38,8 @@ export class ArkWallet {
         // Create the wallet
         const seed: string = generateMnemonic();
         const encryptedSeed: string = SecureStorage.generateSecretFromSeed(seed);
-        const publicKey: string = crypto.getKeys(seed).publicKey;
-        const address: string = crypto.getAddress(publicKey, networkVersion);
+        const publicKey: string = Identities.PublicKey.fromPassphrase(seed);
+        const address: string = Identities.Address.fromPublicKey(publicKey, networkVersion);
 
         // Check the wallet
         Joi.assert({ address, encryptedSeed }, walletSchema);

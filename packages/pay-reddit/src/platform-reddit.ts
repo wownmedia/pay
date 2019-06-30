@@ -72,7 +72,7 @@ export class PlatformReddit {
             password: redditConfiguration.hasOwnProperty("password") ? redditConfiguration.password : null,
             requestDelay: 3000,
             continueAfterRatelimitError: true,
-            networks: redditConfiguration.hasOwnProperty("networks") ? redditConfiguration.admin : ["ARK"],
+            networks: redditConfiguration.hasOwnProperty("networks") ? redditConfiguration.networks : ["ARK"],
         };
 
         if (
@@ -158,6 +158,8 @@ export class PlatformReddit {
      */
     public readonly platformConfig: Snoowrap;
 
+    private platform: Services.Platform;
+
     /**
      * @dev The configuration for the Snoowrap API
      */
@@ -182,6 +184,7 @@ export class PlatformReddit {
                 continueAfterRatelimitError: this.redditConfig.continueAfterRatelimitError,
             };
             this.platformConfig.config(parameters);
+            this.platform = new Services.Platform();
         } catch (e) {
             Core.logger.error(e.message);
         }
@@ -249,15 +252,6 @@ export class PlatformReddit {
 
                                 // Reply to the receiver of the command
                                 if (reply.hasOwnProperty("directMessageReceiver")) {
-                                    // todo: check platform
-                                    let youGot: string = command.command;
-                                    if (
-                                        command.hasOwnProperty("transfer") &&
-                                        command.transfer.hasOwnProperty("token")
-                                    ) {
-                                        youGot = command.transfer.token;
-                                    }
-                                    const subject = `You've got ${youGot}!`;
                                     let receiver: Interfaces.Username = command.commandReplyTo;
                                     if (
                                         command.hasOwnProperty("transfer") &&
@@ -265,16 +259,7 @@ export class PlatformReddit {
                                     ) {
                                         receiver = command.transfer.receiver;
                                     }
-                                    Core.logger.info(
-                                        `Sending Direct Message to receiver: ${receiver.username} on ${
-                                            receiver.platform
-                                        }`,
-                                    );
-                                    await this.sendDirectMessage(
-                                        receiver.username,
-                                        reply.directMessageReceiver,
-                                        subject,
-                                    );
+                                    await this.platform.notifyReceiver(receiver, reply);
                                 }
 
                                 // Reply to a Merchant (that's you Justin)
@@ -417,8 +402,7 @@ export class PlatformReddit {
             return true;
         }
 
-        // todo platform independent: pay-platforms isValidUser(username, platform)
-        const receiverOk: boolean = await this.isValidUser(checkReceiver.username);
+        const receiverOk: boolean = await this.platform.isValidUser(checkReceiver);
         if (!receiverOk) {
             Core.logger.error(`Bad receiver: ${checkReceiver.username} on ${checkReceiver.platform}`);
         }

@@ -1,7 +1,8 @@
 import "jest-extended";
 
 // Mock Config
-import { config } from "@cryptology.hk/pay-framework";
+import { Core } from "@cryptology.hk/pay-framework";
+const config = new Core.Config();
 const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     reddit: {

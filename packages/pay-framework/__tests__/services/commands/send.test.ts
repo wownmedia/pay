@@ -280,7 +280,7 @@ describe("pay-commands: Send()", () => {
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";
-            const result: Reply = await Send.transfer(transfer, vendorField);
+            const result: Reply = await Send.transfer(transfer, vendorField, true, true);
             expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
@@ -309,7 +309,7 @@ describe("pay-commands: Send()", () => {
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";
-            const result: Reply = await Send.transfer(transfer, vendorField);
+            const result: Reply = await Send.transfer(transfer, vendorField, true, true);
             expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();

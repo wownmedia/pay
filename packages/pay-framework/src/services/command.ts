@@ -51,7 +51,7 @@ export class Commander {
         switch (command.command) {
             case "REWARD":
             case "HELP":
-                return Help.getHelp(command.command);
+                return Help.getHelp(command.command, command.smallFooter);
             case "DEPOSIT":
             case "ADDRESS":
                 return await Deposit.getDeposit(command);
@@ -61,13 +61,18 @@ export class Commander {
             case "TIP":
                 // Check if the user requested SEND/TIP help:
                 if (!command.hasOwnProperty("commandReplyTo")) {
-                    return Help.getHelp(command.command);
+                    return Help.getHelp(command.command, command.smallFooter);
                 }
                 const parentId: string = command.hasOwnProperty("id") ? command.id : "";
                 const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${
                     command.commandSender.platform
                 } >> ${command.transfer.receiver.username}@${command.transfer.receiver.platform} ${parentId}`;
-                return await Send.transfer(command.transfer, vendorField);
+                return await Send.transfer(
+                    command.transfer,
+                    vendorField,
+                    command.smallFooter,
+                    command.hasOwnProperty("id"),
+                );
             case "WITHDRAW":
                 // Check if the user requested WITHDRAW help:
                 if (!command.hasOwnProperty("transfer")) {

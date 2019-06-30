@@ -10,10 +10,14 @@ export class Messenger {
     /**
      * @dev Generate a HELP message to send to the user who requested HELP
      * @param command {string} The command to provide HELP about
+     * @param short {boolean} Return a short format message
      * @returns {Reply} Object containing help message for sender
      */
-    public static helpMessage(command: string): Reply {
-        const directMessageSender: string = Messages.helpMessage(command);
+    public static helpMessage(command: string, short?: boolean): Reply {
+        if (!short) {
+            short = false;
+        }
+        const directMessageSender: string = Messages.helpMessage(command, short);
         return { directMessageSender };
     }
 
@@ -53,12 +57,22 @@ export class Messenger {
      * @param amount {BigNumber}    Amount sender requested to transfer
      * @param token {string}        Token of the ArkEcosystem blockchain that is used in the command
      * @param address {string}      Wallet address of the Sender
+     * @param isComment {boolean}   True if the command comes from a comment and not a DM
      * @returns {Reply} Object with reply to send per direct message for sender and a reply to post to a comment
      */
-    public static senderLowBalance(balance: BigNumber, amount: BigNumber, token: string, address: string): Reply {
+    public static senderLowBalance(
+        balance: BigNumber,
+        amount: BigNumber,
+        token: string,
+        address: string,
+        isComment?: boolean,
+    ): Reply {
         const directMessageSender: string = Messages.senderLowBalance(balance, amount, token, address);
         const replyComment: string = Messages.errorComment();
-        return { directMessageSender, replyComment };
+        if (isComment) {
+            return { directMessageSender, replyComment };
+        }
+        return { directMessageSender };
     }
 
     /**
@@ -156,8 +170,13 @@ export class Messenger {
             token,
             address,
         );
+        const senderPlatform: string =
+            receiver.platform === sender.platform
+                ? senderUsernamePrefix + sender.username
+                : `${senderUsernamePrefix}${sender.username} at ${sender.platform}`;
         let replyComment: string = Messages.transferCommentReply(
             receiverUsernamePrefix + receiver.username,
+            senderPlatform,
             transactionId,
             amount,
             usdValueConverted,

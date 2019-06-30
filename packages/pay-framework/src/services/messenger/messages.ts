@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { config } from "../../core";
+import { Username } from "../../interfaces";
 const arkEcoSytemConfig = config.get("arkEcosystem");
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
@@ -8,20 +9,21 @@ export class Messages {
     /**
      * @dev Generate a HELP message
      * @param command
+     * @param short
      */
-    public static helpMessage(command: string): string {
+    public static helpMessage(command: string, short?: boolean): string {
         switch (command.toUpperCase()) {
             case "WITHDRAW":
                 return _HELP_WITHDRAW;
             case "TIP":
-                return _HELP_TIP;
+                return short ? _HELP_TIP_SHORT : _HELP_TIP;
             case "SEND":
                 return _HELP_SEND;
             case "STICKERS":
                 return _HELP_STICKERS;
             case "HELP":
             default:
-                return _HELP;
+                return short ? _HELP_SHORT : _HELP;
         }
     }
 
@@ -175,14 +177,16 @@ export class Messages {
 
     /**
      * @dev generate a TIP comment reply
-     * @param username
+     * @param receiver
+     * @param sender
      * @param transactionId
      * @param amount
      * @param usdValue
      * @param token
      */
     public static transferCommentReply(
-        username: string,
+        receiver: string,
+        sender: string,
         transactionId: string,
         amount: string,
         usdValue: string,
@@ -192,7 +196,8 @@ export class Messages {
         token = token.toUpperCase();
         const message: string = this.replaceAll(_TIP_NOTIFICATION, "#token#", token);
         return message
-            .replace("#username#", username)
+            .replace("#username#", receiver)
+            .replace("#sender#", sender)
             .replace("#amount#", amount)
             .replace("#usdValue#", usdValue)
             .replace("#transactionId#", transactionId)
@@ -287,31 +292,32 @@ const _EXPLORER = "https://explorer.ark.io";
 
 const _FOOTER =
     " \n\n --- \n\n " +
-    "[Use ArkTippr](https://np.reddit.com/r/arktippr/wiki/usage) | [FAQ](https://np.reddit.com/r/arktippr/wiki/faq) | [Ark.io](https://ark.io) | [Explore Ark](https://arkdirectory.com/) | [Terms of Use](https://np.reddit.com/r/arktippr/wiki/terms) | [r/arktippr](https://np.reddit.com/r/arktippr) \n\n " +
+    "[Use ArkTippr](https://arktippr.com) | [FAQ](https://np.reddit.com/r/arktippr/wiki/faq) | [Ark.io](https://ark.io) | [Explore Ark](https://arkdirectory.com/) | [Terms of Use](https://np.reddit.com/r/arktippr/wiki/terms) | [r/arktippr](https://np.reddit.com/r/arktippr) \n\n " +
     "Ark provides users, developers, and startups with innovative blockchain technologies. Point. Click. Blockchain.";
 
-const _SMALL_FOOTER = " \n\n " + "[ArkTippr](https://np.reddit.com/r/arktippr/wiki/usage) | [Ark.io](https://ark.io)";
+const _SMALL_FOOTER = " \n\n" + "https://arktippr.com | https://ark.io";
 
 const _SUMMONED_COMMENT =
     "ArkTippr tipbot here- I have been summoned, but I'm having trouble understanding what to do. " +
     "I do enjoy a zero before a decimal if that's the issue!";
 
-const _ERROR_MESSAGE = "\n\n " + "Sorry, something went wrong executing your command. Please try again later.\n\n ";
+const _ERROR_MESSAGE = "\n\n" + "Sorry, something went wrong executing your command. Please try again later.\n\n ";
 
 const _WITHDRAW_MESSAGE =
     "\n\n " +
-    "You withdrew funds from your wallet successfully! \n\n " +
-    "#amount# #token# ($#usdValue# USD) was transferred out of your #token# wallet.\n\n " +
-    "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
+    "You withdrew funds from your wallet successfully! \n\n" +
+    "#amount# #token# ($#usdValue# USD) was transferred out of your #token# wallet. \n\n" +
+    "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _BALANCE_MESSAGE =
-    "\n\n " +
-    "Your ArkTippr #token# wallet balance is: #balance# #token# ($#usdValue# USD).\n\n " +
-    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply ` WITHDRAW #token# `.\n\n ";
+    "\n\n" +
+    "Your ArkTippr #token# wallet balance is: \n\n" +
+    "#balance# #token# ($#usdValue# USD).\n\n" +
+    "For instructions on how to withdraw #token# from your ArkTippr wallet to a different #token# address, reply: `WITHDRAW #token#`.\n\n";
 
 const _MINIMAL_TRANSACTION_VALUE =
     "\n\n " +
-    "You tried to execute a transaction below the minimum amount, #minValue#.\n\n " +
+    "You tried to execute a transaction below the minimum amount, #minValue#.\n\n" +
     "Please try again, with an amount of #minValue# or higher. Cheers!\n\n ";
 
 const _ERROR_COMMENT =
@@ -320,26 +326,26 @@ const _ERROR_COMMENT =
 
 const _SEND_NO_BALANCE_MESSAGE =
     "\n\n " +
-    "Unfortunately, your #token# wallet does not have a sufficient balance for this transaction.\n\n " +
-    "You tried to send #amount# but your wallet only contains #balance#. " +
-    "Perhaps the transaction failed due to not accounting for the network transaction fee.\n\n " +
-    "Your #token# wallet address is ` #address# ` \n\n " +
-    "Add #token# to your balance at that address and retry.\n\n " +
+    "Unfortunately, your #token# wallet does not have a sufficient balance for this transaction.\n\n" +
+    "You tried to send #amount# but your wallet only contains #balance#.\n\n" +
+    "Perhaps the transaction failed due to not accounting for the network transaction fee.\n\n" +
+    "Your #token# wallet address is `#address#` \n\n" +
+    "Add #token# to your balance at that address and retry.\n\n" +
     "Thank you!\n\n ";
 
 const _DEPOSIT_MESSAGE =
-    "\n\n " +
-    "Your #token# address is:\n\n " +
-    "**#address#**\n\n " +
-    "Every #platform# user has their own unique #token# wallet address, and this one is yours!\n\n " +
-    "Add to your #token# wallet balance by sending #token# to this address.\n\n " +
-    "You can also add this address to any official #token# wallet in Watch-Only mode, to track your balance.\n\n ";
+    "\n\n" +
+    "Your #token# address is:\n\n" +
+    "**#address#**\n\n" +
+    "Every #platform# user has their own unique #token# wallet address, and this one is yours!\n\n" +
+    "Add to your #token# wallet balance by sending #token# to this address.\n\n" +
+    "You can also add this address to any official #token# wallet in Watch-Only mode, to track your balance.\n\n";
 
 const _TRANSACTION_MESSAGE =
     "\n\n " +
-    "Your #token# transaction to #receiver# on #platform# was successful!\n\n " +
-    "You sent #amount# #token# ($#usdValue# USD) from your ArkTippr wallet.\n\n " +
-    "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
+    "Your #token# transaction to #receiver# on #platform# was successful!\n\n" +
+    "You sent #amount# #token# ($#usdValue# USD) from your ArkTippr wallet.\n\n" +
+    "Check this transaction on the #token# blockchain: #explorer#/transaction/#transactionId#\n\n ";
 
 const _TRANSACTION_RECEIVE_MESSAGE =
     "\n\n " +
@@ -350,8 +356,8 @@ const _TRANSACTION_RECEIVE_MESSAGE =
     "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
 
 const _TIP_NOTIFICATION =
-    "#username#. You have received ` #amount# #token# ($#usdValue# USD) `! " +
-    "[Check on #token# blockchain](#explorer#/transaction/#transactionId#). ";
+    "#username# #sender# has sent you `#amount# #token# ($#usdValue# USD)`! " +
+    "Check on #token# blockchain: #explorer#/transaction/#transactionId#. ";
 
 const _STICKERS_NOTIFICATION =
     "#username#. You have received a free ArkStickers sticker set!\n\n " +
@@ -387,46 +393,63 @@ const _HELP =
     "**BALANCE** - To see your ArkTippr wallet balance\n\n " +
     "**DEPOSIT** or **ADDRESS** - To receive instructions on how to add to your balance\n\n " +
     "**WITHDRAW** - To receive instructions on how to withdraw funds to a different Ark wallet\n\n " +
-    "**TIP** - To receive instructions on how to publicly tip a Reddit user\n\n " +
-    "**SEND** - To receive instructions on how to non-publicly send Ark to a Reddit user\n\n " +
+    "**TIP** - To receive instructions on how to publicly tip a user\n\n " +
+    "**SEND** - To receive instructions on how to non-publicly send Ark to a user\n\n " +
     "**STICKERS** - To receive instructions on how to give a Reddit user an ArkStickers.com sticker code\n\n " +
     "[You can also visit the Usage page of the ArkTippr Wiki](https://np.reddit.com/r/arktippr/wiki/usage)\n\n ";
 
-const _HELP_WITHDRAW =
+const _HELP_SHORT =
     "\n\n " +
-    "You can withdraw all the Ark in your ArkTippr wallet to a different wallet:\n\n " +
-    "**To withdraw the total balance:** \n\n " +
-    "    WITHDRAW [token] <address> \n\n " +
-    "You can also withdraw only some of the Ark in your ArkTippr wallet to a different wallet:\n\n " +
-    "**To withdraw a partial balance:** \n\n " +
-    "    WITHDRAW [token] <address> [amount] [currency] \n\n " +
-    "`[token]` is the Ark Ecosystem token that you like to withdraw (e.g. ARK, XQR). If no token is declared, Ark is the default. \n\n " +
-    "`<address>` should be a **valid wallet that you control**. WITHDRAW is irreversible so make sure the address is correct.\n\n " +
-    "`[amount]` is the amount you like to withdraw *(e.g. 10, 1.5)* \n\n " +
-    "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies) " +
-    "If no currency is declared, Ark is the default. \n\n ";
+    "Send me a direct message containing one (or more) of the following commands:\n\n" +
+    "BALANCE - To see your ArkTippr wallet balance\n\n" +
+    "DEPOSIT or ADDRESS - To receive instructions on how to add to your balance\n\n" +
+    "WITHDRAW - To receive instructions on how to withdraw funds to a different Ark wallet\n\n" +
+    "TIP - To receive instructions on how to publicly tip a user\n\n" +
+    "SEND - To receive instructions on how to non-publicly send Ark to a user\n\n";
+
+const _HELP_WITHDRAW =
+    "\n\n" +
+    "You can withdraw the ARK (or supported BridgeChain tokens) in your ArkTippr wallet to a different wallet:\n\n" +
+    "**To withdraw the total balance:** \n\n" +
+    "WITHDRAW [token] <address> \n\n" +
+    "You can also withdraw only some of the Ark in your ArkTippr wallet to a different wallet:\n\n" +
+    "**To withdraw a partial balance:** \n\n" +
+    "WITHDRAW [token] <address> [amount] \n\n" +
+    "`[token]` is the Ark Ecosystem token that you like to withdraw (e.g. ARK, XQR). If no token is declared, ARK is the default. \n\n" +
+    "`<address>` should be a **valid wallet that you control**. WITHDRAW is irreversible so make sure the address is correct.\n\n" +
+    "`[amount]` is the amount you like to withdraw *(e.g. 10, 1.5)* \n\n";
 
 const _HELP_TIP =
-    "\n\n " +
-    "To tip a user as a reward for good content, simply reply to the specific comment or post with: \n\n " +
-    "    <amount> [currency] u/arktippr\n\n " +
-    "This will transfer the `<amount> [currency]` converted to Ark from your ArkTippr Ark wallet to theirs - on-chain!\n\n " +
-    "If the other user did not set up an ArkTippr Ark wallet yet, it still works. The Ark is waiting for them on the blockchain!\n\n " +
-    "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n " +
+    "\n\n" +
+    "To tip a user as a reward for good content, simply reply to the specific comment or post with: \n\n" +
+    "<amount> [currency] u/arktippr\n\n " +
+    "This will transfer the `<amount> [currency]` converted to ARK from your ArkTippr Ark wallet to theirs - on-chain!\n\n" +
+    "If the other user did not set up an ArkTippr Ark wallet yet, it still works. The ARK is waiting for them on the blockchain!\n\n" +
+    "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n" +
     "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
-    "If no currency is declared, Ark is the default. \n\n " +
+    "If no currency is declared, ARK is the default. \n\n" +
     "`[~]` enables a smaller footer on the public reply ArkTippr posts on a tip comment. \n\n ";
 
+const _HELP_TIP_SHORT =
+    "\n\n" +
+    "To tip a user as a reward for good content, simply reply to or retweet the specific comment or tweet with: \n\n" +
+    "<amount> [currency] @ArkTippr\n\n " +
+    "This will transfer the `<amount> [currency]` converted to ARK from your ArkTippr ARK wallet to theirs - on-chain!\n\n" +
+    "If the other user did not set up an ArkTippr ARK wallet yet, it still works. The ARK is waiting for them on the blockchain!\n\n" +
+    "`<amount>` is the amount you like to tip *(e.g. 10, 1.5)*\n\n" +
+    "`[currency]` is one of the supported currencies (https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
+    "If no currency is declared, ARK is the default. \n\n";
+
 const _HELP_SEND =
-    "\n\n " +
-    "Sometimes, you will want to send Ark to another Reddit user privately, without a public comment that everyone can see. " +
-    "This is accomplished with the SEND command. It's more anonymous than Venmo, and more fun than Paypal :)\n\n " +
-    "To transfer Ark to a Reddit user privately, send ArkTippr a private message like this:\n\n " +
-    "    SEND <username> <amount> [currency]\n\n " +
-    "`<username>` should be a **valid Reddit user**\n\n " +
-    "`<amount>` is the amount you like to send *(e.g. 10, 1.5)*\n\n " +
+    "\n\n" +
+    "Sometimes, you will want to send ARK (or a supported BridgeChain token) to another user. " +
+    "This is accomplished with the SEND command. It's more anonymous than Venmo, and more fun than Paypal :)\n\n" +
+    "To transfer Ark to a user privately, send ArkTippr a private message like this:\n\n" +
+    "SEND <username> <amount> [currency]\n\n" +
+    "`<username>` should be a **valid user**\n\n" +
+    "`<amount>` is the amount you like to send *(e.g. 10, 1.5)*\n\n" +
     "`[currency]` is one of the [supported currencies](https://np.reddit.com/r/arktippr/wiki/usage#wiki_supported_currencies). " +
-    "If no currency is declared, Ark is the default.\n\n ";
+    "If no currency is declared, ARK is the default.\n\n";
 
 const _HELP_STICKERS =
     "\n\n " +
@@ -434,12 +457,12 @@ const _HELP_STICKERS =
     "When you use the STICKERS command, you will give that user (or yourself) a code redeemable at ArkStickers.com for a sticker set, and it never expires!\n\n " +
     "There are two ways to accomplish this:\n\n " +
     "**1) Publicly reply to a comment or post** \n\n " +
-    "To send a Reddit user an ArkStickers sticker code, comment on their post or reply to their comment with:\n\n " +
+    "To send a user an ArkStickers sticker code, comment on their post or reply to their comment with:\n\n " +
     "    STICKERS u/arktippr\n\n " +
     "This will do the following:\n\n " +
     "1 Send Ѧ2 ARK from your balance to ArkStickers.com Ark wallet\n\n " +
     "2 Generate an ArkStickers stickers code\n\n " +
-    "3 Send the code privately to the user in question via Reddit private message.\n\n " +
+    "3 Send the code privately to the user in question via private message.\n\n " +
     "They will receive a code that you paid for in their messages Inbox, and they can use their code on ArkStickers.com to get their stickers for free " +
     "(no Ark transaction required for them).\n\n " +
     "Everyone on Reddit will see that you gave them stickers!\n\n " +
@@ -450,7 +473,7 @@ const _HELP_STICKERS =
     "This will do the following:\n\n " +
     "1 Send Ѧ2 ARK from your balance to ArkStickers.com Ark wallet\n\n " +
     "2 Generate an ArkStickers stickers code\n\n " +
-    "3 Send the code privately to the user in question via Reddit private message.\n\n " +
+    "3 Send the code privately to the user in question via private message.\n\n " +
     "*(This method allows you to get a code sent to yourself if you want to.)* \n\n " +
     "They will receive a code that you paid for in their messages Inbox, and they can use their code on ArkStickers.com to get their stickers for free " +
     "(no Ark transaction required for them).\n\n " +

@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+const { TwitterListener } = require("../dist");
+TwitterListener.listener().catch(e => {
+    console.log(`Error running Twitter Listener: ${e.message}`);
+});

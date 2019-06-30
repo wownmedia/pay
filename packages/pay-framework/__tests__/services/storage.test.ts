@@ -1,5 +1,12 @@
 import "jest-extended";
 
+// mock config
+import { config } from "../../src/core";
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation(() => ({
+    seed: "this is a top secret passphrase",
+}));
+
 // mock database
 import { payDatabase } from "../../src/core";
 import { Wallet } from "../../src/interfaces";
@@ -65,11 +72,17 @@ describe("pay-storage: Storage()", () => {
 
     describe("checkSubmission()", () => {
         const submission: string = "XXX";
-        it("should correctly find an exisitng submission", async () => {
+        it("should correctly find an existing submission for a registered server", async () => {
             const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
-                    rows: [{ submission: "XXX" }],
+                    rows: [
+                        {
+                            submission: "XXX",
+                            signature:
+                                "30450221008732a92a48455eb306879c0144e6473ac61036d5b2d460d5e67121f04349d92802202d11935a624b7ac158c015cb97c1edc9d92ad8cb495717c3c28c2e039970f365",
+                        },
+                    ],
                 }),
             );
             const result: boolean = await Storage.checkSubmission(submission);
@@ -84,7 +97,13 @@ describe("pay-storage: Storage()", () => {
             const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
-                    rows: [{ submission: "XXX" }],
+                    rows: [
+                        {
+                            submission: "XXX",
+                            signature:
+                                "30450221008732a92a48455eb306879c0144e6473ac61036d5b2d460d5e67121f04349d92802202d11935a624b7ac158c015cb97c1edc9d92ad8cb495717c3c28c2e039970f365",
+                        },
+                    ],
                 }),
             );
             const result: boolean = await Storage.addSubmission(submission);

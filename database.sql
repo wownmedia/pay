@@ -1,5 +1,4 @@
 #Setup the following tables in your database
-#Currently the system uses a table like users per bridgechain, that will change as soon as it is confirmed all is stable.
 
 CREATE TABLE IF NOT EXISTS users (
   username varchar(30) NOT NULL,
@@ -11,5 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS submissions (
-  submission varchar(30) PRIMARY KEY
+  submission varchar(32) PRIMARY KEY,
+  public_key varchar(66),
+  signature varchar
 );

@@ -1,6 +1,6 @@
-import { Address, configManager } from "@arkecosystem/crypto";
+import { Identities, Managers } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
-import { config } from "../../core";
+import { config, logger } from "../../core";
 import { CurrencySymbol } from "../../enums";
 import { AmountCurrency, BaseCurrency, Command, Transfer, Username } from "../../interfaces";
 import { ArkWallet } from "../ark-wallet";
@@ -17,6 +17,7 @@ const baseCurrency: BaseCurrency = {
     units: ARKTOSHI,
 };
 const arkEcosystemConfig = config.get("arkEcosystem");
+const platforms = config.get("platforms");
 
 // Use a ParserUtils class to be able to add these methods to Unit testing without exposing them to the module
 export class ParserUtils {
@@ -201,6 +202,7 @@ export class ParserUtils {
         const command = "SEND";
         const receiver: Username = ParserUtils.parseUsername(arg1, platform);
         const validUser: boolean = ParserUtils.isValidUser(receiver);
+
         if (validUser) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
             if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
@@ -308,8 +310,13 @@ export class ParserUtils {
         return !(!new BigNumber(user.username).isNaN() || !this.isValidPlatform(user.platform) || user.username === "");
     }
 
+    /**
+     * @dev Return true if the platform is in the configuration
+     * @param platform
+     */
     public static isValidPlatform(platform: string): boolean {
-        return platform === "reddit";
+        platform = platform.toLowerCase();
+        return platforms.hasOwnProperty(platform);
     }
 
     /**
@@ -319,7 +326,7 @@ export class ParserUtils {
      */
     public static findMentionedArkPayUser(mentionedUser: string, mentionParts: string[]): number {
         mentionedUser = mentionedUser.toUpperCase();
-        const index: number = mentionParts.indexOf(mentionedUser);
+        const index: number = mentionParts.lastIndexOf(mentionedUser);
 
         if (index === 0) {
             throw TypeError("Mentioned user as first entry in the message: where is the command?");
@@ -328,10 +335,11 @@ export class ParserUtils {
         if (index === -1) {
             // Really? I know it is there, we got triggered by a mention after all, try uppercase...
             for (const item in mentionParts) {
-                if (typeof mentionParts !== "undefined") {
+                if (typeof mentionParts[item] !== "undefined") {
                     const checkForUser: string = mentionParts[item].toUpperCase();
-                    if (checkForUser.includes(mentionedUser) && parseInt(item, 10) > 0) {
-                        return parseInt(item, 10);
+                    const index = parseInt(item, 10);
+                    if (checkForUser.includes(mentionedUser) && index > 0) {
+                        return index;
                     }
                 }
             }
@@ -402,24 +410,24 @@ export class ParserUtils {
      */
     public static async isValidAddress(address: string, token: string): Promise<boolean> {
         if (token === "ARK") {
-            configManager.setFromPreset("mainnet");
+            Managers.configManager.setFromPreset("mainnet");
         } else if (token === "DARK") {
-            configManager.setFromPreset("devnet");
+            Managers.configManager.setFromPreset("devnet");
         } else {
             try {
                 const networkConfig = await ArkTransaction.getNetworkConfig(token);
                 if (networkConfig === null) {
                     // Not a V2.4 network or newer
                     const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(token);
-                    return Address.validate(address, networkVersion);
+                    return Identities.Address.validate(address, networkVersion);
                 }
-                configManager.setConfig(config);
+                Managers.configManager.setConfig(networkConfig);
             } catch (e) {
                 return false;
             }
         }
 
-        return Address.validate(address);
+        return Identities.Address.validate(address);
     }
 
     /**
@@ -552,7 +560,6 @@ export class ParserUtils {
         const requestedRewards: Transfer[] = [];
         let bodyParts: string[] = ParserUtils.splitMessageToParts(mentionBody, true);
         bodyParts = bodyParts.slice(mentionIndex + 1);
-
         for (const item in bodyParts) {
             if (typeof bodyParts[item] !== "undefined") {
                 const index: number = parseInt(item, 10);

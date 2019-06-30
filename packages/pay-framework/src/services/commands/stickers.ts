@@ -19,6 +19,11 @@ export class Stickers extends Send {
      */
     public static async send(sender: Username, receiver: Username): Promise<Reply> {
         try {
+            // Can't send stickers to Twitter as the code will be seen publicly
+            if (receiver.platform === "twitter") {
+                return Messenger.errorMessage();
+            }
+
             // Prepare the transfer
             const price: BigNumber = this.getStickersPrice();
             const address: string = this.getStickersAddress();
@@ -27,7 +32,7 @@ export class Stickers extends Send {
             // Check if the Sender has sufficient balance
             const senderBalance: WalletBalance = await Send.senderHasBalance(sender, token, price);
             if (!senderBalance.success) {
-                return Messenger.senderLowBalance(senderBalance.balance, price, token, senderBalance.address);
+                return Messenger.senderLowBalance(senderBalance.balance, price, token, senderBalance.address, true);
             }
 
             // Generate the code

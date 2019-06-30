@@ -1,7 +1,7 @@
 {
-    "name": "@cryptology.hk/pay-reddit",
+    "name": "@cryptology.hk/pay-twitter",
     "version": "2.2.2",
-    "description": "Interface with the Reddit platform for ARK Pay.",
+    "description": "Interface with the Twitter platform for ARK Pay.",
     "license": "MIT",
     "author": "Marc Schot",
     "files": [
@@ -11,7 +11,7 @@
     "main": "dist/index",
     "types": "dist/index",
     "bin": {
-        "reddit-listener": "./bin/reddit-listener"
+        "reddit-listener": "./bin/reddit-twitter"
     },
     "scripts": {
         "build": "yarn clean && yarn compile",
@@ -38,10 +38,12 @@
     },
     "dependencies": {
         "@cryptology.hk/pay-framework": "^2.2.2",
-        "bignumber.js": "^9.0.0",
+        "body-parser": "^1.19.0",
+        "express": "^4.17.1",
         "joi": "^14.3.1",
-        "snoowrap": "^1.17.0",
-        "underscore": "^1.9.1"
+        "twit": "^2.2.11",
+        "twitter": "^1.7.1",
+        "twitter-webhooks": "^0.3.0"
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",
