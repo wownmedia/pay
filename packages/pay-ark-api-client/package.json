@@ -1,0 +1,52 @@
+{
+    "name": "@cryptology.hk/pay-api-client",
+    "version": "2.2.2",
+    "description": "Client Interface with the ARK Blockchain for ARK Pay.",
+    "license": "MIT",
+    "author": "Marc Schot",
+    "files": [
+        "dist",
+        "bin"
+    ],
+    "main": "dist/index",
+    "types": "dist/index",
+    "bin": {
+        "ark-pay-client": "./bin/ark-pay-client"
+    },
+    "scripts": {
+        "build": "yarn clean && yarn compile",
+        "build:watch": "yarn clean && yarn compile -w",
+        "clean": "del dist",
+        "compile": "../../node_modules/typescript/bin/tsc",
+        "docs": "../../node_modules/typedoc/bin/typedoc src --out docs",
+        "lint": "../../node_modules/tslint/bin/tslint -c ../../tslint.json 'src/**/*.ts' '__tests__/**/*.ts' --fix",
+        "prepublishOnly": "yarn build",
+        "publish:alpha": "npm publish --tag alpha",
+        "publish:beta": "npm publish --tag beta",
+        "publish:latest": "npm publish --tag latest",
+        "publish:rc": "npm publish --tag rc",
+        "pretest": "bash ../../scripts/pre-test.sh",
+        "test": "cross-env CORE_ENV=test jest --runInBand --forceExit",
+        "test:coverage": "cross-env CORE_ENV=test jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit",
+        "test:debug": "cross-env CORE_ENV=test node --inspect-brk ../../node_modules/.bin/jest --runInBand",
+        "test:watch": "cross-env CORE_ENV=test jest --runInBand --watch",
+        "test:watch:all": "cross-env CORE_ENV=test jest --runInBand --watchAll",
+        "updates": "../../node_modules/npm-check-updates/bin/npm-check-updates"
+    },
+    "jest": {
+        "preset": "../../jest-preset.json"
+    },
+    "dependencies": {
+        "@cryptology.hk/pay-framework": "^2.2.2"
+    },
+    "devDependencies": {
+        "@types/joi": "^14.3.3",
+        "jest-extended": "^0.11.1"
+    },
+    "engines": {
+        "node": ">=10.x"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
