@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 'use strict';
-require('dotenv').config();
 const { WebhookListener } = require("../dist");
 const { Core } = require("@cryptology.hk/pay-framework");
 
@@ -14,11 +13,10 @@ async function start () {
         const webhookListener = new WebhookListener();
         await webhookListener.start();
     } catch (e) {
-        Core.logger.error(e.message);
         throw e;
     }
 }
 
 start().catch(e => {
-    Core.logger.error('ARK Blockchain Command Monitor terminated with error');
+    Core.logger.error(`ARK Blockchain Command Monitor terminated with error: ${e.message}`);
 });
