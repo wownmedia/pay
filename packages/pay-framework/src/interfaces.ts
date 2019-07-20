@@ -98,6 +98,12 @@ export interface APITransaction {
     balance?: number;
     isDelegate?: boolean;
     vote?: string;
+    id?: string;
+    event?: string;
+    target?: string;
+    token?: string;
+    enabled?: boolean;
+    conditions?: any;
 }
 
 export interface TransactionResponse {

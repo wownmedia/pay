@@ -54,7 +54,7 @@ export class Network {
                 try {
                     const response = await axios.get(`${node}${request}`, {
                         params,
-                        headers: { "API-Version": 2 },
+                        headers: { "Content-Type": "application/json" },
                     });
 
                     if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
@@ -66,6 +66,52 @@ export class Network {
                 }
             }
         }
+        return null;
+    }
+
+    /**
+     * @dev Send a GET request to a node
+     * @param node {string} The node to where to GET
+     * @param request {string}  The request to GET (e.g. "/api/webhooks/xxx")
+     * @param params {Parameters}   Optional parameters
+     * @returns {Promise<ApiResponse>}  A response with the requested data
+     */
+    public static async getFromNode(node: string, request: string, params?: Parameters): Promise<ApiResponse> {
+        try {
+            const response = await axios.get(`${node}${request}`, {
+                params,
+                headers: { "Content-Type": "application/json" },
+            });
+            if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
+                logger.info(`Retrieved webhook data from ${node}`);
+                return response.data;
+            }
+        } catch (e) {
+            logger.error(e.message);
+        }
+
+        return null;
+    }
+
+    /**
+     * @dev Send a POST to a node
+     * @param node {string} The node to where to post to
+     * @param endPoint {string}  The endpoint to POST to (e.g. "/api/webhooks/xxx")
+     * @param data {any}   Optional data to POST
+     * @returns {Promise<TransactionResponse>}  A response from the node
+     */
+    public static async postToNode(node: string, endPoint: string, data?: any): Promise<ApiResponse> {
+        try {
+            const response = await axios.post(`${node}${endPoint}`, data, {
+                headers: { "Content-Type": "application/json" },
+            });
+            if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
+                return response.data;
+            }
+        } catch (e) {
+            logger.error(e.message);
+        }
+
         return null;
     }
 
