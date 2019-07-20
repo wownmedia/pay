@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-api-server",
-    "version": "2.2.2",
+    "version": "2.3.0",
     "description": "Interface with the ARK Blockchain for ARK Pay.",
     "license": "MIT",
     "author": "Marc Schot",
@@ -37,11 +37,15 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-framework": "^2.2.2"
+        "@arkecosystem/crypto": "^2.4.15",
+        "@cryptology.hk/pay-framework": "^2.3.0",
+        "env-paths": "^2.2.0",
+        "webhook-manager": "^1.0.2"
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",
-        "jest-extended": "^0.11.1"
+        "jest-extended": "^0.11.1",
+        "joi": "^14.3.1"
     },
     "engines": {
         "node": ">=10.x"

@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-api-client",
-    "version": "2.2.2",
+    "version": "2.3.0",
     "description": "Client Interface with the ARK Blockchain for ARK Pay.",
     "license": "MIT",
     "author": "Marc Schot",
@@ -37,7 +37,7 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-framework": "^2.2.2"
+        "@cryptology.hk/pay-framework": "^2.3.0"
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",

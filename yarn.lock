@@ -31,6 +31,35 @@
     tiny-glob "^0.2.6"
     wif "^2.0.6"
 
+"@arkecosystem/crypto@^2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/crypto/-/crypto-2.4.15.tgz#3c25392717c88d5b1734f6832574a02ab220ac81"
+  integrity sha512-dDHoSswVvxZQ8Z7ozY7Mnf6w4sjlMCVziM47sZOIynK7JlxtSWNBw6MdSUkKYREcJxPRUHVamHiF/AgtvVlZVQ==
+  dependencies:
+    "@hapi/joi" "^15.0.3"
+    ajv "^6.10.0"
+    ajv-keywords "^3.4.0"
+    bcrypto "^3.1.11"
+    bignumber.js "^8.1.1"
+    bip32 "^2.0.3"
+    bip39 "^3.0.2"
+    browserify-aes "^1.2.0"
+    bs58 "^4.0.1"
+    bs58check "^2.1.2"
+    buffer-xor "^2.0.2"
+    bytebuffer "^5.0.1"
+    dayjs "^1.8.14"
+    deepmerge "^3.2.0"
+    lodash.camelcase "^4.3.0"
+    lodash.get "^4.4.2"
+    lodash.set "^4.3.2"
+    lodash.sumby "^4.6.0"
+    node-forge "^0.8.4"
+    otplib "^11.0.0"
+    pluralize "^7.0.0"
+    tiny-glob "^0.2.6"
+    wif "^2.0.6"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.0.0-beta.35":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0.tgz#06e2ab19bdb535385559aabb5ba59729482800f8"
@@ -10854,6 +10883,14 @@ wcwidth@^1.0.0:
   integrity sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
   dependencies:
     defaults "^1.0.3"
+
+webhook-manager@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/webhook-manager/-/webhook-manager-1.0.2.tgz#c57fb95abe6a381e077f2e23e706f38d73001737"
+  integrity sha512-jeRgdzQbvc1om+i1fUKLQYYAIJjcFiZFuvMAREUl85QtnIU3HsWJfIzFKdqKGWXT1OcM/OB3Ho5C5s9c8uyxOw==
+  dependencies:
+    body-parser "^1.18.3"
+    express "^4.16.4"
 
 webidl-conversions@^4.0.2:
   version "4.0.2"
