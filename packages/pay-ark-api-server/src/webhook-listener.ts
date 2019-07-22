@@ -222,6 +222,7 @@ export class WebhookListener {
             Core.logger.info("Webhook loaded from file, checking if it is still active on the server");
             if (await this.checkWebhook(webhookConfig.id)) {
                 const token: string = await WebhookListener.tokenFromWebhookToken(webhookConfig.token);
+                Core.logger.info("Valid webhook registration found.");
                 return {
                     token32: token,
                     token64: webhookConfig.token,
