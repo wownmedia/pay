@@ -302,7 +302,11 @@ export class WebhookListener {
                 enabled: webhookAPIResults.data.enabled ? webhookAPIResults.data.enabled : null,
                 conditions: webhookAPIResults.data.conditions ? webhookAPIResults.data.conditions : null,
             };
-            Core.logger.info(`checkWebhook(): received ${JSON.stringify(webhookAPIResults.data)}`); // todo remove
+            Core.logger.info(
+                `checkWebhook(): received ${JSON.stringify(webhookAPIResults.data)} wallet: ${this.wallet} url: ${
+                    this.url
+                }`,
+            ); // todo remove
             // await WebhookListener.checkWebhookConfig(receivedWebhookConfig);
 
             if (webhookAPIResults.data.target === this.url && webhookAPIResults.data.conditions.value === this.wallet) {
