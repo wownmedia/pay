@@ -20,7 +20,7 @@ export class WebhookListener {
                 .length(36)
                 .required(),
             event: Joi.string()
-                .valid("transaction.forged")
+                .valid("transaction.applied")
                 .required(),
             target: Joi.string()
                 .uri(uriConfig)
@@ -264,7 +264,7 @@ export class WebhookListener {
             const postWebhookEndpoint = "/api/webhooks";
             const params = {
                 target: this.url,
-                event: "transaction.forged",
+                event: "transaction.applied",
                 conditions: [
                     {
                         key: "recipientId",
