@@ -220,14 +220,13 @@ export class WebhookListener {
 
             // Check if configured webhook is active and if the authorization matches
             Core.logger.info("Webhook loaded from file, checking if it is still active on the server");
-            const authorization: string = await this.checkWebhook(webhookConfig.id);
-            const token: string = await WebhookListener.tokenFromWebhookToken(webhookConfig.token);
-            await WebhookListener.validateResponse(authorization, webhookConfig.token, token);
-
-            return {
-                token32: token,
-                token64: webhookConfig.token,
-            };
+            if (await this.checkWebhook(webhookConfig.id)) {
+                const token: string = await WebhookListener.tokenFromWebhookToken(webhookConfig.token);
+                return {
+                    token32: token,
+                    token64: webhookConfig.token,
+                };
+            }
         } catch (e) {
             Core.logger.warn(`Webhook not configured (correctly), going to register a new webhook: ${e.message}`);
         }
@@ -287,7 +286,7 @@ export class WebhookListener {
         return null;
     }
 
-    private async checkWebhook(id: string): Promise<string> {
+    private async checkWebhook(id: string): Promise<boolean> {
         try {
             const getWebhookEndpoint = `/api/webhooks/${id}`;
             const webhookAPIResults: Interfaces.ApiResponse = await Services.Network.getFromNode(
@@ -307,14 +306,14 @@ export class WebhookListener {
 
             if (webhookAPIResults.data.target === this.url && webhookAPIResults.data.conditions.value === this.wallet) {
                 Core.logger.info(`Webhook confirmed for ${this.wallet}`);
-                return webhookAPIResults.data.token;
+                return true;
             }
 
             Core.logger.warn("checkWebhook(): Hey, this is not our webhook!");
         } catch (e) {
             Core.logger.error(`checkWebhook(): ${e.message}`);
         }
-        return null;
+        return false;
     }
 
     private async storeWebhook(webhookConfig: WebhookConfig): Promise<void> {
