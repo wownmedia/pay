@@ -126,7 +126,8 @@ export class WebhookListener {
             });
             webhookListener.on("/", async data => {
                 try {
-                    Core.logger.info(`Incoming webhook: ${data}`);
+                    console.log("Received webhook with following data:", data);
+                    // Core.logger.info(`Incoming webhook: ${data}`);
                     const authorization =
                         data.hasOwnProperty("headers") && data.headers.hasOwnProperty("authorization")
                             ? data.headers.authorization
