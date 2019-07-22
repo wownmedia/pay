@@ -303,9 +303,10 @@ export class WebhookListener {
                 conditions: webhookAPIResults.data.conditions ? webhookAPIResults.data.conditions : null,
             };
             Core.logger.info(`checkWebhook(): received ${JSON.stringify(receivedWebhookConfig)}`); // todo remove
-            await WebhookListener.checkWebhookConfig(receivedWebhookConfig);
+            // await WebhookListener.checkWebhookConfig(receivedWebhookConfig);
 
-            if (webhookAPIResults.data.target === this.url) {
+            if (webhookAPIResults.data.target === this.url && webhookAPIResults.data.conditions.value === this.wallet) {
+                Core.logger.info(`Webhook confirmed for ${this.wallet}`);
                 return webhookAPIResults.data.token;
             }
 
