@@ -219,6 +219,7 @@ export class WebhookListener {
             await WebhookListener.checkWebhookConfig(webhookConfig);
 
             // Check if configured webhook is active and if the authorization matches
+            Core.logger.info("Webhook loaded from file, checking if it is still active on the server");
             const authorization: string = await this.checkWebhook(webhookConfig.id);
             const token: string = await WebhookListener.tokenFromWebhookToken(webhookConfig.token);
             await WebhookListener.validateResponse(authorization, webhookConfig.token, token);
@@ -307,9 +308,9 @@ export class WebhookListener {
                 return webhookAPIResults.data.token;
             }
 
-            Core.logger.warn("Hey, this is not our webhook!");
+            Core.logger.warn("checkWebhook(): Hey, this is not our webhook!");
         } catch (e) {
-            Core.logger.error(e.message);
+            Core.logger.error(`checkWebhook(): ${e.message}`);
         }
         return null;
     }
