@@ -58,7 +58,14 @@ export class WebhookListener {
         return null;
     }
 
-    private static async validateResponse(authorization: string, webhookToken: string, verification: string) {
+    private static async validateResponse(
+        authorization: string,
+        webhookToken: string,
+        verification: string,
+    ): Promise<void> {
+        Core.logger.info(
+            `validateResponse(): authorization: ${authorization} webhookToken: ${webhookToken} verification: ${verification}`,
+        );
         const validationSchema = Joi.object().keys({
             authorization: Joi.string()
                 .token()
