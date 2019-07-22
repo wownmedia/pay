@@ -20,7 +20,7 @@ export class WebhookListener {
                 .length(36)
                 .required(),
             event: Joi.string()
-                .valid("round.created")
+                .valid("transaction.applied")
                 .required(),
             target: Joi.string()
                 .uri(uriConfig)
