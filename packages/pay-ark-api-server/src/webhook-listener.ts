@@ -265,6 +265,7 @@ export class WebhookListener {
             const params = {
                 target: this.url,
                 event: "transaction.applied",
+                conditions: [],
             };
             /*
                 event: "transaction.applied",
