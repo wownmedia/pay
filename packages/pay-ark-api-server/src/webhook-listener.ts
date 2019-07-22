@@ -302,6 +302,7 @@ export class WebhookListener {
                 enabled: webhookAPIResults.data.enabled ? webhookAPIResults.data.enabled : null,
                 conditions: webhookAPIResults.data.conditions ? webhookAPIResults.data.conditions : null,
             };
+            Core.logger.info(`checkWebhook(): received ${JSON.stringify(receivedWebhookConfig)}`); // todo remove
             await WebhookListener.checkWebhookConfig(receivedWebhookConfig);
 
             if (webhookAPIResults.data.target === this.url) {
