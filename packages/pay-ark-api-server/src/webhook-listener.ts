@@ -268,6 +268,7 @@ export class WebhookListener {
                 postWebhookEndpoint,
                 params,
             );
+            Core.logger.info(`registerWebhook(): ${JSON.stringify(webhookAPIResults)}`);
             const receivedWebhookConfig: WebhookConfig = {
                 id: webhookAPIResults.data.id ? webhookAPIResults.data.id : null,
                 event: webhookAPIResults.data.event ? webhookAPIResults.data.event : null,
