@@ -95,6 +95,8 @@ export class WebhookListener {
             const networkVersion: number = 23; // todo maybe make this configurable so listeners can be added to other blockchains
             const publicKey: string = Identities.PublicKey.fromPassphrase(this.seed);
             this.wallet = Identities.Address.fromPublicKey(publicKey, networkVersion);
+
+            Core.logger.info(`constructor() wallet ${this.wallet}`);
         } catch (e) {
             Core.logger.error(e.message);
         }
@@ -106,7 +108,7 @@ export class WebhookListener {
             this.webhookToken = await this.loadWebhook();
 
             if (this.webhookToken.token32 === null) {
-                Core.logger.error("Could not register or cfonnectto a webhook");
+                Core.logger.error("Could not register or connect to a webhook");
                 return;
             }
 
@@ -211,6 +213,7 @@ export class WebhookListener {
 
     private async loadWebhook(): Promise<WebhookToken> {
         try {
+            Core.logger.info(`Loading webhook from: ${this.webhookConfigFile}`);
             // Check if an existing webhook is correctly registered
             const webhookConfig: WebhookConfig = require(this.webhookConfigFile);
             await WebhookListener.checkWebhookConfig(webhookConfig);
@@ -277,7 +280,7 @@ export class WebhookListener {
             await this.storeWebhook(receivedWebhookConfig);
             return webhookAPIResults.data.token;
         } catch (e) {
-            Core.logger.error(e.message);
+            Core.logger.error(`registerWebhook(): ${e.message}`);
         }
         return null;
     }
