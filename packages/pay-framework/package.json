@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-framework",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "description": "Application Framework for ARK pay",
     "license": "MIT",
     "author": "Marc Schot",
