@@ -14,3 +14,8 @@ CREATE TABLE IF NOT EXISTS submissions (
   public_key varchar(66),
   signature varchar
 );
+
+CREATE TABLE IF NOT EXISTS platforms (
+  platform varchar(30) PRIMARY KEY,
+  address varchar(34) NOT NULL
+);
