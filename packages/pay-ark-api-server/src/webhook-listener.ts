@@ -126,8 +126,6 @@ export class WebhookListener {
             });
             webhookListener.on("/", async data => {
                 try {
-                    console.log("Received webhook with following data:", data);
-                    // Core.logger.info(`Incoming webhook: ${data}`);
                     const authorization =
                         data.hasOwnProperty("headers") && data.headers.hasOwnProperty("authorization")
                             ? data.headers.authorization
@@ -151,33 +149,56 @@ export class WebhookListener {
         // todo
         Core.logger.info(`Process Response: ${JSON.stringify(data)}`);
 
-        // COMMANDS: REGISTER, SEND, DEPOSIT, BALANCE, WITHDRAW
-        /*
-        request:  { command: REGISTER, platform: UNIQUE-NAME }
-        response: { id: TX-ID, registered: true/false, error?: ERROR }
-
-        request:  { command: SEND, senderId: marc1970, receiverId: mschot@twitter, amount: 10, currency: ARK }
-        response: { id: TX-ID, transactionId: TX-ID2, explorer: http://exlplorer, error?: NOT ENOUGH FUNDS }
-
-        request:  { command: DEPOSIT, senderId: marc1970, currency?: ARK }
-        response: { id: TX-ID, address: address }
-
-        request:  { command: BALANCE, senderId: marc1970, currency?: ARK }
-        response: { id: TX-ID: balance: 0 }
-
-        request:  { command: WITHDRAW, senderId: marc1970, address: address, amount: 0, currency?: ARK }
-        response: { id: TX-ID, transactionId: TX-ID2, explorer: http://exlplorer, error?: NOT ENOUGH FUNDS }
-         */
-
-        // check if send amount in tx is above level
-
         // check if address is from registered platform
 
-        // parse command
+        try {
+            const command = JSON.parse(data.vendorField);
+            if (!command.hasOwnProperty("command")) {
+                return;
+            }
 
-        // execute command
+            switch (command.command.toUpperCase()) {
+                case "REGISTER":
+                    break;
+                case "DEPOSIT":
+                    break;
+                case "BALANCE":
+                    break;
 
-        // send reply
+                case "SEND":
+                    break;
+                case "WITHDRAW":
+                    break;
+            }
+
+            // COMMANDS: REGISTER, SEND, DEPOSIT, BALANCE, WITHDRAW
+            /*
+            request:  { command: REGISTER, platform: UNIQUE-NAME }
+            response: { id: TX-ID, registered: true/false, error?: ERROR }
+
+            request:  { command: SEND, senderId: marc1970, receiverId: mschot@twitter, amount: 10, currency: ARK }
+            response: { id: TX-ID, transactionId: TX-ID2, explorer: http://exlplorer, error?: NOT ENOUGH FUNDS }
+
+            request:  { command: DEPOSIT, senderId: marc1970, currency?: ARK }
+            response: { id: TX-ID, address: address }
+
+            request:  { command: BALANCE, senderId: marc1970, currency?: ARK }
+            response: { id: TX-ID: balance: 0 }
+
+            request:  { command: WITHDRAW, senderId: marc1970, address: address, amount: 0, currency?: ARK }
+            response: { id: TX-ID, transactionId: TX-ID2, explorer: http://exlplorer, error?: NOT ENOUGH FUNDS }
+             */
+
+            // check if send amount in tx is above level
+
+            // parse command
+
+            // execute command
+
+            // send reply
+        } catch (e) {
+            Core.logger.error(e.message);
+        }
     }
 
     /**
@@ -314,9 +335,8 @@ export class WebhookListener {
             };
 
             if (
-                true // todo
-                // webhookAPIResults.data.target === this.url &&
-                // webhookAPIResults.data.conditions[0].value === this.wallet
+                webhookAPIResults.data.target === this.url &&
+                webhookAPIResults.data.conditions[0].value === this.wallet
             ) {
                 Core.logger.info(`Webhook confirmed for ${this.wallet}`);
                 return true;

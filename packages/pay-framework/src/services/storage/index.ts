@@ -133,4 +133,14 @@ export class Storage {
         logger.info(`New platform ${platform} has been added to the database for address: ${address}.`);
         return true;
     }
+
+    public static async updatePlatform(platform: string, address: string): Promise<boolean> {
+        platform = platform.toLowerCase();
+        const sql = "UPDATE platforms SET address = $1 WHERE platform = $2 RETURNING *";
+        const values = [address, platform];
+
+        await payDatabase.query(sql, values);
+        logger.info(`Platform ${platform} has been updated with new address: ${address}.`);
+        return true;
+    }
 }
