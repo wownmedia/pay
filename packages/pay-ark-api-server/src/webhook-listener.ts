@@ -1,13 +1,15 @@
 import { Identities } from "@arkecosystem/crypto";
 import { Core, Interfaces, Services } from "@cryptology.hk/pay-framework";
+import BigNumber from "bignumber.js";
 import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { Webhook, WebhookConfig, WebhookToken } from "./interfaces";
+import { ApiFees, WebhookConfig, WebhookToken } from "./interfaces";
 const fs = fsWithCallbacks.promises;
 
 const webhookConfig = Core.config.get("apiServer");
+const apiFeesConfig = Core.config.get("apiFees");
 
 export class WebhookListener {
     private static async checkWebhookConfig(webhookConfig: WebhookConfig): Promise<void> {
@@ -91,6 +93,7 @@ export class WebhookListener {
     private readonly wallet: string;
     private readonly webhookConfigFile: string = `${envPaths("ark-pay").config}/pay-webhook-listener.json`;
     private webhookToken: WebhookToken;
+    private readonly apiFees: ApiFees;
 
     constructor() {
         try {
@@ -99,6 +102,16 @@ export class WebhookListener {
             this.url = webhookConfig.url;
             this.node = webhookConfig.node;
             this.seed = webhookConfig.seed;
+            const registration = new BigNumber(apiFeesConfig.registration).gt(0)
+                ? new BigNumber(apiFeesConfig.registration)
+                : new BigNumber(1);
+            const command = new BigNumber(apiFeesConfig.command).gt(0)
+                ? new BigNumber(apiFeesConfig.command)
+                : new BigNumber(1);
+            this.apiFees = {
+                registration,
+                command,
+            };
             const networkVersion: number = 23; // todo maybe make this configurable so listeners can be added to other blockchains
             const publicKey: string = Identities.PublicKey.fromPassphrase(this.seed);
             this.wallet = Identities.Address.fromPublicKey(publicKey, networkVersion);
@@ -149,8 +162,6 @@ export class WebhookListener {
         // todo
         Core.logger.info(`Process Response: ${JSON.stringify(data)}`);
 
-        // check if address is from registered platform
-
         try {
             const command = JSON.parse(data.vendorField);
             if (!command.hasOwnProperty("command")) {
@@ -159,43 +170,57 @@ export class WebhookListener {
 
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
+                    // check if platform isn't a common one (e.g. reddit, twitter, facebook, etc)
+
+                    // check if address or platform exists
+
+                    // check if value is larger than minimal
+
+                    // register platform
+
+                    // send reply tx
+
                     break;
                 case "DEPOSIT":
+                    // check if from address is a valid platform
+
+                    // get user address
+
+                    // send reply tx
+
                     break;
                 case "BALANCE":
+                    // check if from address is a valid platform
+
+                    // get balance
+
+                    // send reply tx
+
                     break;
 
                 case "SEND":
+                    // check if from address is a valid platform
+
+                    // create and execute send transaction
+
+                    // send reply tx
+
                     break;
                 case "WITHDRAW":
+                    // check if from address is a valid platform
+
+                    // create and execute withdraw transaction
+
+                    // send reply tx
+
                     break;
+                default:
+                // check if vendorField is a valid user
+
+                // transfer to that user
+
+                // send reply tx
             }
-
-            // COMMANDS: REGISTER, SEND, DEPOSIT, BALANCE, WITHDRAW
-            /*
-            request:  { command: REGISTER, platform: UNIQUE-NAME }
-            response: { id: TX-ID, registered: true/false, error?: ERROR }
-
-            request:  { command: SEND, senderId: marc1970, receiverId: mschot@twitter, amount: 10, currency: ARK }
-            response: { id: TX-ID, transactionId: TX-ID2, explorer: http://exlplorer, error?: NOT ENOUGH FUNDS }
-
-            request:  { command: DEPOSIT, senderId: marc1970, currency?: ARK }
-            response: { id: TX-ID, address: address }
-
-            request:  { command: BALANCE, senderId: marc1970, currency?: ARK }
-            response: { id: TX-ID: balance: 0 }
-
-            request:  { command: WITHDRAW, senderId: marc1970, address: address, amount: 0, currency?: ARK }
-            response: { id: TX-ID, transactionId: TX-ID2, explorer: http://exlplorer, error?: NOT ENOUGH FUNDS }
-             */
-
-            // check if send amount in tx is above level
-
-            // parse command
-
-            // execute command
-
-            // send reply
         } catch (e) {
             Core.logger.error(e.message);
         }

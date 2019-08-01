@@ -1,6 +1,8 @@
-export interface Webhook {
-    id: string;
-    target: string;
+import { BigNumber } from "bignumber.js";
+
+export interface ApiFees {
+    registration: BigNumber;
+    command: BigNumber;
 }
 
 export interface WebhookToken {
