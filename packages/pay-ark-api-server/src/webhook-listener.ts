@@ -213,12 +213,16 @@ export class WebhookListener {
 
         try {
             // Only accept transfers (type 0)
+            Core.logger.info(`data.type: ${data.type}`); // todo remove
             if (!data.hasOwnProperty("type") || data.type !== 0) {
                 return;
             }
 
             // First make sure we didn't process this tx already on an other server
             const needToProcessSubmission: boolean = await WebhookListener.isNewSubmission(data.id);
+
+            Core.logger.info(`needToProcessSubmission: ${needToProcessSubmission}`); // todo remove
+
             if (!needToProcessSubmission) {
                 return;
             }
@@ -226,6 +230,8 @@ export class WebhookListener {
             // I think the larger amount of transactions will be direct deposits, so check for those first
             // check if vendorField is a valid user so we can do a direct deposit
             const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.vendorField);
+            Core.logger.info(`possibleUser: ${JSON.stringify(possibleUser)}`); // todo remove
+
             if (await this.platform.isValidUser(possibleUser)) {
                 // calculate value: received amount minus 2x the fee so we can forward the tx and send a reply tx
                 const amount: BigNumber = new BigNumber(data.amount).minus(arkTransactionFee.times(2));
