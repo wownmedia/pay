@@ -215,13 +215,13 @@ export class WebhookListener {
 
         try {
             // Only accept transfers (type 0)
-            Core.logger.info(`data.type: ${data.type}`); // todo remove
-            if (!data.hasOwnProperty("type") || data.type !== 0) {
+            Core.logger.info(`data.type: ${data.data.type}`); // todo remove
+            if (!data.hasOwnProperty("data") || !data.data.hasOwnProperty("type") || data.data.type !== 0) {
                 return;
             }
 
             // First make sure we didn't process this tx already on an other server
-            const needToProcessSubmission: boolean = await WebhookListener.isNewSubmission(data.id);
+            const needToProcessSubmission: boolean = await WebhookListener.isNewSubmission(data.data.id);
 
             Core.logger.info(`needToProcessSubmission: ${needToProcessSubmission}`); // todo remove
 
@@ -231,16 +231,16 @@ export class WebhookListener {
 
             // I think the larger amount of transactions will be direct deposits, so check for those first
             // check if vendorField is a valid user so we can do a direct deposit
-            const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.vendorField);
+            const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.data.vendorField);
             Core.logger.info(`possibleUser: ${JSON.stringify(possibleUser)}`); // todo remove
 
             if (await this.platform.isValidUser(possibleUser)) {
                 // calculate value: received amount minus 2x the fee so we can forward the tx and send a reply tx
-                const amount: BigNumber = new BigNumber(data.amount).minus(arkTransactionFee.times(2));
+                const amount: BigNumber = new BigNumber(data.data.amount).minus(arkTransactionFee.times(2));
 
                 // create a tx and send it
                 const recipientId: string = await Services.User.getWalletAddress(possibleUser, "ARK");
-                const sender: string = WebhookListener.getSenderWallet(data.senderPublicKey);
+                const sender: string = WebhookListener.getSenderWallet(data.data.senderPublicKey);
                 const vendorField: string = `ARK Pay - Direct Deposit from ${sender}`;
                 const transaction = await Services.ArkTransaction.generateTransferTransaction(
                     amount,
@@ -259,7 +259,7 @@ export class WebhookListener {
 
                 // send reply to receiver and send reply tx
                 const transferReply: APITransferReply = {
-                    id: data.id,
+                    id: data.data.id,
                     transactionId: transfers[0].response.data.id,
                     explorer: arkEcosystemConfig.ark.explorer,
                 };
@@ -270,7 +270,7 @@ export class WebhookListener {
             }
 
             // Now check if this is a command
-            const command = JSON.parse(data.vendorField);
+            const command = JSON.parse(data.data.vendorField);
 
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
