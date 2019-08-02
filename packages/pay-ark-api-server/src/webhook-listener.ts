@@ -5,11 +5,18 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { ApiFees, WebhookConfig, WebhookToken } from "./interfaces";
+import { ApiFees, APITransferCommand, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
 const fs = fsWithCallbacks.promises;
 
 const webhookConfig = Core.config.get("apiServer");
 const apiFeesConfig = Core.config.get("apiFees");
+const parserConfig = Core.config.get("parser");
+const arkEcosystemConfig = Core.config.get("arkEcosystem");
+const arkTransactionFee: BigNumber =
+    arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("transactionFee")
+        ? new BigNumber(arkEcosystemConfig.ark.transactionFee)
+        : new BigNumber(2000000);
+const USERNAME_PLATFORM_SEPERATOR = parserConfig.seperator ? parserConfig.seperator : "@";
 
 export class WebhookListener {
     private static async checkWebhookConfig(webhookConfig: WebhookConfig): Promise<void> {
@@ -86,6 +93,48 @@ export class WebhookListener {
         const validationError = new Error("Bad verification on received DATA.");
         await Joi.attempt({ authorization, webhookToken, verification }, validationSchema, validationError);
     }
+
+    /**
+     * @dev Check if a message/mention was not processed before
+     * @param submissionId
+     * @returns {Promise<boolean>} True if the message was not processed already
+     * @private
+     */
+    private static async isNewSubmission(submissionId: string): Promise<boolean> {
+        try {
+            if (await Services.Storage.Storage.checkSubmission(submissionId)) {
+                return false;
+            }
+            return await Services.Storage.Storage.addSubmission(submissionId);
+        } catch (e) {
+            // Most likely a DB connection error
+            Core.logger.error(e.message);
+        }
+        return false;
+    }
+
+    private static getSenderWallet(senderPublicKey: string): string {
+        return Identities.Address.fromPublicKey(senderPublicKey, 23);
+    }
+
+    /**
+     * Parse a username
+     * @param username
+     */
+    private static parseUsername(username: string): Interfaces.Username {
+        // Remove the Reddit user u/ and Twitter @
+        const userNameReplace: RegExp = new RegExp("(^@|u/)");
+        username = username.replace(userNameReplace, "");
+
+        // Split up the username and platform if any (eg. cryptology@twitter)
+        const usernameParts: string[] = username.split(USERNAME_PLATFORM_SEPERATOR);
+        if (usernameParts.length === 2) {
+            username = usernameParts[0];
+            const platform = usernameParts[1];
+            return { username, platform };
+        }
+        return null;
+    }
     private readonly port: number;
     private readonly url: string;
     private readonly node: string;
@@ -94,6 +143,7 @@ export class WebhookListener {
     private readonly webhookConfigFile: string = `${envPaths("ark-pay").config}/pay-webhook-listener.json`;
     private webhookToken: WebhookToken;
     private readonly apiFees: ApiFees;
+    private platform: Services.Platform;
 
     constructor() {
         try {
@@ -115,8 +165,7 @@ export class WebhookListener {
             const networkVersion: number = 23; // todo maybe make this configurable so listeners can be added to other blockchains
             const publicKey: string = Identities.PublicKey.fromPassphrase(this.seed);
             this.wallet = Identities.Address.fromPublicKey(publicKey, networkVersion);
-
-            Core.logger.info(`constructor() wallet ${this.wallet}`);
+            this.platform = new Services.Platform();
         } catch (e) {
             Core.logger.error(e.message);
         }
@@ -163,10 +212,57 @@ export class WebhookListener {
         Core.logger.info(`Process Response: ${JSON.stringify(data)}`);
 
         try {
-            const command = JSON.parse(data.vendorField);
-            if (!command.hasOwnProperty("command")) {
+            // Only accept transfers (type 0)
+            if (!data.hasOwnProperty("type") || data.type !== 0) {
                 return;
             }
+
+            // First make sure we didn't process this tx already on an other server
+            const needToProcessSubmission: boolean = await WebhookListener.isNewSubmission(data.id);
+            if (!needToProcessSubmission) {
+                return;
+            }
+
+            // I think the larger amount of transactions will be direct deposits, so check for those first
+            // check if vendorField is a valid user so we can do a direct deposit
+            const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.vendorField);
+            if (await this.platform.isValidUser(possibleUser)) {
+                // calculate value: received amount minus 2x the fee so we can forward the tx and send a reply tx
+                const amount: BigNumber = new BigNumber(data.amount).minus(arkTransactionFee.times(2));
+
+                // create a tx and send it
+                const recipientId: string = await Services.User.getWalletAddress(possibleUser, "ARK");
+                const sender: string = WebhookListener.getSenderWallet(data.senderPublicKey);
+                const vendorField: string = `ARK Pay - Direct Deposit from ${sender}`;
+                const transaction = await Services.ArkTransaction.generateTransferTransaction(
+                    amount,
+                    recipientId,
+                    vendorField,
+                    arkTransactionFee,
+                    this.seed,
+                    "ARK",
+                );
+                const transactions: any[] = [];
+                transactions.push(transaction);
+                const transfers: Interfaces.TransactionResponse[] = await Services.Network.broadcastTransactions(
+                    transactions,
+                    "ARK",
+                );
+
+                // send reply to receiver and send reply tx
+                const transferReply: APITransferReply = {
+                    id: data.id,
+                    transactionId: transfers[0].response.data.id,
+                    explorer: arkEcosystemConfig.ark.explorer,
+                };
+
+                // todo
+                Core.logger.info(`transferReply: ${JSON.stringify(transferReply)}`);
+                return;
+            }
+
+            // Now check if this is a command
+            const command = JSON.parse(data.vendorField);
 
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
@@ -180,7 +276,7 @@ export class WebhookListener {
 
                     // send reply tx
 
-                    break;
+                    return;
                 case "DEPOSIT":
                     // check if from address is a valid platform
 
@@ -188,7 +284,7 @@ export class WebhookListener {
 
                     // send reply tx
 
-                    break;
+                    return;
                 case "BALANCE":
                     // check if from address is a valid platform
 
@@ -196,7 +292,7 @@ export class WebhookListener {
 
                     // send reply tx
 
-                    break;
+                    return;
 
                 case "SEND":
                     // check if from address is a valid platform
@@ -205,7 +301,7 @@ export class WebhookListener {
 
                     // send reply tx
 
-                    break;
+                    return;
                 case "WITHDRAW":
                     // check if from address is a valid platform
 
@@ -213,13 +309,7 @@ export class WebhookListener {
 
                     // send reply tx
 
-                    break;
-                default:
-                // check if vendorField is a valid user
-
-                // transfer to that user
-
-                // send reply tx
+                    return;
             }
         } catch (e) {
             Core.logger.error(e.message);
