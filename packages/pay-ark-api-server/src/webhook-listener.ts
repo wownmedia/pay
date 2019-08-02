@@ -189,7 +189,7 @@ export class WebhookListener {
             });
             webhookListener.on("/", async data => {
                 try {
-                    Core.logger(`Received webhook: ${JSON.stringify(data.headers)}`); // todo
+                    Core.logger.info(`Received webhook: ${JSON.stringify(data.headers)}`); // todo
                     const authorization =
                         data.hasOwnProperty("headers") && data.headers.hasOwnProperty("authorization")
                             ? data.headers.authorization
