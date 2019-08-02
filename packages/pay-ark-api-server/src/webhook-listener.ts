@@ -75,6 +75,7 @@ export class WebhookListener {
         Core.logger.info(
             `validateResponse(): authorization: ${authorization} webhookToken: ${webhookToken} verification: ${verification}`,
         );
+
         const validationSchema = Joi.object().keys({
             authorization: Joi.string()
                 .token()
@@ -188,6 +189,7 @@ export class WebhookListener {
             });
             webhookListener.on("/", async data => {
                 try {
+                    Core.logger(`Received webhook: ${JSON.stringify(data.headers)}`); // todo
                     const authorization =
                         data.hasOwnProperty("headers") && data.headers.hasOwnProperty("authorization")
                             ? data.headers.authorization
