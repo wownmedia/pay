@@ -228,7 +228,7 @@ export class WebhookListener {
             const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.vendorField);
             if (await this.platform.isValidUser(possibleUser)) {
                 // calculate value: received amount minus 2x the fee so we can forward the tx and send a reply tx
-                const amount: BigNumber = new BigNumber(data.amount); // .minus(arkTransactionFee.times(2));
+                const amount: BigNumber = new BigNumber(data.amount).minus(arkTransactionFee.times(2));
 
                 // create a tx and send it
                 const recipientId: string = await Services.User.getWalletAddress(possibleUser, "ARK");
