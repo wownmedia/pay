@@ -174,6 +174,10 @@ export class WebhookListener {
 
     public async start() {
         try {
+            // todo
+            // Process all transactions that have not yet been processed  and that might not have been received by the webhook
+            // because offline etc.
+
             // Load the Webhook, if it doesnt yet exist create one
             this.webhookToken = await this.loadWebhook();
 
@@ -221,11 +225,7 @@ export class WebhookListener {
             }
 
             // First make sure we didn't process this tx already on an other server
-            const needToProcessSubmission: boolean = await WebhookListener.isNewSubmission(data.data.id);
-
-            Core.logger.info(`needToProcessSubmission: ${needToProcessSubmission}`); // todo remove
-
-            if (!needToProcessSubmission) {
+            if (!(await WebhookListener.isNewSubmission(data.data.id))) {
                 return;
             }
 
@@ -265,7 +265,9 @@ export class WebhookListener {
                 };
 
                 // todo
-                Core.logger.info(`transferReply: ${JSON.stringify(transferReply)}`);
+                Core.logger.info(
+                    `transferReply: ${JSON.stringify(transferReply)} transfers[0]: ${JSON.stringify(transfers[0])}`,
+                );
                 return;
             }
 
