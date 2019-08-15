@@ -41,8 +41,8 @@ export interface APITransferCommand {
 
 export interface APITransferReply {
     id: string;
-    transactionId: string;
-    explorer: string;
+    transactionId?: string;
+    explorer?: string;
     error?: string;
 }
 

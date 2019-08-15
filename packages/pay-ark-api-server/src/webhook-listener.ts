@@ -136,6 +136,18 @@ export class WebhookListener {
         }
         return null;
     }
+
+    private static checkTransferResult(transfer: any): string {
+        if (
+            transfer.hasOwnProperty("response") &&
+            transfer.response.hasOwnProperty("data") &&
+            transfer.response.data.hasOwnProperty("accept") &&
+            transfer.response.data.accept.length > 0
+        ) {
+            return transfer.response.data.accept[0];
+        }
+        return null;
+    }
     private readonly port: number;
     private readonly url: string;
     private readonly node: string;
@@ -219,7 +231,6 @@ export class WebhookListener {
 
         try {
             // Only accept transfers (type 0)
-            Core.logger.info(`data.type: ${data.data.type}`); // todo remove
             if (!data.hasOwnProperty("data") || !data.data.hasOwnProperty("type") || data.data.type !== 0) {
                 return;
             }
@@ -232,9 +243,12 @@ export class WebhookListener {
             // I think the larger amount of transactions will be direct deposits, so check for those first
             // check if vendorField is a valid user so we can do a direct deposit
             const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.data.vendorField);
-            Core.logger.info(`possibleUser: ${JSON.stringify(possibleUser)}`); // todo remove
 
+            // If the Vendorfield does not contain a valid user it could contain a command or be a regular transaction
+            // to the ArkTippr listener wallet....
             if (await this.platform.isValidUser(possibleUser)) {
+                Core.logger.info(`Direct Deposit request to: ${JSON.stringify(possibleUser)}`);
+
                 // calculate value: received amount minus 2x the fee so we can forward the tx and send a reply tx
                 const amount: BigNumber = new BigNumber(data.data.amount).minus(arkTransactionFee.times(2));
 
@@ -257,17 +271,38 @@ export class WebhookListener {
                     "ARK",
                 );
 
-                // send reply to receiver and send reply tx
-                const transferReply: APITransferReply = {
-                    id: data.data.id,
-                    transactionId: transfers[0].response.data.id,
-                    explorer: arkEcosystemConfig.ark.explorer,
-                };
+                // Check if we have an accepted transaction
+                const transactionId: string = WebhookListener.checkTransferResult(transfers[0]);
+                let transferReply: APITransferReply;
+                if (transactionId) {
+                    // send reply to receiver and send reply tx`
+                    transferReply = {
+                        id: data.data.id,
+                        transactionId,
+                        explorer: arkEcosystemConfig.ark.explorer,
+                    };
 
-                // todo
-                Core.logger.info(
-                    `transferReply: ${JSON.stringify(transferReply)} transfers[0]: ${JSON.stringify(transfers[0])}`,
+                    // todo remove
+                    Core.logger.info(`transferReply: ${JSON.stringify(transferReply)}`);
+                } else {
+                    transferReply = {
+                        id: data.data.id,
+                        error: "Could not POST transfer",
+                    };
+                }
+
+                // Send a reply to the Sender
+                const replyTransaction = await Services.ArkTransaction.generateTransferTransaction(
+                    new BigNumber(1),
+                    sender,
+                    JSON.stringify(transferReply),
+                    arkTransactionFee,
+                    this.seed,
+                    "ARK",
                 );
+                const replyTransactions: any[] = [];
+                replyTransactions.push(replyTransaction);
+                await Services.Network.broadcastTransactions(replyTransactions, "ARK");
                 return;
             }
 
@@ -321,6 +356,9 @@ export class WebhookListener {
 
                     return;
             }
+
+            // It didn't contain a Direct deposit, nor a valid command. To prevent DDOS we will not reply with an
+            // error message.
         } catch (e) {
             Core.logger.error(e.message);
         }
