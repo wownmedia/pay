@@ -50,7 +50,11 @@ describe("pay-ark: Transaction()", () => {
             networkMock.mockImplementation(() => Promise.resolve(null));
             const amount: BigNumber = new BigNumber(1);
             const recipientId: string = "AUDud8tvyVZa67p3QY7XPRUTjRGnWQQ9Xv";
-            const vendorField: string = "test";
+            const vendorField: string = JSON.stringify({
+                id: "e4a8854bc0e22e757e7cf1a5368187021744542c4a1a36151c922b5b3aa07b1a",
+                transactionId: "a2ebde4d3643807e02e78508274246c8c843424a6296f817c8dc335259edf00e",
+                explorer: "https://explorer.ark.io",
+            });
             const fee: BigNumber = new BigNumber(2);
             const seed: string = "this is a top secret passphrase";
             const token = "ARK";
@@ -75,6 +79,7 @@ describe("pay-ark: Transaction()", () => {
                 "vendorField",
                 "version",
             ]);
+            expect(result.vendorField).toEqual(vendorField);
             networkMock.mockRestore();
         });
 

@@ -39,6 +39,11 @@ export class ArkTransaction {
             .vendorField(vendorField)
             .fee(fee.toFixed(0));
 
+        // todo somehow it doesn't take it as 255 from the setConfig with ARK mainnet
+        if (Buffer.from(vendorField).length > 64 && Buffer.from(vendorField).length <= 255) {
+            transaction.data.vendorField = vendorField;
+        }
+
         // todo: Remove this workaround for pre 2.4 networks that have a different epoch than ARK Devnet
         const epoch: string = this.getArkEcosystemEpochForToken(token);
         if (epoch !== null) {
