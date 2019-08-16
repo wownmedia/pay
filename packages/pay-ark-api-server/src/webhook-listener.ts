@@ -16,6 +16,10 @@ const arkTransactionFee: BigNumber =
     arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("transactionFee")
         ? new BigNumber(arkEcosystemConfig.ark.transactionFee)
         : new BigNumber(2000000);
+const arkNode: string =
+    arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("nodes")
+        ? `http://${arkEcosystemConfig.ark.nodes[0].host}:${arkEcosystemConfig.ark.nodes[0].port}`
+        : "http://localhost:4003";
 const USERNAME_PLATFORM_SEPERATOR = parserConfig.seperator ? parserConfig.seperator : "@";
 
 export class WebhookListener {
@@ -189,6 +193,8 @@ export class WebhookListener {
             // todo
             // Process all transactions that have not yet been processed  and that might not have been received by the webhook
             // because offline etc.
+            const transactions: any[] = await this.searchTransactions();
+            Core.logger.info(`Transactions found: ${transactions.length}`);
 
             // Load the Webhook, if it doesnt yet exist create one
             this.webhookToken = await this.loadWebhook();
@@ -223,6 +229,34 @@ export class WebhookListener {
         } catch (e) {
             Core.logger.error(e.message);
         }
+    }
+
+    private async searchTransactions(): Promise<any[]> {
+        const searchTransactionsEndpoint: string = "/api/v2/transactions/search";
+        const params: Interfaces.Parameters = {
+            page: 1,
+            limit: 100,
+        };
+
+        const data: any = {
+            type: 0,
+            recipientId: this.wallet,
+        };
+
+        let results;
+        let transactions: any[] = [];
+        try {
+            do {
+                results = await Services.Network.postToNode(arkNode, searchTransactionsEndpoint, data, params);
+                if (results.hasOwnProperty("data") && results.data.length > 0) {
+                    transactions = transactions.concat(results.data);
+                }
+                params.page++;
+            } while (results.hasOwnProperty("data") && results.data.length > 0);
+        } catch (e) {
+            Core.logger.error(e.message);
+        }
+        return transactions;
     }
 
     private async processResponse(data: any): Promise<void> {

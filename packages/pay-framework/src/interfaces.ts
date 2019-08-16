@@ -77,6 +77,8 @@ export interface Node {
 
 export interface Parameters {
     nope?: string;
+    page?: number;
+    limit?: number;
 }
 
 export interface ApiResponse {

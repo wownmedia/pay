@@ -98,9 +98,15 @@ export class Network {
      * @param node {string} The node to where to post to
      * @param endPoint {string}  The endpoint to POST to (e.g. "/api/webhooks/xxx")
      * @param data {any}   Optional data to POST
+     * @param params {Parameters}   Optional parameters
      * @returns {Promise<TransactionResponse>}  A response from the node
      */
-    public static async postToNode(node: string, endPoint: string, data?: any): Promise<ApiResponse> {
+    public static async postToNode(
+        node: string,
+        endPoint: string,
+        data?: any,
+        params?: Parameters,
+    ): Promise<ApiResponse> {
         try {
             const response = await axios.post(`${node}${endPoint}`, data, {
                 headers: { "Content-Type": "application/json" },
