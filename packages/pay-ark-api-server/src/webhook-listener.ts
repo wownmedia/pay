@@ -346,6 +346,7 @@ export class WebhookListener {
                 return;
             }
 
+            /*
             // Now check if this is a command
             const command = JSON.parse(data.data.vendorField);
 
@@ -396,6 +397,7 @@ export class WebhookListener {
 
                     return;
             }
+             */
 
             // It didn't contain a Direct deposit, nor a valid command. To prevent DDOS we will not reply with an
             // error message.
