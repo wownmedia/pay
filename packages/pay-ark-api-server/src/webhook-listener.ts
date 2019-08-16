@@ -1,11 +1,12 @@
 import { Identities } from "@arkecosystem/crypto";
+import { ARKTOSHI } from "@arkecosystem/crypto/dist/constants";
 import { Core, Interfaces, Services } from "@cryptology.hk/pay-framework";
 import BigNumber from "bignumber.js";
 import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { ApiFees, APITransferCommand, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
+import { ApiFees, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
 const fs = fsWithCallbacks.promises;
 
 const webhookConfig = Core.config.get("apiServer");
@@ -190,7 +191,6 @@ export class WebhookListener {
 
     public async start() {
         try {
-            // todo
             // Process all transactions that have not yet been processed  and that might not have been received by the webhook
             // because offline etc.
             const transactions: any[] = await this.searchTransactions();
@@ -217,7 +217,6 @@ export class WebhookListener {
             });
             webhookListener.on("/", async data => {
                 try {
-                    Core.logger.info(`Received webhook: ${JSON.stringify(data.headers)}`); // todo
                     const authorization =
                         data.hasOwnProperty("headers") && data.headers.hasOwnProperty("authorization")
                             ? data.headers.authorization
@@ -237,6 +236,9 @@ export class WebhookListener {
         }
     }
 
+    /**
+     * @dev Retrieve all received transactions for the listener's wallet
+     */
     private async searchTransactions(): Promise<any[]> {
         const searchTransactionsEndpoint: string = "/api/v2/transactions/search";
         const params: Interfaces.Parameters = {
@@ -265,10 +267,11 @@ export class WebhookListener {
         return transactions;
     }
 
+    /**
+     * @dev Process a received transaction
+     * @param data
+     */
     private async processResponse(data: any): Promise<void> {
-        // todo
-        Core.logger.info(`Process Response: ${JSON.stringify(data)}`);
-
         try {
             // Only accept transfers (type 0)
             if (!data.hasOwnProperty("data") || !data.data.hasOwnProperty("type") || data.data.type !== 0) {
@@ -286,7 +289,7 @@ export class WebhookListener {
 
             // If the Vendorfield does not contain a valid user it could contain a command or be a regular transaction
             // to the ArkTippr listener wallet....
-            if (await this.platform.isValidUser(possibleUser)) {
+            if (possibleUser && (await this.platform.isValidUser(possibleUser))) {
                 Core.logger.info(`Direct Deposit request to: ${JSON.stringify(possibleUser)}`);
 
                 // calculate value: received amount minus 2x the fee so we can forward the tx and send a reply tx
@@ -306,6 +309,9 @@ export class WebhookListener {
                 );
                 const transactions: any[] = [];
                 transactions.push(transaction);
+                Core.logger.info(
+                    `Transfering ${amount.div(ARKTOSHI)} ARK to ${possibleUser.username} at ${possibleUser.platform}.`,
+                );
                 const transfers: Interfaces.TransactionResponse[] = await Services.Network.broadcastTransactions(
                     transactions,
                     "ARK",
@@ -322,8 +328,9 @@ export class WebhookListener {
                         explorer: arkEcosystemConfig.ark.explorer,
                     };
 
-                    // todo remove
-                    Core.logger.info(`transferReply: ${JSON.stringify(transferReply)}`);
+                    // todo Notify receiver
+                    // Notify Receiver via platform
+                    Core.logger.info("Sending notification to Receiver");
                 } else {
                     transferReply = {
                         id: data.data.id,
@@ -332,6 +339,7 @@ export class WebhookListener {
                 }
 
                 // Send a reply to the Sender
+                Core.logger.info("Sending notification to Sender");
                 const replyTransaction = await Services.ArkTransaction.generateTransferTransaction(
                     new BigNumber(1),
                     sender,
@@ -530,14 +538,6 @@ export class WebhookListener {
                 this.node,
                 getWebhookEndpoint,
             );
-            const receivedWebhookConfig: WebhookConfig = {
-                id: webhookAPIResults.data.id ? webhookAPIResults.data.id : null,
-                event: webhookAPIResults.data.event ? webhookAPIResults.data.event : null,
-                target: webhookAPIResults.data.target ? webhookAPIResults.data.target : null,
-                token: webhookAPIResults.data.token ? webhookAPIResults.data.token : null,
-                enabled: webhookAPIResults.data.enabled ? webhookAPIResults.data.enabled : null,
-                conditions: webhookAPIResults.data.conditions ? webhookAPIResults.data.conditions : null,
-            };
 
             if (
                 webhookAPIResults.data.target === this.url &&
