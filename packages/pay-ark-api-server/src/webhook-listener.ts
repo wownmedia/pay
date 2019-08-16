@@ -198,7 +198,7 @@ export class WebhookListener {
             for (const item in transactions) {
                 if (transactions[item]) {
                     // process old received transactions to see if we missed one via webhooks
-                    await this.processResponse(transactions[item]);
+                    await this.processResponse({ data: transactions[item] });
                 }
             }
 
