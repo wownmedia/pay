@@ -109,6 +109,7 @@ export class Network {
     ): Promise<ApiResponse> {
         try {
             const response = await axios.post(`${node}${endPoint}`, data, {
+                params,
                 headers: { "Content-Type": "application/json" },
             });
             if (typeof response !== "undefined" && response.hasOwnProperty("data")) {
