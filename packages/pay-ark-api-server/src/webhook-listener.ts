@@ -194,7 +194,13 @@ export class WebhookListener {
             // Process all transactions that have not yet been processed  and that might not have been received by the webhook
             // because offline etc.
             const transactions: any[] = await this.searchTransactions();
-            Core.logger.info(`Transactions found: ${transactions.length}`);
+            Core.logger.info(`Received Transactions found: ${transactions.length}`);
+            for (const item in transactions) {
+                if (transactions[item]) {
+                    // process old received transactions to see if we missed one via webhooks
+                    await this.processResponse(transactions[item]);
+                }
+            }
 
             // Load the Webhook, if it doesnt yet exist create one
             this.webhookToken = await this.loadWebhook();
