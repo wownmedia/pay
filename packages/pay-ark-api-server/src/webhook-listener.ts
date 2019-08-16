@@ -252,7 +252,7 @@ export class WebhookListener {
                     transactions = transactions.concat(results.data);
                 }
                 params.page++;
-            } while (results.hasOwnProperty("data") && results.data.length > 0 && params.page <= 5);
+            } while (results.hasOwnProperty("data") && results.data.length > 0);
         } catch (e) {
             Core.logger.error(e.message);
         }
