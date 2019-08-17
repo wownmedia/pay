@@ -330,7 +330,17 @@ export class WebhookListener {
 
                     // todo Notify receiver
                     // Notify Receiver via platform
-                    Core.logger.info("Sending notification to Receiver");
+                    const usdValue: BigNumber = await Services.Currency.Currency.baseCurrencyUnitsToUSD(amount, "ARK");
+                    const message: string = Services.Messenger.Messenger.directDepositMessage(
+                        sender,
+                        possibleUser,
+                        transactionId,
+                        amount,
+                        usdValue,
+                        "ARK",
+                        recipientId,
+                    );
+                    Core.logger.info(`TODO Sending notification to Receiver: ${message}`);
                 } else {
                     transferReply = {
                         id: data.data.id,
