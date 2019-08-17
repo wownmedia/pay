@@ -76,7 +76,7 @@ export class Messenger {
     }
 
     /**
-     * @dev Generate a message with the depositi address of the sender on a platform for a token
+     * @dev Generate a message with the deposit address of the sender on a platform for a token
      * @param address {string}  Wallet address of the sender
      * @param token {string}    Token of the ArkEcosystem blockchain that is used in the command
      * @param platform          Platform the sender is on (e.g. Reddit)
@@ -118,6 +118,36 @@ export class Messenger {
         const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const directMessageSender: string = Messages.withdrawMessage(amount, token, usdValueConverted, transactionId);
         return { directMessageSender };
+    }
+
+    public static directDepositMessage(
+        senderAddress: string,
+        receiver: Username,
+        transactionId: string,
+        arkToshiValue: BigNumber,
+        usdValue: BigNumber,
+        token: string,
+        address: string,
+    ): string {
+        token = token.toUpperCase();
+        const receiverUsernamePrefix = platforms.hasOwnProperty(receiver.platform)
+            ? platforms[receiver.platform].usernamePrefix
+            : "";
+        const currencySymbol: string = token === "ARK" ? "Ѧ" : "";
+        const amount: string = this.formatBalance(arkToshiValue, currencySymbol);
+        const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
+        let directMessageReceiver: string = Messages.directDepositReceiverMessage(
+            senderAddress,
+            transactionId,
+            amount,
+            usdValueConverted,
+            token,
+            address,
+        );
+        const footer: string = Messages.getFooter(true);
+        directMessageReceiver = directMessageReceiver + footer;
+
+        return directMessageReceiver;
     }
 
     /**
