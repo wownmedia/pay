@@ -328,7 +328,6 @@ export class WebhookListener {
                         explorer: arkEcosystemConfig.ark.explorer,
                     };
 
-                    // todo Notify receiver
                     // Notify Receiver via platform
                     const usdValue: BigNumber = await Services.Currency.Currency.baseCurrencyUnitsToUSD(amount, "ARK");
                     const reply: Interfaces.Reply = Services.Messenger.Messenger.directDepositMessage(
