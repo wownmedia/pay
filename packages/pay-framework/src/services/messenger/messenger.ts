@@ -128,7 +128,7 @@ export class Messenger {
         usdValue: BigNumber,
         token: string,
         address: string,
-    ): string {
+    ): Reply {
         token = token.toUpperCase();
         const receiverUsernamePrefix = platforms.hasOwnProperty(receiver.platform)
             ? platforms[receiver.platform].usernamePrefix
@@ -144,10 +144,21 @@ export class Messenger {
             token,
             address,
         );
+
+        let replyComment: string = Messages.transferCommentReply(
+            receiverUsernamePrefix + receiver.username,
+            senderAddress,
+            transactionId,
+            amount,
+            usdValueConverted,
+            token,
+        );
+
         const footer: string = Messages.getFooter(true);
         directMessageReceiver = directMessageReceiver + footer;
+        replyComment = replyComment + footer;
 
-        return directMessageReceiver;
+        return { directMessageReceiver, replyComment };
     }
 
     /**
