@@ -340,11 +340,6 @@ export class WebhookListener {
                         recipientId,
                     );
                     await this.platform.notifyReceiver(possibleUser, reply);
-                    Core.logger.info(
-                        `TODO Sending notification to Receiver: ${reply.directMessageReceiver} or ${
-                            reply.replyComment
-                        }`,
-                    );
                 } else {
                     transferReply = {
                         id: data.data.id,
