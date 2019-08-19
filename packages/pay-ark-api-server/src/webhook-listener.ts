@@ -7,8 +7,8 @@ import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
 import { ApiFees, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
-const fs = fsWithCallbacks.promises;
 
+const fs = fsWithCallbacks.promises;
 const webhookConfig = Core.config.get("apiServer");
 const apiFeesConfig = Core.config.get("apiFees");
 const parserConfig = Core.config.get("parser");
@@ -21,9 +21,13 @@ const arkNode: string =
     arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("nodes")
         ? `http://${arkEcosystemConfig.ark.nodes[0].host}:${arkEcosystemConfig.ark.nodes[0].port}`
         : "http://localhost:4003";
-const USERNAME_PLATFORM_SEPERATOR = parserConfig.seperator ? parserConfig.seperator : "@";
+const USERNAME_PLATFORM_SEPARATOR = parserConfig.seperator ? parserConfig.seperator : "@";
 
 export class WebhookListener {
+    /**
+     * @dev Check if the configuration for the webhook is complete
+     * @param webhookConfig
+     */
     private static async checkWebhookConfig(webhookConfig: WebhookConfig): Promise<void> {
         const uriConfig = {
             scheme: ["http", "https"],
@@ -54,6 +58,10 @@ export class WebhookListener {
         await Joi.attempt(webhookConfig, webhookConfigSchema, badWebhookConfig);
     }
 
+    /**
+     * @dev Check and generate the 32 byte token from the 64 byte webhook token
+     * @param webhookToken
+     */
     private static async tokenFromWebhookToken(webhookToken) {
         try {
             const tokenSchema = Joi.object().keys({
@@ -72,15 +80,17 @@ export class WebhookListener {
         return null;
     }
 
+    /**
+     * @dev Validate if received data on the webhook listener is valid (e.g. coming from the right source)
+     * @param authorization
+     * @param webhookToken
+     * @param verification
+     */
     private static async validateResponse(
         authorization: string,
         webhookToken: string,
         verification: string,
     ): Promise<void> {
-        Core.logger.info(
-            `validateResponse(): authorization: ${authorization} webhookToken: ${webhookToken} verification: ${verification}`,
-        );
-
         const validationSchema = Joi.object().keys({
             authorization: Joi.string()
                 .token()
@@ -119,12 +129,16 @@ export class WebhookListener {
         return false;
     }
 
+    /**
+     * @dev Generate an ARK wallet from a public key
+     * @param senderPublicKey
+     */
     private static getSenderWallet(senderPublicKey: string): string {
         return Identities.Address.fromPublicKey(senderPublicKey, 23);
     }
 
     /**
-     * Parse a username
+     * @dev Parse a username
      * @param username
      */
     private static parseUsername(username: string): Interfaces.Username {
@@ -133,7 +147,7 @@ export class WebhookListener {
         username = username.replace(userNameReplace, "");
 
         // Split up the username and platform if any (eg. cryptology@twitter)
-        const usernameParts: string[] = username.split(USERNAME_PLATFORM_SEPERATOR);
+        const usernameParts: string[] = username.split(USERNAME_PLATFORM_SEPARATOR);
         if (usernameParts.length === 2) {
             username = usernameParts[0];
             const platform = usernameParts[1];
@@ -142,6 +156,10 @@ export class WebhookListener {
         return null;
     }
 
+    /**
+     * @dev Check if a sent transaction was accepted
+     * @param transfer
+     */
     private static checkTransferResult(transfer: any): string {
         if (
             transfer.hasOwnProperty("response") &&
@@ -189,6 +207,9 @@ export class WebhookListener {
         }
     }
 
+    /**
+     * @dev start the webhook listener
+     */
     public async start() {
         try {
             // Process all transactions that have not yet been processed  and that might not have been received by the webhook
@@ -463,6 +484,9 @@ export class WebhookListener {
         );
     }
 
+    /**
+     * @dev Load the webhook configuration from file
+     */
     private async loadWebhook(): Promise<WebhookToken> {
         try {
             Core.logger.info(`Loading webhook from: ${this.webhookConfigFile}`);
@@ -502,6 +526,9 @@ export class WebhookListener {
         };
     }
 
+    /**
+     * @dev Register a new webhook with the node
+     */
     private async registerWebhook() {
         try {
             const postWebhookEndpoint = "/api/webhooks";
@@ -540,6 +567,10 @@ export class WebhookListener {
         return null;
     }
 
+    /**
+     * @dev Check if the configured webhook ist still active on the node
+     * @param id
+     */
     private async checkWebhook(id: string): Promise<boolean> {
         try {
             const getWebhookEndpoint = `/api/webhooks/${id}`;
@@ -563,6 +594,10 @@ export class WebhookListener {
         return false;
     }
 
+    /**
+     * @dev Store the webhook config to file
+     * @param webhookConfig
+     */
     private async storeWebhook(webhookConfig: WebhookConfig): Promise<void> {
         const jsonWebhook: string = JSON.stringify(webhookConfig);
         await fs.writeFile(this.webhookConfigFile, jsonWebhook);
