@@ -176,6 +176,35 @@ export class Messages {
     }
 
     /**
+     * @dev generate a message for the receiver of a direct deposit
+     * @param senderAddress
+     * @param transactionId
+     * @param amount
+     * @param usdValue
+     * @param token
+     * @param address
+     */
+    public static directDepositReceiverMessage(
+        senderAddress: string,
+        transactionId: string,
+        amount: string,
+        usdValue: string,
+        token: string,
+        address: string,
+    ): string {
+        const explorer: string = this.getExplorer(token);
+        token = token.toUpperCase();
+        const message: string = this.replaceAll(_DIRECT_DEPOSIT_RECEIVE_MESSAGE, "#token#", token);
+        return message
+            .replace("#senderAddress#", senderAddress)
+            .replace("#amount#", amount)
+            .replace("#usdValue#", usdValue)
+            .replace("#transactionId#", transactionId)
+            .replace("#address#", address)
+            .replace("#explorer#", explorer);
+    }
+
+    /**
      * @dev generate a TIP comment reply
      * @param receiver
      * @param sender
@@ -350,6 +379,14 @@ const _TRANSACTION_MESSAGE =
 const _TRANSACTION_RECEIVE_MESSAGE =
     "\n\n " +
     "User #username# on #platform# has sent you `#amount# #token# ($#usdValue# USD)` directly via ArkTippr!\n\n " +
+    "For reference, your personal #token# wallet address is `#address#`\n\n " +
+    "For assistance withdrawing this #token# to a different wallet, reply ` WITHDRAW #token# ` or visit the " +
+    "[Usage page of the ArkTippr Wiki](https://np.reddit.com/r/arktippr/wiki/usage)\n\n " +
+    "[Check this transaction on the #token# blockchain](#explorer#/transaction/#transactionId#)\n\n ";
+
+const _DIRECT_DEPOSIT_RECEIVE_MESSAGE =
+    "\n\n " +
+    "#senderAddress# has deposited `#amount# #token# ($#usdValue# USD)` to your wallet, directly via ArkTippr!\n\n " +
     "For reference, your personal #token# wallet address is `#address#`\n\n " +
     "For assistance withdrawing this #token# to a different wallet, reply ` WITHDRAW #token# ` or visit the " +
     "[Usage page of the ArkTippr Wiki](https://np.reddit.com/r/arktippr/wiki/usage)\n\n " +

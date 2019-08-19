@@ -110,4 +110,37 @@ export class Storage {
         }
         return false;
     }
+
+    public static async getPlatform(platform: string): Promise<string> {
+        platform = platform.toLowerCase();
+        const query: string = "SELECT * FROM platforms WHERE platform = $1 LIMIT 1";
+        const result = await payDatabase.query(query, [platform]);
+
+        // A new platform
+        if (typeof result.rows[0] === "undefined" || !result.rows[0].hasOwnProperty("address")) {
+            return null;
+        }
+
+        return result.rows[0].address;
+    }
+
+    public static async addPlatform(platform: string, address: string): Promise<boolean> {
+        platform = platform.toLowerCase();
+        const sql = "INSERT INTO platforms(platform, address) VALUES($1, $2) RETURNING *";
+        const values = [platform, address];
+
+        await payDatabase.query(sql, values);
+        logger.info(`New platform ${platform} has been added to the database for address: ${address}.`);
+        return true;
+    }
+
+    public static async updatePlatform(platform: string, address: string): Promise<boolean> {
+        platform = platform.toLowerCase();
+        const sql = "UPDATE platforms SET address = $1 WHERE platform = $2 RETURNING *";
+        const values = [address, platform];
+
+        await payDatabase.query(sql, values);
+        logger.info(`Platform ${platform} has been updated with new address: ${address}.`);
+        return true;
+    }
 }

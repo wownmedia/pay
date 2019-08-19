@@ -77,6 +77,8 @@ export interface Node {
 
 export interface Parameters {
     nope?: string;
+    page?: number;
+    limit?: number;
 }
 
 export interface ApiResponse {
@@ -98,6 +100,12 @@ export interface APITransaction {
     balance?: number;
     isDelegate?: boolean;
     vote?: string;
+    id?: string;
+    event?: string;
+    target?: string;
+    token?: string;
+    enabled?: boolean;
+    conditions?: any;
 }
 
 export interface TransactionResponse {
