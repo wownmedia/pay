@@ -6,9 +6,9 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { Register } from "./commands";
+import { Balance, Register } from "./commands";
 import { CommonPlatforms } from "./enums";
-import { ApiFees, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
+import { APIBalanceReply, ApiFees, APIInfoCommand, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
 
 const fs = fsWithCallbacks.promises;
 const webhookConfig = Core.config.get("apiServer");
@@ -386,8 +386,8 @@ export class WebhookListener {
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
                     try {
-                        const registration = new Register(amount, data.data.id, data.data.vendorField);
-                        await registration.registrate();
+                        const registrationCommand = new Register(amount, data.data.id, data.data.vendorField);
+                        await registrationCommand.registrate();
                         transferReply = {
                             id: data.data.id,
                             registered: true,
@@ -411,12 +411,27 @@ export class WebhookListener {
 
                     return;
                 case "BALANCE":
-                    // check if from address is a valid platform
+                    let balanceReply: APIBalanceReply;
+                    try {
+                        const vendorField: APIInfoCommand = {
+                            command: "BALANCE",
+                            token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
+                            senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
+                        };
+                        const balanceCommand = new Balance(sender, amount, vendorField);
+                        const balance: BigNumber = await balanceCommand.getBalance();
+                        balanceReply = {
+                            id: data.data.id,
+                            balance: balance.toString(),
+                        };
+                    } catch (e) {
+                        balanceReply = {
+                            id: data.data.id,
+                            error: e.message,
+                        };
+                    }
 
-                    // get balance
-
-                    // send reply tx
-
+                    await this.sendReplyToSender(sender, balanceReply);
                     return;
 
                 case "SEND":
