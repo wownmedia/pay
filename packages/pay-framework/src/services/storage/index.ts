@@ -1,4 +1,4 @@
-import { Crypto, Identities, Interfaces } from "@arkecosystem/crypto";
+import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { config, logger, payDatabase } from "../../core";
 import { Wallet } from "../../interfaces";
 import { Signature } from "../signature";
@@ -132,6 +132,18 @@ export class Storage {
         }
 
         return result.rows[0].address;
+    }
+
+    public static async getPlatformByWallet(address: string): Promise<string> {
+        const query: string = "SELECT * FROM platforms WHERE address = $1 LIMIT 1";
+        const result = await payDatabase.query(query, [address]);
+
+        // A new address
+        if (typeof result.rows[0] === "undefined" || !result.rows[0].hasOwnProperty("platform")) {
+            return null;
+        }
+
+        return result.rows[0].platform;
     }
 
     public static async addPlatform(platform: string, address: string): Promise<boolean> {

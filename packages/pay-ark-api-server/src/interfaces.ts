@@ -44,6 +44,7 @@ export interface APITransferReply {
     transactionId?: string;
     explorer?: string;
     error?: string;
+    registered?: boolean;
 }
 
 export interface APIInfoCommand {

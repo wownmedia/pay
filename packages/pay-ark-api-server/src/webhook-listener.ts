@@ -6,6 +6,8 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
+import { Register } from "./commands";
+import { CommonPlatforms } from "./enums";
 import { ApiFees, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
 
 const fs = fsWithCallbacks.promises;
@@ -307,6 +309,8 @@ export class WebhookListener {
             // I think the larger amount of transactions will be direct deposits, so check for those first
             // check if vendorField is a valid user so we can do a direct deposit
             const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.data.vendorField);
+            const sender: string = WebhookListener.getSenderWallet(data.data.senderPublicKey);
+            let transferReply: APITransferReply;
 
             // If the Vendorfield does not contain a valid user it could contain a command or be a regular transaction
             // to the ArkTippr listener wallet....
@@ -318,7 +322,6 @@ export class WebhookListener {
 
                 // create a tx and send it
                 const recipientId: string = await Services.User.getWalletAddress(possibleUser, "ARK");
-                const sender: string = WebhookListener.getSenderWallet(data.data.senderPublicKey);
                 const vendorField: string = `ARK Pay - Direct Deposit from ${sender}`;
                 const transaction = await Services.ArkTransaction.generateTransferTransaction(
                     amount,
@@ -340,7 +343,6 @@ export class WebhookListener {
 
                 // Check if we have an accepted transaction
                 const transactionId: string = WebhookListener.checkTransferResult(transfers[0]);
-                let transferReply: APITransferReply;
                 if (transactionId) {
                     // send reply to receiver and send reply tx`
                     transferReply = {
@@ -369,38 +371,37 @@ export class WebhookListener {
                 }
 
                 // Send a reply to the Sender
-                Core.logger.info("Sending notification to Sender");
-                const replyTransaction = await Services.ArkTransaction.generateTransferTransaction(
-                    new BigNumber(1),
-                    sender,
-                    JSON.stringify(transferReply),
-                    arkTransactionFee,
-                    this.seed,
-                    "ARK",
-                );
-                const replyTransactions: any[] = [];
-                replyTransactions.push(replyTransaction);
-                await Services.Network.broadcastTransactions(replyTransactions, "ARK");
+                await this.sendReplyToSender(sender, transferReply);
                 return;
             }
 
-            /*
             // Now check if this is a command
             const command = JSON.parse(data.data.vendorField);
+            if (!command.hasOwnProperty("command")) {
+                return;
+            }
+            const amount: BigNumber = new BigNumber(data.data.amount);
+            const platformByWallet: string = await Services.Storage.Storage.getPlatformByWallet(sender);
 
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
-                    // check if platform isn't a common one (e.g. reddit, twitter, facebook, etc)
-
-                    // check if address or platform exists
-
-                    // check if value is larger than minimal
-
-                    // register platform
-
-                    // send reply tx
-
+                    try {
+                        const registration = new Register(amount, data.data.id, data.data.vendorField);
+                        await registration.registrate();
+                        transferReply = {
+                            id: data.data.id,
+                            registered: true,
+                        };
+                    } catch (e) {
+                        transferReply = {
+                            id: data.data.id,
+                            registered: false,
+                            error: e.message,
+                        };
+                    }
+                    await this.sendReplyToSender(sender, transferReply);
                     return;
+
                 case "DEPOSIT":
                     // check if from address is a valid platform
 
@@ -435,13 +436,24 @@ export class WebhookListener {
 
                     return;
             }
-             */
-
-            // It didn't contain a Direct deposit, nor a valid command. To prevent DDOS we will not reply with an
-            // error message.
         } catch (e) {
             Core.logger.error(e.message);
         }
+    }
+
+    private async sendReplyToSender(sender: string, transferReply: APITransferReply): Promise<void> {
+        Core.logger.info("Sending notification to Sender");
+        const replyTransaction = await Services.ArkTransaction.generateTransferTransaction(
+            new BigNumber(1),
+            sender,
+            JSON.stringify(transferReply),
+            arkTransactionFee,
+            this.seed,
+            "ARK",
+        );
+        const replyTransactions: any[] = [];
+        replyTransactions.push(replyTransaction);
+        await Services.Network.broadcastTransactions(replyTransactions, "ARK");
     }
 
     /**
