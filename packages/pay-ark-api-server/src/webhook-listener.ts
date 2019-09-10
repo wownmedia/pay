@@ -6,9 +6,17 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { Balance, Register } from "./commands";
+import { Balance, Deposit, Register } from "./commands";
 import { CommonPlatforms } from "./enums";
-import { APIBalanceReply, ApiFees, APIInfoCommand, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
+import {
+    APIBalanceReply,
+    APIDepositReply,
+    ApiFees,
+    APIInfoCommand,
+    APITransferReply,
+    WebhookConfig,
+    WebhookToken,
+} from "./interfaces";
 
 const fs = fsWithCallbacks.promises;
 const webhookConfig = Core.config.get("apiServer");
@@ -403,13 +411,28 @@ export class WebhookListener {
                     return;
 
                 case "DEPOSIT":
-                    // check if from address is a valid platform
-
-                    // get user address
-
-                    // send reply tx
-
+                    let depositReply: APIDepositReply;
+                    try {
+                        const vendorField: APIInfoCommand = {
+                            command: "DEPOSIT",
+                            token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
+                            senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
+                        };
+                        const depositCommand = new Deposit(sender, amount, vendorField);
+                        const address: string = await depositCommand.getAddress();
+                        depositReply = {
+                            id: data.data.id,
+                            address,
+                        };
+                    } catch (e) {
+                        depositReply = {
+                            id: data.data.id,
+                            error: e.message,
+                        };
+                    }
+                    await this.sendReplyToSender(sender, depositReply);
                     return;
+
                 case "BALANCE":
                     let balanceReply: APIBalanceReply;
                     try {

@@ -55,6 +55,6 @@ export interface APIBalanceReply {
 
 export interface APIDepositReply {
     id: string;
-    address: string;
+    address?: string;
     error?: string;
 }
