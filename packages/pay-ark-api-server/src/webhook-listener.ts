@@ -12,6 +12,7 @@ import {
     APIDepositReply,
     ApiFees,
     APIInfoCommand,
+    APITransferCommand,
     APITransferReply,
     WebhookConfig,
     WebhookToken,
@@ -436,17 +437,39 @@ export class WebhookListener {
                     return;
 
                 case "SEND":
-                    // let sendReply: APITransferReply;
-                    /*
+                    let sendReply: APITransferReply;
                     try {
+                        const vendorField: APITransferCommand = {
+                            command: "SEND",
+                            token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
+                            senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
+                            receiverId: command.hasOwnProperty("receiverId") ? command.receiverId : null,
+                            amount: command.hasOwnProperty("amount") ? command.amount : null,
+                        };
+                        const sendCommand = new Send(sender, amount, vendorField);
+                        const reply: Interfaces.Reply = await sendCommand.sendTransaction();
 
-
-
+                        if (reply.hasOwnProperty("error")) {
+                            sendReply = {
+                                id: data.data.id,
+                                error: reply.error,
+                            };
+                        } else {
+                            sendReply = {
+                                id: data.data.id,
+                                transactionId: reply.data,
+                                explorer: arkEcosystemConfig.ark.explorer,
+                            };
+                            await this.platform.notifyReceiver(possibleUser, reply);
+                        }
                     } catch (e) {
-
+                        sendReply = {
+                            id: data.data.id,
+                            error: e.message,
+                        };
                     }
-                     */
-                    // await this.sendReplyToSender(sender, sendReply);
+
+                    await this.sendReplyToSender(sender, sendReply);
                     return;
                 case "WITHDRAW":
                     // check if from address is a valid platform
