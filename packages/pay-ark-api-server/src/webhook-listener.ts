@@ -6,8 +6,7 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { Balance, Deposit, Register } from "./commands";
-import { CommonPlatforms } from "./enums";
+import { Balance, Deposit, Register, Send } from "./commands";
 import {
     APIBalanceReply,
     APIDepositReply,
@@ -21,7 +20,6 @@ import {
 const fs = fsWithCallbacks.promises;
 const webhookConfig = Core.config.get("apiServer");
 const apiFeesConfig = Core.config.get("apiFees");
-const parserConfig = Core.config.get("parser");
 const arkEcosystemConfig = Core.config.get("arkEcosystem");
 const arkTransactionFee: BigNumber =
     arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("transactionFee")
@@ -31,7 +29,6 @@ const arkNode: string =
     arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("nodes")
         ? `http://${arkEcosystemConfig.ark.nodes[0].host}:${arkEcosystemConfig.ark.nodes[0].port}`
         : "http://localhost:4003";
-const USERNAME_PLATFORM_SEPARATOR = parserConfig.seperator ? parserConfig.seperator : "@";
 
 export class WebhookListener {
     /**
@@ -145,25 +142,6 @@ export class WebhookListener {
      */
     private static getSenderWallet(senderPublicKey: string): string {
         return Identities.Address.fromPublicKey(senderPublicKey, 23);
-    }
-
-    /**
-     * @dev Parse a username
-     * @param username
-     */
-    private static parseUsername(username: string): Interfaces.Username {
-        // Remove the Reddit user u/ and Twitter @
-        const userNameReplace: RegExp = new RegExp("(^@|u/)");
-        username = username.replace(userNameReplace, "");
-
-        // Split up the username and platform if any (eg. cryptology@twitter)
-        const usernameParts: string[] = username.split(USERNAME_PLATFORM_SEPARATOR);
-        if (usernameParts.length === 2) {
-            username = usernameParts[0];
-            const platform = usernameParts[1];
-            return { username, platform };
-        }
-        return null;
     }
 
     /**
@@ -316,7 +294,7 @@ export class WebhookListener {
 
             // I think the larger amount of transactions will be direct deposits, so check for those first
             // check if vendorField is a valid user so we can do a direct deposit
-            const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.data.vendorField);
+            const possibleUser: Interfaces.Username = Send.parseUsername(data.data.vendorField);
             const sender: string = WebhookListener.getSenderWallet(data.data.senderPublicKey);
             let transferReply: APITransferReply;
 
@@ -458,12 +436,17 @@ export class WebhookListener {
                     return;
 
                 case "SEND":
-                    // check if from address is a valid platform
+                    // let sendReply: APITransferReply;
+                    /*
+                    try {
 
-                    // create and execute send transaction
 
-                    // send reply tx
 
+                    } catch (e) {
+
+                    }
+                     */
+                    // await this.sendReplyToSender(sender, sendReply);
                     return;
                 case "WITHDRAW":
                     // check if from address is a valid platform

@@ -58,3 +58,8 @@ export interface APIDepositReply {
     address?: string;
     error?: string;
 }
+
+export interface Transaction {
+    transactionId: string;
+    explorer: string;
+}
