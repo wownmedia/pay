@@ -6,7 +6,7 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { Balance, Deposit, Register, Send } from "./commands";
+import { Balance, Deposit, Register, Send, Withdraw } from "./commands";
 import {
     APIBalanceReply,
     APIDepositReply,
@@ -437,6 +437,7 @@ export class WebhookListener {
                     return;
 
                 case "SEND":
+                case "WITHDRAW":
                     let sendReply: APITransferReply;
                     try {
                         const vendorField: APITransferCommand = {
@@ -444,9 +445,13 @@ export class WebhookListener {
                             token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
                             senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
                             receiverId: command.hasOwnProperty("receiverId") ? command.receiverId : null,
+                            address: command.hasOwnProperty("address") ? command.address : null,
                             amount: command.hasOwnProperty("amount") ? command.amount : null,
                         };
-                        const sendCommand = new Send(sender, amount, vendorField);
+                        const sendCommand =
+                            command.command.toUpperCase() === "SEND"
+                                ? new Send(sender, amount, vendorField)
+                                : new Withdraw(sender, amount, vendorField);
                         const reply: Interfaces.Reply = await sendCommand.sendTransaction();
 
                         if (reply.hasOwnProperty("error")) {
@@ -470,14 +475,6 @@ export class WebhookListener {
                     }
 
                     await this.sendReplyToSender(sender, sendReply);
-                    return;
-                case "WITHDRAW":
-                    // check if from address is a valid platform
-
-                    // create and execute withdraw transaction
-
-                    // send reply tx
-
                     return;
             }
         } catch (e) {
