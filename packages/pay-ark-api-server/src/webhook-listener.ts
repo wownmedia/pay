@@ -365,16 +365,16 @@ export class WebhookListener {
 
             // Now check if this is a command
             const command = JSON.parse(data.data.vendorField);
+            Core.logger.info(JSON.stringify(command));
+
             if (!command.hasOwnProperty("command")) {
                 return;
             }
             const amount: BigNumber = new BigNumber(data.data.amount);
-            const platformByWallet: string = await Services.Storage.Storage.getPlatformByWallet(sender);
 
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
                     try {
-                        Core.logger.warn(JSON.stringify(command));
                         const vendorField: APIRegisterCommand = {
                             command: "REGISTER",
                             platform: command.hasOwnProperty("platform") ? command.platform : null,
@@ -392,8 +392,7 @@ export class WebhookListener {
                             error: e.message,
                         };
                     }
-                    Core.logger.warn(JSON.stringify(transferReply));
-                    // await this.sendReplyToSender(sender, transferReply);
+                    await this.sendReplyToSender(sender, transferReply);
                     return;
 
                 case "DEPOSIT":
