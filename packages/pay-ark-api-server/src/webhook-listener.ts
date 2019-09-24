@@ -373,6 +373,7 @@ export class WebhookListener {
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
                     try {
+                        Core.logger.warn(JSON.stringify(data.data));
                         const registrationCommand = new Register(amount, data.data.id, data.data.vendorField);
                         await registrationCommand.registrate();
                         transferReply = {
@@ -386,7 +387,8 @@ export class WebhookListener {
                             error: e.message,
                         };
                     }
-                    await this.sendReplyToSender(sender, transferReply);
+                    Core.logger.warn(JSON.stringify(transferReply));
+                    // await this.sendReplyToSender(sender, transferReply);
                     return;
 
                 case "DEPOSIT":
