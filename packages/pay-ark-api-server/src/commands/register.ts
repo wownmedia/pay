@@ -5,12 +5,14 @@ import { APIRegisterCommand, APITransferReply } from "../interfaces";
 const apiFeesConfig = Core.config.get("apiFees");
 
 export class Register {
+    private readonly sender: string;
     private readonly amount: BigNumber;
     private readonly transactionId: string;
     private readonly command: APIRegisterCommand;
     private readonly registrationFee: BigNumber;
 
-    constructor(amount: BigNumber, transactionId: string, vendorField: APIRegisterCommand) {
+    constructor(sender: string, amount: BigNumber, transactionId: string, vendorField: APIRegisterCommand) {
+        this.sender = sender;
         this.amount = amount;
         this.transactionId = transactionId;
         this.command = vendorField;
@@ -34,14 +36,14 @@ export class Register {
             throw new Error("Platform is already registered");
         }
 
-        const platformByWallet: string = await Services.Storage.Storage.getPlatformByWallet(platformWallet);
+        const platformByWallet: string = await Services.Storage.Storage.getPlatformByWallet(this.sender);
         if (platformByWallet != null) {
             throw new Error("Wallet is already registered");
         }
 
         const successfulRegistration: boolean = await Services.Storage.Storage.addPlatform(
             this.command.platform,
-            platformByWallet,
+            this.sender,
         );
         if (!successfulRegistration) {
             throw new Error("Could not register platform");

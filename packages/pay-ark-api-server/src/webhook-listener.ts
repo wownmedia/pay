@@ -374,12 +374,12 @@ export class WebhookListener {
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
                     try {
-                        Core.logger.warn(JSON.stringify(data.data));
+                        Core.logger.warn(JSON.stringify(command));
                         const vendorField: APIRegisterCommand = {
                             command: "REGISTER",
                             platform: command.hasOwnProperty("platform") ? command.platform : null,
                         };
-                        const registrationCommand = new Register(amount, data.data.id, vendorField);
+                        const registrationCommand = new Register(sender, amount, data.data.id, vendorField);
                         await registrationCommand.registrate();
                         transferReply = {
                             id: data.data.id,
