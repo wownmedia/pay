@@ -12,6 +12,7 @@ import {
     APIDepositReply,
     ApiFees,
     APIInfoCommand,
+    APIRegisterCommand,
     APITransferCommand,
     APITransferReply,
     WebhookConfig,
@@ -374,7 +375,11 @@ export class WebhookListener {
                 case "REGISTER":
                     try {
                         Core.logger.warn(JSON.stringify(data.data));
-                        const registrationCommand = new Register(amount, data.data.id, data.data.vendorField);
+                        const vendorField: APIRegisterCommand = {
+                            command: "REGISTER",
+                            platform: command.hasOwnProperty("platform") ? command.platform : null,
+                        };
+                        const registrationCommand = new Register(amount, data.data.id, vendorField);
                         await registrationCommand.registrate();
                         transferReply = {
                             id: data.data.id,
