@@ -1,3 +1,4 @@
+import { Services } from "@cryptology.hk/pay-framework";
 import Snoowrap from "snoowrap";
 import Twit from "twit";
 import Twitter from "twitter";
@@ -224,8 +225,9 @@ export class Platform {
                 return await this.isValidRedditUser(user.username);
             case "twitter":
                 return (await this.getTwitterUserId(user.username)) !== null;
+            default:
+                return (await Services.Storage.Storage.getPlatform(user.platform)) !== null;
         }
-        return false;
     }
 
     /**
