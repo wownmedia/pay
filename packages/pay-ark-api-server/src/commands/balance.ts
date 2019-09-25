@@ -34,7 +34,7 @@ export class Balance {
         }
 
         const user: Interfaces.Username = {
-            username: this.sender,
+            username: this.command.senderId,
             platform: platformByWallet,
         };
         const wallet: string = await Services.User.getWalletAddress(user, this.command.token);
