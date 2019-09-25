@@ -34,7 +34,7 @@ export class Deposit {
         }
 
         const user: Interfaces.Username = {
-            username: this.sender,
+            username: this.command.senderId,
             platform: platformByWallet,
         };
 
