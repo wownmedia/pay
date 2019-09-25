@@ -37,7 +37,9 @@ export class Balance {
             username: this.command.senderId,
             platform: platformByWallet,
         };
+        Core.logger.info(`user: ${JSON.stringify(user)}`);
         const wallet: string = await Services.User.getWalletAddress(user, this.command.token);
+        Core.logger.info(`wallet: ${wallet}`);
         return await Services.ArkWallet.getBalance(wallet, this.command.token);
     }
 }
