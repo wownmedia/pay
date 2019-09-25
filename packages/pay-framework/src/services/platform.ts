@@ -1,4 +1,3 @@
-import { Services } from "@cryptology.hk/pay-framework";
 import Snoowrap from "snoowrap";
 import Twit from "twit";
 import Twitter from "twitter";
@@ -6,6 +5,7 @@ import { config, logger } from "../core";
 import { RedditCfg, Reply, TwitterCfg, Username } from "../interfaces";
 import { Commander } from "./command";
 import { Currency } from "./currency";
+import { Storage } from "./storage";
 
 export class Platform {
     /**
@@ -226,7 +226,7 @@ export class Platform {
             case "twitter":
                 return (await this.getTwitterUserId(user.username)) !== null;
             default:
-                return (await Services.Storage.Storage.getPlatform(user.platform)) !== null;
+                return (await Storage.getPlatform(user.platform)) !== null;
         }
     }
 
