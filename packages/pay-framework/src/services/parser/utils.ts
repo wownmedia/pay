@@ -319,7 +319,8 @@ export class ParserUtils {
     public static async isValidPlatform(platform: string): Promise<boolean> {
         platform = platform.toLowerCase();
         const apiPlatform: string = await Storage.getPlatform(platform);
-        return platforms.hasOwnProperty(platform) || apiPlatform;
+        logger.info(`${platform} === ${apiPlatform} `);
+        return platforms.hasOwnProperty(platform) || apiPlatform !== null;
     }
 
     /**
