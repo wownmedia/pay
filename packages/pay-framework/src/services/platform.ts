@@ -220,6 +220,10 @@ export class Platform {
      * @returns {Promise<boolean>} True if the username exists on the platform
      */
     public async isValidUser(user: Username): Promise<boolean> {
+        if (user.platform === null) {
+            return false;
+        }
+
         switch (user.platform) {
             case "reddit":
                 return await this.isValidRedditUser(user.username);
