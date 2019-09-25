@@ -419,6 +419,7 @@ export class WebhookListener {
                     return;
 
                 case "BALANCE":
+                    Core.logger.info(`requesting Balance for ${JSON.stringify(command)} on ${sender}`);
                     let balanceReply: APIBalanceReply;
                     try {
                         const vendorField: APIInfoCommand = {
