@@ -203,6 +203,7 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeFalse();
         });
 
+        /* TODO: MOCK PLATFORM DB CALL
         it("should return FALSE on a username that includes a bad platform", async () => {
             const user: Username = {
                 username: "user1",
@@ -211,6 +212,8 @@ describe("pay-Parser: ParserUtils()", () => {
             const result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
         });
+
+         */
     });
 
     describe("parseTipValue()", () => {

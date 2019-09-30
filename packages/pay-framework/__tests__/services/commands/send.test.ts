@@ -88,7 +88,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
         });
 
         it("should return an error message when amount is below the minimal amount", async () => {
@@ -109,7 +109,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
         });
 
         it("should return an error message when sender tries transfer for badly configured token (no min value)", async () => {
@@ -136,7 +136,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -165,7 +165,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -194,7 +194,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -223,7 +223,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -252,7 +252,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -281,7 +281,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField, true, true);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -310,7 +310,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField, true, true);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -367,7 +367,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "directMessageReceiver"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "directMessageReceiver", "data"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
             getWalletMock.mockRestore();
@@ -427,7 +427,7 @@ describe("pay-commands: Send()", () => {
             };
             const vendorField: string = "XXX";
             const result: Reply = await Send.transfer(transfer, vendorField);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
             getWalletMock.mockRestore();
