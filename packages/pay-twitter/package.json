@@ -47,7 +47,7 @@
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",
-        "jest-extended": "^0.11.1"
+        "jest-extended": "^0.11.2"
     },
     "engines": {
         "node": ">=10.x"

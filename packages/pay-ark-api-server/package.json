@@ -37,7 +37,7 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.4.15",
+        "@arkecosystem/crypto": "^2.5.25",
         "@cryptology.hk/pay-framework": "^2.4.0",
         "bignumber.js": "^9.0.0",
         "env-paths": "^2.2.0",
@@ -45,7 +45,7 @@
     },
     "devDependencies": {
         "@types/joi": "^14.3.3",
-        "jest-extended": "^0.11.1",
+        "jest-extended": "^0.11.2",
         "joi": "^14.3.1"
     },
     "engines": {
