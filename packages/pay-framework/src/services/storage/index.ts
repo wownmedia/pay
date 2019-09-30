@@ -1,4 +1,4 @@
-import { Crypto, Identities, Interfaces } from "@arkecosystem/crypto";
+import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { config, logger, payDatabase } from "../../core";
 import { Wallet } from "../../interfaces";
 import { Signature } from "../signature";
@@ -67,6 +67,15 @@ export class Storage {
 
     public static async addSubmission(submissionId: string): Promise<boolean> {
         submissionId = submissionId.substring(0, 32);
+        const query: string = "SELECT * FROM submissions WHERE submission = $1 LIMIT 1";
+        const result = await payDatabase.query(query, [submissionId]);
+        const submission = result.rows[0];
+
+        // A new submission
+        if (typeof submission !== "undefined") {
+            return false;
+        }
+
         if (!serverConfig.hasOwnProperty("seed")) {
             throw new Error("Bad server configuration: No seed.");
         }
@@ -104,11 +113,12 @@ export class Storage {
                 logger.info(`Submission ${submissionId} will be executed by this server.`);
                 return true;
             }
+
+            return false;
         } catch (e) {
             // Most likely a DB connection error
-            logger.error(e.message);
+            return false;
         }
-        return false;
     }
 
     public static async getPlatform(platform: string): Promise<string> {
@@ -122,6 +132,18 @@ export class Storage {
         }
 
         return result.rows[0].address;
+    }
+
+    public static async getPlatformByWallet(address: string): Promise<string> {
+        const query: string = "SELECT * FROM platforms WHERE address = $1 LIMIT 1";
+        const result = await payDatabase.query(query, [address]);
+
+        // A new address
+        if (typeof result.rows[0] === "undefined" || !result.rows[0].hasOwnProperty("platform")) {
+            return null;
+        }
+
+        return result.rows[0].platform;
     }
 
     public static async addPlatform(platform: string, address: string): Promise<boolean> {

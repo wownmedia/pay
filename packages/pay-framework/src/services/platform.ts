@@ -5,6 +5,7 @@ import { config, logger } from "../core";
 import { RedditCfg, Reply, TwitterCfg, Username } from "../interfaces";
 import { Commander } from "./command";
 import { Currency } from "./currency";
+import { Storage } from "./storage";
 
 export class Platform {
     /**
@@ -219,13 +220,18 @@ export class Platform {
      * @returns {Promise<boolean>} True if the username exists on the platform
      */
     public async isValidUser(user: Username): Promise<boolean> {
+        if (user.platform === null) {
+            return false;
+        }
+
         switch (user.platform) {
             case "reddit":
                 return await this.isValidRedditUser(user.username);
             case "twitter":
                 return (await this.getTwitterUserId(user.username)) !== null;
+            default:
+                return (await Storage.getPlatform(user.platform)) !== null;
         }
-        return false;
     }
 
     /**

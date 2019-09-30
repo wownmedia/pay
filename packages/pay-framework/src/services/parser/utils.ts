@@ -6,6 +6,7 @@ import { AmountCurrency, BaseCurrency, Command, Transfer, Username } from "../..
 import { ArkWallet } from "../ark-wallet";
 import { Commander } from "../command";
 import { Currency } from "../currency/";
+import { Storage } from "../storage";
 import { ArkTransaction } from "../transaction";
 
 const configuration = config.get("parser");
@@ -201,7 +202,7 @@ export class ParserUtils {
     ): Promise<Command> {
         const command = "SEND";
         const receiver: Username = ParserUtils.parseUsername(arg1, platform);
-        const validUser: boolean = ParserUtils.isValidUser(receiver);
+        const validUser: boolean = await ParserUtils.isValidUser(receiver);
 
         if (validUser) {
             const amountCurrency: AmountCurrency = await ParserUtils.parseAmount(arg2, arg3);
@@ -292,7 +293,7 @@ export class ParserUtils {
      *
      * A username can never be a valid currency or a number (that would parse badly)
      */
-    public static isValidUser(user: Username): boolean {
+    public static async isValidUser(user: Username): Promise<boolean> {
         // A user can never be a command
         if (Commander.isValidCommand(user.username)) {
             return false;
@@ -307,16 +308,19 @@ export class ParserUtils {
         ) {
             return false;
         }
-        return !(!new BigNumber(user.username).isNaN() || !this.isValidPlatform(user.platform) || user.username === "");
+        const platform: boolean = await this.isValidPlatform(user.platform);
+        return !(!new BigNumber(user.username).isNaN() || !platform || user.username === "");
     }
 
     /**
      * @dev Return true if the platform is in the configuration
      * @param platform
      */
-    public static isValidPlatform(platform: string): boolean {
+    public static async isValidPlatform(platform: string): Promise<boolean> {
         platform = platform.toLowerCase();
-        return platforms.hasOwnProperty(platform);
+        const apiPlatform: string = await Storage.getPlatform(platform);
+        logger.info(`${platform} === ${apiPlatform} `);
+        return platforms.hasOwnProperty(platform) || apiPlatform !== null;
     }
 
     /**
@@ -463,7 +467,7 @@ export class ParserUtils {
     public static async parseSTICKERS(arg1: string, platform: string, commandSender: Username): Promise<Command> {
         const command = "STICKERS";
         const commandReplyTo: Username = ParserUtils.parseUsername(arg1, platform);
-        const validUser = ParserUtils.isValidUser(commandReplyTo);
+        const validUser = await ParserUtils.isValidUser(commandReplyTo);
         if (validUser) {
             return { command, commandReplyTo, commandSender };
         }
@@ -565,7 +569,7 @@ export class ParserUtils {
                 const index: number = parseInt(item, 10);
                 if (typeof bodyParts[index - 1] !== "undefined") {
                     const receiver: Username = this.parseUsername(bodyParts[item], platform);
-                    const validUser: boolean = this.isValidUser(receiver);
+                    const validUser: boolean = await this.isValidUser(receiver);
                     if (validUser) {
                         const command: string = bodyParts[index - 1].toUpperCase();
 

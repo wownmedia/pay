@@ -50,6 +50,8 @@ export interface Reply {
     directMessageReceiver?: string;
     directMessageMerchant?: string;
     replyComment?: string;
+    data?: string;
+    error?: string;
 }
 
 export interface Username {

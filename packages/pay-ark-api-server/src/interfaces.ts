@@ -24,12 +24,6 @@ export interface APIRegisterCommand {
     platform: string;
 }
 
-export interface APIRegisterReply {
-    id: string;
-    registered: boolean;
-    error?: string;
-}
-
 export interface APITransferCommand {
     command: string;
     senderId: string;
@@ -44,6 +38,7 @@ export interface APITransferReply {
     transactionId?: string;
     explorer?: string;
     error?: string;
+    registered?: boolean;
 }
 
 export interface APIInfoCommand {
@@ -54,12 +49,17 @@ export interface APIInfoCommand {
 
 export interface APIBalanceReply {
     id: string;
-    balance: string;
+    balance?: string;
     error?: string;
 }
 
 export interface APIDepositReply {
     id: string;
-    address: string;
+    address?: string;
     error?: string;
+}
+
+export interface Transaction {
+    transactionId: string;
+    explorer: string;
 }

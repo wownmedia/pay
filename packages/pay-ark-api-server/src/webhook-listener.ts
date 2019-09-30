@@ -6,12 +6,22 @@ import envPaths from "env-paths";
 import { default as fsWithCallbacks } from "fs";
 import Joi from "joi";
 import WebhookManager from "webhook-manager";
-import { ApiFees, APITransferReply, WebhookConfig, WebhookToken } from "./interfaces";
+import { Balance, Deposit, Register, Send, Withdraw } from "./commands";
+import {
+    APIBalanceReply,
+    APIDepositReply,
+    ApiFees,
+    APIInfoCommand,
+    APIRegisterCommand,
+    APITransferCommand,
+    APITransferReply,
+    WebhookConfig,
+    WebhookToken,
+} from "./interfaces";
 
 const fs = fsWithCallbacks.promises;
 const webhookConfig = Core.config.get("apiServer");
 const apiFeesConfig = Core.config.get("apiFees");
-const parserConfig = Core.config.get("parser");
 const arkEcosystemConfig = Core.config.get("arkEcosystem");
 const arkTransactionFee: BigNumber =
     arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("transactionFee")
@@ -21,7 +31,6 @@ const arkNode: string =
     arkEcosystemConfig.hasOwnProperty("ark") && arkEcosystemConfig.ark.hasOwnProperty("nodes")
         ? `http://${arkEcosystemConfig.ark.nodes[0].host}:${arkEcosystemConfig.ark.nodes[0].port}`
         : "http://localhost:4003";
-const USERNAME_PLATFORM_SEPARATOR = parserConfig.seperator ? parserConfig.seperator : "@";
 
 export class WebhookListener {
     /**
@@ -135,25 +144,6 @@ export class WebhookListener {
      */
     private static getSenderWallet(senderPublicKey: string): string {
         return Identities.Address.fromPublicKey(senderPublicKey, 23);
-    }
-
-    /**
-     * @dev Parse a username
-     * @param username
-     */
-    private static parseUsername(username: string): Interfaces.Username {
-        // Remove the Reddit user u/ and Twitter @
-        const userNameReplace: RegExp = new RegExp("(^@|u/)");
-        username = username.replace(userNameReplace, "");
-
-        // Split up the username and platform if any (eg. cryptology@twitter)
-        const usernameParts: string[] = username.split(USERNAME_PLATFORM_SEPARATOR);
-        if (usernameParts.length === 2) {
-            username = usernameParts[0];
-            const platform = usernameParts[1];
-            return { username, platform };
-        }
-        return null;
     }
 
     /**
@@ -306,7 +296,9 @@ export class WebhookListener {
 
             // I think the larger amount of transactions will be direct deposits, so check for those first
             // check if vendorField is a valid user so we can do a direct deposit
-            const possibleUser: Interfaces.Username = WebhookListener.parseUsername(data.data.vendorField);
+            const possibleUser: Interfaces.Username = Send.parseUsername(data.data.vendorField);
+            const sender: string = WebhookListener.getSenderWallet(data.data.senderPublicKey);
+            let transferReply: APITransferReply;
 
             // If the Vendorfield does not contain a valid user it could contain a command or be a regular transaction
             // to the ArkTippr listener wallet....
@@ -318,7 +310,6 @@ export class WebhookListener {
 
                 // create a tx and send it
                 const recipientId: string = await Services.User.getWalletAddress(possibleUser, "ARK");
-                const sender: string = WebhookListener.getSenderWallet(data.data.senderPublicKey);
                 const vendorField: string = `ARK Pay - Direct Deposit from ${sender}`;
                 const transaction = await Services.ArkTransaction.generateTransferTransaction(
                     amount,
@@ -340,7 +331,6 @@ export class WebhookListener {
 
                 // Check if we have an accepted transaction
                 const transactionId: string = WebhookListener.checkTransferResult(transfers[0]);
-                let transferReply: APITransferReply;
                 if (transactionId) {
                     // send reply to receiver and send reply tx`
                     transferReply = {
@@ -369,79 +359,149 @@ export class WebhookListener {
                 }
 
                 // Send a reply to the Sender
-                Core.logger.info("Sending notification to Sender");
-                const replyTransaction = await Services.ArkTransaction.generateTransferTransaction(
-                    new BigNumber(1),
-                    sender,
-                    JSON.stringify(transferReply),
-                    arkTransactionFee,
-                    this.seed,
-                    "ARK",
-                );
-                const replyTransactions: any[] = [];
-                replyTransactions.push(replyTransaction);
-                await Services.Network.broadcastTransactions(replyTransactions, "ARK");
+                await this.sendReplyToSender(sender, transferReply);
                 return;
             }
 
-            /*
             // Now check if this is a command
             const command = JSON.parse(data.data.vendorField);
+            Core.logger.info(JSON.stringify(command));
+
+            if (!command.hasOwnProperty("command")) {
+                return;
+            }
+            const amount: BigNumber = new BigNumber(data.data.amount);
 
             switch (command.command.toUpperCase()) {
                 case "REGISTER":
-                    // check if platform isn't a common one (e.g. reddit, twitter, facebook, etc)
-
-                    // check if address or platform exists
-
-                    // check if value is larger than minimal
-
-                    // register platform
-
-                    // send reply tx
-
+                    try {
+                        const vendorField: APIRegisterCommand = {
+                            command: "REGISTER",
+                            platform: command.hasOwnProperty("platform") ? command.platform : null,
+                        };
+                        const registrationCommand = new Register(sender, amount, data.data.id, vendorField);
+                        await registrationCommand.registrate();
+                        transferReply = {
+                            id: data.data.id,
+                            registered: true,
+                        };
+                    } catch (e) {
+                        transferReply = {
+                            id: data.data.id,
+                            registered: false,
+                            error: e.message,
+                        };
+                    }
+                    await this.sendReplyToSender(sender, transferReply);
                     return;
+
                 case "DEPOSIT":
-                    // check if from address is a valid platform
-
-                    // get user address
-
-                    // send reply tx
-
+                    let depositReply: APIDepositReply;
+                    try {
+                        const vendorField: APIInfoCommand = {
+                            command: "DEPOSIT",
+                            token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
+                            senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
+                        };
+                        const depositCommand = new Deposit(sender, amount, vendorField);
+                        const address: string = await depositCommand.getAddress();
+                        depositReply = {
+                            id: data.data.id,
+                            address,
+                        };
+                    } catch (e) {
+                        depositReply = {
+                            id: data.data.id,
+                            error: e.message,
+                        };
+                    }
+                    await this.sendReplyToSender(sender, depositReply);
                     return;
+
                 case "BALANCE":
-                    // check if from address is a valid platform
+                    Core.logger.info(`requesting Balance for ${JSON.stringify(command)} on ${sender}`);
+                    let balanceReply: APIBalanceReply;
+                    try {
+                        const vendorField: APIInfoCommand = {
+                            command: "BALANCE",
+                            token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
+                            senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
+                        };
+                        const balanceCommand = new Balance(sender, amount, vendorField);
+                        const balance: BigNumber = await balanceCommand.getBalance();
+                        balanceReply = {
+                            id: data.data.id,
+                            balance: balance.toString(),
+                        };
+                    } catch (e) {
+                        balanceReply = {
+                            id: data.data.id,
+                            error: e.message,
+                        };
+                    }
 
-                    // get balance
-
-                    // send reply tx
-
+                    await this.sendReplyToSender(sender, balanceReply);
                     return;
 
                 case "SEND":
-                    // check if from address is a valid platform
-
-                    // create and execute send transaction
-
-                    // send reply tx
-
-                    return;
                 case "WITHDRAW":
-                    // check if from address is a valid platform
+                    let sendReply: APITransferReply;
+                    try {
+                        const vendorField: APITransferCommand = {
+                            command: "SEND",
+                            token: command.hasOwnProperty("token") ? command.token.toUpperCase() : "ARK",
+                            senderId: command.hasOwnProperty("senderId") ? command.senderId : null,
+                            receiverId: command.hasOwnProperty("receiverId") ? command.receiverId : null,
+                            address: command.hasOwnProperty("address") ? command.address : null,
+                            amount: command.hasOwnProperty("amount") ? command.amount : null,
+                        };
+                        const sendCommand =
+                            command.command.toUpperCase() === "SEND"
+                                ? new Send(sender, amount, vendorField)
+                                : new Withdraw(sender, amount, vendorField);
+                        const reply: Interfaces.Reply = await sendCommand.sendTransaction();
 
-                    // create and execute withdraw transaction
+                        if (reply.hasOwnProperty("error")) {
+                            sendReply = {
+                                id: data.data.id,
+                                error: reply.error,
+                            };
+                        } else {
+                            sendReply = {
+                                id: data.data.id,
+                                transactionId: reply.data,
+                                explorer: arkEcosystemConfig.ark.explorer,
+                            };
+                            await this.platform.notifyReceiver(possibleUser, reply);
+                        }
+                    } catch (e) {
+                        sendReply = {
+                            id: data.data.id,
+                            error: e.message,
+                        };
+                    }
 
-                    // send reply tx
-
+                    await this.sendReplyToSender(sender, sendReply);
                     return;
             }
-             */
-
-            // It didn't contain a Direct deposit, nor a valid command. To prevent DDOS we will not reply with an
-            // error message.
         } catch (e) {
             Core.logger.error(e.message);
         }
+    }
+
+    private async sendReplyToSender(sender: string, transferReply: APITransferReply): Promise<void> {
+        Core.logger.info("Sending notification to Sender");
+        const replyTransaction = await Services.ArkTransaction.generateTransferTransaction(
+            new BigNumber(1),
+            sender,
+            JSON.stringify(transferReply),
+            arkTransactionFee,
+            this.seed,
+            "ARK",
+        );
+        const replyTransactions: any[] = [];
+        replyTransactions.push(replyTransaction);
+        await Services.Network.broadcastTransactions(replyTransactions, "ARK");
     }
 
     /**

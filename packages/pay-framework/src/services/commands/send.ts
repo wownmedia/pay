@@ -52,12 +52,16 @@ export class Send {
         try {
             // Check if not sending to self
             if (this.sendingToSelf(transfer.sender, transfer.receiver)) {
-                return Messenger.errorMessage();
+                const reply: Reply = Messenger.errorMessage();
+                reply.error = "Trying to send to self";
+                return reply;
             }
 
             // Check if amount is above minimum
             if (!this.amountLargerThanMinimum(transfer.arkToshiValue, transfer.token)) {
-                return Messenger.minAmountMessage(transfer.token);
+                const reply: Reply = Messenger.minAmountMessage(transfer.token);
+                reply.error = "Amount too low";
+                return reply;
             }
 
             // Check if the Sender has sufficient balance
@@ -67,20 +71,24 @@ export class Send {
                 transfer.arkToshiValue,
             );
             if (!senderBalance.success) {
-                return Messenger.senderLowBalance(
+                const reply: Reply = Messenger.senderLowBalance(
                     senderBalance.balance,
                     transfer.arkToshiValue,
                     transfer.token,
                     senderBalance.address,
                     isComment,
                 );
+                reply.error = "Insufficient balance";
+                return reply;
             }
 
             // and..... send
             return await this.sendTransaction(transfer, vendorField, smallFooter);
         } catch (e) {
             logger.warn(e.message);
-            return Messenger.errorMessage();
+            const reply: Reply = Messenger.errorMessage();
+            reply.error = e.message;
+            return reply;
         }
     }
 
@@ -127,7 +135,7 @@ export class Send {
 
         const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(transfer.arkToshiValue, transfer.token);
-        return Messenger.transferMessage(
+        const reply: Reply = Messenger.transferMessage(
             transfer.sender,
             transfer.receiver,
             transactionId,
@@ -137,6 +145,8 @@ export class Send {
             txReceiver.address,
             smallFooter,
         );
+        reply.data = transactionId;
+        return reply;
     }
 
     /**
@@ -154,7 +164,7 @@ export class Send {
                 }
             }
         }
-        throw new Error("Could not succesfully send Transaction");
+        throw new Error("Could not successfully send Transaction");
     }
 
     /**
