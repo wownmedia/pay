@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@arkecosystem/crypto@^2.4.12", "@arkecosystem/crypto@^2.4.15":
+"@arkecosystem/crypto@^2.4.12", "@arkecosystem/crypto@^2.5.25":
   version "2.5.25"
   resolved "https://registry.yarnpkg.com/@arkecosystem/crypto/-/crypto-2.5.25.tgz#3d87538f6a22bf92ba99be8cc780ff2293149dc7"
   integrity sha512-t4+6wOCbVhNitmtmRM5jVPXREademEwqZOPYsKDul7Qi3ol6Mo3bEeP1jSEF+1QPs+80HlU23gBWjmaXVz812w==
@@ -1978,7 +1978,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/node@*":
+"@types/node@*", "@types/node@^12.7.8":
   version "12.7.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.8.tgz#cb1bf6800238898bc2ff6ffa5702c3cadd350708"
   integrity sha512-FMdVn84tJJdV+xe+53sYiZS4R5yn1mAIxfj+DVoNiQjTYz1+OYmjwEZr1ev9nU0axXwda0QDbYl06QHanRVH3A==
@@ -1992,11 +1992,6 @@
   version "11.11.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.6.tgz#df929d1bb2eee5afdda598a41930fe50b43eaa6a"
   integrity sha512-Exw4yUWMBXM3X+8oqzJNRqZSwUAaS4+7NdvHqQuFi/d+synz++xmX3QIf+BFqneW8N31R8Ky+sikfZUXq07ggQ==
-
-"@types/node@^11.13.6":
-  version "11.13.21"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.21.tgz#afcf913437eeb1f9e1994a62a03b1762ee4600d3"
-  integrity sha512-fLwcSjMmDnjfk4FP7/QDiNzXSCEOGNvEe9eA6vaITmC784+Gm70wF7woaFQxUb2CpMjgLBhSPyhH0oIe1JS2uw==
 
 "@types/node@^6.14.4":
   version "6.14.7"
@@ -6217,7 +6212,7 @@ jest-environment-node@^24.9.0:
     jest-mock "^24.9.0"
     jest-util "^24.9.0"
 
-jest-extended@^0.11.1:
+jest-extended@^0.11.1, jest-extended@^0.11.2:
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/jest-extended/-/jest-extended-0.11.2.tgz#924f4a6b4c946133faf9ec8fba865de9790f4116"
   integrity sha512-gwNMXrAPN0IY5L7VXWfSlC2aGo0KHIsGGcW+lTHYpedt5SJksEvBgMxs29iNikiNOz+cqAZY1s/+kYK0jlj4Jw==
@@ -9659,7 +9654,7 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-snoowrap@^1.17.0:
+snoowrap@^1.17.0, snoowrap@^1.19.0:
   version "1.19.0"
   resolved "https://registry.yarnpkg.com/snoowrap/-/snoowrap-1.19.0.tgz#6b24dd91ddb72ef15aba626109fd695d8c5e1ab0"
   integrity sha512-T5ksseuepfNjZOmERB6p5/PNot45fDzez2GvIO320p7b2I4gl1Wjo+u6s7W2IyGzBJ5kHDXcWIlnJnEvdRvC2g==
