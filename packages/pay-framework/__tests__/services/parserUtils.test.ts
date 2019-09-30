@@ -167,21 +167,48 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeTrue();
         });
 
-        it("should return FALSE on invalid input", async () => {
+        it("should return FALSE on a username that equals a command", async () => {
+            const user: Username = {
+                username: "SEND",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that equals a currency", async () => {
+            const user: Username = {
+                username: "USD",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that equals a currency pair", async () => {
+            const user: Username = {
+                username: "ARK",
+                platform: "10",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that equals a numerical input", async () => {
+            const user: Username = {
+                username: "10",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that includes a bad platform", async () => {
             const user: Username = {
                 username: "user1",
                 platform: "badPlatform",
             };
-            let result: boolean = await ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.platform = "badPlatform";
-            result = await ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.username = "10";
-            result = await ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.username = "USD";
-            result = await ParserUtils.isValidUser(user);
+            const result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
         });
     });
