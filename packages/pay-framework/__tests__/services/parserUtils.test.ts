@@ -163,7 +163,7 @@ describe("pay-Parser: ParserUtils()", () => {
                 username: "user1",
                 platform: "reddit",
             };
-            const result: boolean = ParserUtils.isValidUser(user);
+            const result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeTrue();
         });
 
@@ -172,16 +172,16 @@ describe("pay-Parser: ParserUtils()", () => {
                 username: "user1",
                 platform: "badPlatform",
             };
-            let result: boolean = ParserUtils.isValidUser(user);
+            let result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
             user.platform = "badPlatform";
-            result = ParserUtils.isValidUser(user);
+            result = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
             user.username = "10";
-            result = ParserUtils.isValidUser(user);
+            result = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
             user.username = "USD";
-            result = ParserUtils.isValidUser(user);
+            result = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
         });
     });
