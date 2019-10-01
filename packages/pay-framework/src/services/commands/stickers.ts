@@ -12,15 +12,14 @@ const stickersConfig = config.get("merchants").stickers;
 
 export class Stickers extends Send {
     /**
-     * @dev Generate, pay and send Stickers code
+     * @dev Generate, pay and send Stickers code to a Reddit user
      * @param sender {Username}     Sender of the Stickers command
      * @param receiver {Username}   Receiver of the Stickers code
      * @returns {Promise<Reply>} Object with messages for the Sender, Receiver, Merchant and a comment reply message
      */
     public static async send(sender: Username, receiver: Username): Promise<Reply> {
         try {
-            // Can't send stickers to Twitter as the code will be seen publicly
-            if (receiver.platform === "twitter") {
+            if (receiver.platform !== "reddit") {
                 return Messenger.errorMessage();
             }
 

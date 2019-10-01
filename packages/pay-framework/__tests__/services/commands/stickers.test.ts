@@ -51,7 +51,7 @@ describe("pay-commands: Stickers()", () => {
             };
             const receiver: Username = {
                 username: "BBB",
-                platform: "ZZZ",
+                platform: "reddit",
             };
             const result: Reply = await Stickers.send(sender, receiver);
             expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
@@ -100,7 +100,7 @@ describe("pay-commands: Stickers()", () => {
             };
             const receiver: Username = {
                 username: "BBB",
-                platform: "ZZZ",
+                platform: "reddit",
             };
             const result: Reply = await Stickers.send(sender, receiver);
             expect(result).toContainAllKeys([
