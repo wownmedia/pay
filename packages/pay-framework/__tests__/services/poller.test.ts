@@ -11,7 +11,7 @@ describe("pay-poller", () => {
             expect(poller.poll).toBeFunction();
         });
 
-        it("should correctly emit a poll event", () => {
+        it("should correctly setup to emit a poll event after the configured timer expires", () => {
             poller.poll();
             expect(setTimeout).toHaveBeenCalledTimes(1);
             expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 500);
