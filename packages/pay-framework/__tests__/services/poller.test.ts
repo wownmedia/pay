@@ -1,6 +1,6 @@
 import "jest-extended";
 
-jest.useFakeTimers();
+beforeEach(() => jest.useFakeTimers());
 
 import { Poller } from "../../src/services";
 const poller: Poller = new Poller(500);
@@ -30,6 +30,8 @@ describe("pay-poller", () => {
             poller.onPoll(pollMock);
             poller.emit("poll");
             expect(pollMock).toHaveBeenCalledTimes(1);
+            jest.runOnlyPendingTimers();
+            expect(pollMock).toHaveBeenCalledTimes(2);
         });
     });
 });
