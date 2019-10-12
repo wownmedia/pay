@@ -22,7 +22,7 @@
                     "transactionFee": 300,
                     "nodes": [
                         {
-                            "host": "217.160.169.226",
+                            "host": "1.1.1.1",
                             "port": 4003
                         }
                     ]
@@ -34,7 +34,7 @@
                     "transactionFee": 300,
                     "nodes": [
                         {
-                            "host": "82.223.100.85",
+                            "host": "2.2.2.2",
                             "port": 4033
                         }
                     ]

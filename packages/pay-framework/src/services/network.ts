@@ -1,9 +1,8 @@
 import axios from "axios";
-import { config } from "../core";
-import { logger } from "../core";
+import { config, logger } from "../core";
 import { ApiResponse, Node, Parameters, TransactionResponse } from "../interfaces";
 
-const arkEcosystemConfig = config.get("arkEcosystem");
+const arkEcosystemConfig: Record<string, any> = config.get("arkEcosystem");
 
 export class Network {
     /**

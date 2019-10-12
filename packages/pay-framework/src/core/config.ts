@@ -14,7 +14,9 @@ export class Config {
      */
     public loadFromFile(path: string): void {
         try {
+            this.configuration = {};
             this.configuration = require(path);
+            logger.info(`Loaded config from: ${path} ${JSON.stringify(this.get("currency"))}`);
         } catch (e) {
             logger.warn(`pay-config: Bad configuration file: ${e.message}`);
             throw e;

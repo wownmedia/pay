@@ -1,0 +1,68 @@
+{
+    "pay-config": {
+        "test": "cryptology"
+    },
+    "database": {
+        "dbUser": "arkpay",
+        "dbPassword": "password",
+        "host": "localhost",
+        "database": "arkpay",
+        "port": 5432
+    },
+    "user": {},
+    "secureStorage": {
+        "encryptionKey": "935bff586aeb4244452802e4cf87eaca"
+    },
+
+    "currency": {
+        "baseCurrency": "ark",
+        "acceptedCurrencies": ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"]
+    },
+
+    "parser": {
+        "seperator": "@"
+    },
+
+    "arkEcosystem": {
+        "ark": {
+            "minValue": 2000000,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ]
+        },
+
+        "verybad": {
+            "nodes": []
+        },
+
+        "dark": {
+            "minValue": 2000000,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4033
+                }
+            ]
+        }
+    },
+
+    "merchants": {
+        "stickers": {
+            "token": "ark",
+            "price": "2",
+            "payoutTo": "Aa74QyqAFBsevReox3rMWy6FhMUyJVGPop",
+            "notify": { "username": "arkpay", "platform": "reddit" }
+        }
+    }
+}
