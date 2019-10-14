@@ -42,6 +42,76 @@
             "explorer": "https://explorer.ark.io"
         },
 
+        "nominvalue": {
+            "networkVersion": 23,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "badminvalue": {
+            "minValue": "not a number",
+            "networkVersion": 23,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "nofee": {
+            "minValue": 1,
+            "networkVersion": 23,
+            "voteFee": 157,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "badfee": {
+            "minValue": 1,
+            "networkVersion": 23,
+            "voteFee": 157,
+            "transactionFee": "not a number",
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
         "verybad": {
             "nodes": []
         },

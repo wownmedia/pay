@@ -1,68 +1,15 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
+import { resolve } from "path";
 
 import { config } from "../../../src/core";
-
-// Mock Config
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "../.config/ark-pay/pay-config.json"));
 const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    seperator: "@",
-    baseCurrency: "ark",
-    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
-    ark: {
-        networkVersion: 23,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    dark: {
-        networkVersion: 30,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    min: {
-        networkVersion: 30,
-        transactionFee: 300,
-        minValue: "bad",
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    test: {
-        networkVersion: 23,
-        minValue: 2000000,
-        transactionFee: "bad",
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    fee: {
-        networkVersion: 23,
-        minValue: 2000000,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-}));
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
 
 import { Reply, Transfer, Username } from "../../../src/interfaces";
 import { ArkWallet, User } from "../../../src/services";
@@ -131,7 +78,7 @@ describe("pay-commands: Send()", () => {
                 command: "SEND",
                 sender,
                 receiver,
-                token: "DARK",
+                token: "NOMINVALUE",
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";
@@ -160,7 +107,7 @@ describe("pay-commands: Send()", () => {
                 command: "SEND",
                 sender,
                 receiver,
-                token: "MIN",
+                token: "badMinValue",
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";
@@ -189,7 +136,7 @@ describe("pay-commands: Send()", () => {
                 command: "SEND",
                 sender,
                 receiver,
-                token: "FEE",
+                token: "noFee",
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";
@@ -218,7 +165,7 @@ describe("pay-commands: Send()", () => {
                 command: "SEND",
                 sender,
                 receiver,
-                token: "TEST",
+                token: "badFee",
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";
@@ -247,7 +194,7 @@ describe("pay-commands: Send()", () => {
                 command: "SEND",
                 sender,
                 receiver,
-                token: "BAD",
+                token: "unknown",
                 arkToshiValue: new BigNumber(2100000000),
             };
             const vendorField: string = "XXX";

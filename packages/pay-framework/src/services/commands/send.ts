@@ -2,7 +2,6 @@ import BigNumber from "bignumber.js";
 import Joi from "joi";
 import { config, logger } from "../../core";
 import {
-    APITransaction,
     ArkEcosystemWallet,
     Reply,
     TransactionResponse,
@@ -196,7 +195,7 @@ export class Send {
             typeof arkEcosystemConfig[token] === "undefined" ||
             typeof arkEcosystemConfig[token].minValue === "undefined"
         ) {
-            throw TypeError(`Could not find ${token.toUpperCase()} in the configuration`);
+            throw TypeError(`Could not find minValue for ${token.toUpperCase()} in the configuration`);
         }
 
         const minValue: BigNumber = new BigNumber(arkEcosystemConfig[token].minValue);
