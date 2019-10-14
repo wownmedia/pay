@@ -19,14 +19,15 @@ export class Stickers extends Send {
      */
     public static async send(sender: Username, receiver: Username): Promise<Reply> {
         try {
-            if (receiver.platform !== "reddit") {
-                return Messenger.errorMessage();
-            }
-
             // Prepare the transfer
             const price: BigNumber = this.getStickersPrice();
             const address: string = this.getStickersAddress();
             const token: string = this.getStickersToken();
+
+            // Only accept receivers on Reddit for now
+            if (receiver.platform !== "reddit") {
+                return Messenger.errorMessage();
+            }
 
             // Check if the Sender has sufficient balance
             const senderBalance: WalletBalance = await Send.senderHasBalance(sender, token, price);
