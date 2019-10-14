@@ -15,6 +15,7 @@ configMock.mockImplementation((subConfig: string) => {
     return configuration[subConfig];
 });
 import { AmountCurrency, Command, Transfer, Username } from "../../src/interfaces";
+import { ArkTransaction } from "../../src/services";
 import { ParserUtils } from "../../src/services/parser/utils";
 import { Storage } from "../../src/services/storage";
 
@@ -1262,11 +1263,39 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeFalse();
         });
 
-        it("should return false on other addresses", async () => {
+        it("should return false on addresses that do not return a config from their nodes", async () => {
+            // Mock ArkTransaction.getNetworkConfig()
+            const getNetworkConfigMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
+            getNetworkConfigMock.mockImplementation(() => Promise.resolve(null));
             const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            const token: string = "NOTSUPPORTED";
+            const token: string = "noFee";
             const result = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
+            getNetworkConfigMock.mockRestore();
+        });
+
+        it("should return false on addresses for a network that does not exist", async () => {
+            // Mock ArkTransaction.getNetworkConfig()
+            const getNetworkConfigMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
+            getNetworkConfigMock.mockImplementation(() => {
+                throw new Error("yeah, no such network");
+            });
+            const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            const token: string = "noNetwork";
+            const result = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeFalse();
+            getNetworkConfigMock.mockRestore();
+        });
+
+        it("should return false on addresses for a network that does exist, but is badly configured", async () => {
+            // Mock ArkTransaction.getNetworkConfig()
+            const getNetworkConfigMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
+            getNetworkConfigMock.mockImplementation(() => Promise.resolve({}));
+            const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            const token: string = "noNetwork";
+            const result = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeFalse();
+            getNetworkConfigMock.mockRestore();
         });
     });
 

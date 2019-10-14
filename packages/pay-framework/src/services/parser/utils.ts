@@ -428,6 +428,7 @@ export class ParserUtils {
                 }
                 Managers.configManager.setConfig(networkConfig);
             } catch (e) {
+                logger.error(e.message);
                 return false;
             }
         }
