@@ -1,55 +1,22 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { config } from "../../src/core";
-import { AmountCurrency, Command, Transfer, Username } from "../../src/interfaces";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
 const amount = new BigNumber(10);
 
-// Mock Config
-const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    seperator: "@",
-    baseCurrency: "ark",
-    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
-    ark: {
-        networkVersion: 23,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    dark: {
-        networkVersion: 30,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    pay: {
-        networkVersion: 30,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    reddit: {},
-    twitter: {},
-}));
+import { resolve } from "path";
 
+import { config } from "../../src/core";
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "./.config/ark-pay/pay-config.json"));
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
+import { AmountCurrency, Command, Transfer, Username } from "../../src/interfaces";
 import { ParserUtils } from "../../src/services/parser/utils";
+import { Storage } from "../../src/services/storage";
 
 describe("pay-Parser: ParserUtils()", () => {
     describe("parseAmount()", () => {
@@ -214,6 +181,24 @@ describe("pay-Parser: ParserUtils()", () => {
         });
 
          */
+    });
+
+    describe("isValidPlatform()", () => {
+        it("should return TRUE on a valid platform", async () => {
+            const platform = "REDDIT";
+            const result: boolean = await ParserUtils.isValidPlatform(platform);
+            expect(result).toBeTrue();
+        });
+
+        it("should return FALSE on an invalid platform", async () => {
+            // Mock Storage.getPlatform()
+            const getPlatformMock = jest.spyOn(Storage, "getPlatform");
+            getPlatformMock.mockImplementation(() => Promise.resolve(null));
+            const platform = "falsePlatform";
+            const result: boolean = await ParserUtils.isValidPlatform(platform);
+            expect(result).toBeFalse();
+            getPlatformMock.mockRestore();
+        });
     });
 
     describe("parseTipValue()", () => {
@@ -1270,16 +1255,6 @@ describe("pay-Parser: ParserUtils()", () => {
         it("should correctly validate a DARK address", async () => {
             let address: string = "D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib";
             const token: string = "DARK";
-            let result: boolean = await ParserUtils.isValidAddress(address, token);
-            expect(result).toBeTrue();
-            address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            result = await ParserUtils.isValidAddress(address, token);
-            expect(result).toBeFalse();
-        });
-
-        it("should correctly validate a PAY address", async () => {
-            let address: string = "D73ocXmtwgEWfUcibeTTvJiCaFMNyoWmhC";
-            const token: string = "PAY";
             let result: boolean = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeTrue();
             address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
