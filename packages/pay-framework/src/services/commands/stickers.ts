@@ -36,7 +36,6 @@ export class Stickers extends Send {
 
             // Generate the code
             const stickerCode: string = this.generateCode(sender, receiver);
-
             // and..... send
             const vendorField: string = "ARK Pay - Stickers!";
             return await this.sendStickersTransaction(
@@ -101,6 +100,7 @@ export class Stickers extends Send {
 
         const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(price, token);
+
         return Messenger.stickersMessage(
             sender,
             receiver,

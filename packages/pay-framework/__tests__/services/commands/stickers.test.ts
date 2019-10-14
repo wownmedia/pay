@@ -1,30 +1,15 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-
+import { resolve } from "path";
 import { config } from "../../../src/core";
 
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "../.config/ark-pay/pay-config.json"));
 const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    stickers: {
-        token: "ark",
-        price: "2",
-        payoutTo: "Aa74QyqAFBsevReox3rMWy6FhMUyJVGPop",
-        notify: { username: "arkpay", platform: "reddit" },
-    },
-    ark: {
-        networkVersion: 23,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    reddit: {},
-    twitter: {},
-}));
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
 
 import { Reply, Username } from "../../../src/interfaces";
 import { ArkWallet, User } from "../../../src/services";
@@ -62,7 +47,7 @@ describe("pay-commands: Stickers()", () => {
         it("should return an Reply to sender, receiver, creator and comment if TX is success", async () => {
             // Mock User.getWalletAddress()
             const getWalletAddressMock = jest.spyOn(User, "getWalletAddress");
-            getWalletAddressMock.mockImplementation(() => Promise.resolve("XXX"));
+            getWalletAddressMock.mockImplementation(() => Promise.resolve("AFqavNP6bvyTiS4WcSFaTWnpMCHHYbiguR"));
             // Mock ArkWallet.getBalance()
             const getBalanceMock = jest.spyOn(ArkWallet, "getBalance");
             getBalanceMock.mockImplementation(() => Promise.resolve(new BigNumber(9999999999999)));
@@ -96,7 +81,7 @@ describe("pay-commands: Stickers()", () => {
             );
             const sender: Username = {
                 username: "AAA",
-                platform: "ZZZ",
+                platform: "reddit",
             };
             const receiver: Username = {
                 username: "BBB",

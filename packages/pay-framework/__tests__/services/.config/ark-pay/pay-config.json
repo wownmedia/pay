@@ -25,6 +25,7 @@
 
     "arkEcosystem": {
         "ark": {
+            "networkVersion": 23,
             "minValue": 2000000,
             "voteFee": 157,
             "transactionFee": 300,
@@ -37,7 +38,8 @@
                     "host": "remote.host",
                     "port": 4003
                 }
-            ]
+            ],
+            "explorer": "https://explorer.ark.io"
         },
 
         "verybad": {
@@ -63,6 +65,30 @@
             "price": "2",
             "payoutTo": "Aa74QyqAFBsevReox3rMWy6FhMUyJVGPop",
             "notify": { "username": "arkpay", "platform": "reddit" }
+        }
+    },
+
+    "platforms": {
+        "reddit": {
+            "admin": "marcs1970",
+            "clientId": "xxxxx",
+            "clientSecret": "yyyyy",
+            "username": "darktippr",
+            "password": "aaaaaa",
+            "usernamePrefix": "u/"
+        },
+        "twitter": {
+            "admin": "CryptologyHK",
+            "userId": "ArkTippr",
+            "usernamePrefix": "@",
+            "serverUrl": "https://xxx.yyy.com",
+            "route": "/webhooks",
+            "consumerKey": "zzzzzzz",
+            "consumerSecret": "gggggg",
+            "accessToken": "vvvvvvv",
+            "accessTokenSecret": "wwwww",
+            "environment": "arktippr",
+            "accountApiPort": 4466
         }
     }
 }
