@@ -1303,13 +1303,13 @@ describe("pay-Parser: ParserUtils()", () => {
         it("should correctly find a command in an array of strings", () => {
             const bla: string = "bla";
             let command: string = "COMMAND";
-            let stack: string[] = [command, bla, bla, bla];
+            let stack: string[] = [bla, command, bla, bla, bla];
             let result: number = ParserUtils.commandIndex(command, stack);
-            expect(result).toEqual(0);
+            expect(result).toEqual(1);
             command = "command";
-            stack = [command, bla, bla, bla];
+            stack = [bla, command, bla, bla, bla];
             result = ParserUtils.commandIndex(command, stack);
-            expect(result).toEqual(0);
+            expect(result).toEqual(1);
         });
     });
 

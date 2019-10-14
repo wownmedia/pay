@@ -94,18 +94,16 @@ export class ParserUtils {
                     commandSender,
                 );
                 const commands: Command[] = [];
-                for (const item in transfers) {
-                    if (transfers[item]) {
-                        const rewardCommand: Command = {
-                            commandReplyTo: transfers[item].receiver,
-                            commandSender,
-                            command: transfers[item].command,
-                            transfer: transfers[item],
-                            smallFooter,
-                            id,
-                        };
-                        commands.push(rewardCommand);
-                    }
+                for (const item of transfers) {
+                    const rewardCommand: Command = {
+                        commandReplyTo: item.receiver,
+                        commandSender,
+                        command: item.command,
+                        transfer: item,
+                        smallFooter,
+                        id,
+                    };
+                    commands.push(rewardCommand);
                 }
                 return commands;
 
@@ -339,13 +337,11 @@ export class ParserUtils {
 
         if (index === -1) {
             // Really? I know it is there, we got triggered by a mention after all, try uppercase...
-            for (const item in mentionParts) {
-                if (typeof mentionParts[item] !== "undefined") {
-                    const checkForUser: string = mentionParts[item].toUpperCase();
-                    const index = parseInt(item, 10);
-                    if (checkForUser.includes(mentionedUser) && index > 0) {
-                        return index;
-                    }
+            for (const item of mentionParts) {
+                const checkForUser: string = item.toUpperCase();
+                const index = mentionParts.indexOf(item);
+                if (checkForUser.includes(mentionedUser) && index > 0) {
+                    return index;
                 }
             }
             throw TypeError("Could not find the mentioned user");
@@ -448,12 +444,10 @@ export class ParserUtils {
 
         if (index < 0) {
             // We know it's there, but maybe wasn't in uppercase
-            for (const item in stack) {
-                if (typeof stack[item] !== "undefined") {
-                    const haystack = stack[item].toUpperCase();
-                    if (haystack.includes(needle)) {
-                        return parseInt(item, 10);
-                    }
+            for (const item of stack) {
+                const haystack = item.toUpperCase();
+                if (haystack.includes(needle)) {
+                    return stack.indexOf(item);
                 }
             }
         }
@@ -566,45 +560,43 @@ export class ParserUtils {
         const requestedRewards: Transfer[] = [];
         let bodyParts: string[] = ParserUtils.splitMessageToParts(mentionBody, true);
         bodyParts = bodyParts.slice(mentionIndex + 1);
-        for (const item in bodyParts) {
-            if (typeof bodyParts[item] !== "undefined") {
-                const index: number = parseInt(item, 10);
-                if (typeof bodyParts[index - 1] !== "undefined") {
-                    const receiver: Username = this.parseUsername(bodyParts[item], platform);
-                    const validUser: boolean = await this.isValidUser(receiver);
-                    if (validUser) {
-                        const command: string = bodyParts[index - 1].toUpperCase();
+        for (const item of bodyParts) {
+            const index: number = bodyParts.indexOf(item);
+            if (typeof bodyParts[index - 1] !== "undefined") {
+                const receiver: Username = this.parseUsername(item, platform);
+                const validUser: boolean = await this.isValidUser(receiver);
+                if (validUser) {
+                    const command: string = bodyParts[index - 1].toUpperCase();
 
-                        if (command === "STICKERS") {
+                    if (command === "STICKERS") {
+                        const transfer: Transfer = {
+                            sender: commandSender,
+                            receiver,
+                            command: "STICKERS",
+                        };
+                        requestedRewards.push(transfer);
+                    } else {
+                        const rightInput: string = bodyParts[index - 1].toUpperCase();
+                        const leftInput: string =
+                            index >= 2 && this.isValidLeftInput(bodyParts[index - 2], rightInput)
+                                ? bodyParts[index - 2].toUpperCase()
+                                : "";
+                        const amountCurrency: AmountCurrency = await this.parseAmount(leftInput, rightInput);
+                        if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
+                            const token: string = arkEcosystemConfig.hasOwnProperty(
+                                amountCurrency.currency.toLowerCase(),
+                            )
+                                ? amountCurrency.currency.toUpperCase()
+                                : baseCurrency.ticker;
                             const transfer: Transfer = {
                                 sender: commandSender,
                                 receiver,
-                                command: "STICKERS",
+                                command: "TIP",
+                                arkToshiValue: amountCurrency.arkToshiValue,
+                                token,
+                                check: amountCurrency,
                             };
                             requestedRewards.push(transfer);
-                        } else {
-                            const rightInput: string = bodyParts[index - 1].toUpperCase();
-                            const leftInput: string =
-                                index >= 2 && this.isValidLeftInput(bodyParts[index - 2], rightInput)
-                                    ? bodyParts[index - 2].toUpperCase()
-                                    : "";
-                            const amountCurrency: AmountCurrency = await this.parseAmount(leftInput, rightInput);
-                            if (amountCurrency !== null && amountCurrency.arkToshiValue.gt(0)) {
-                                const token: string = arkEcosystemConfig.hasOwnProperty(
-                                    amountCurrency.currency.toLowerCase(),
-                                )
-                                    ? amountCurrency.currency.toUpperCase()
-                                    : baseCurrency.ticker;
-                                const transfer: Transfer = {
-                                    sender: commandSender,
-                                    receiver,
-                                    command: "TIP",
-                                    arkToshiValue: amountCurrency.arkToshiValue,
-                                    token,
-                                    check: amountCurrency,
-                                };
-                                requestedRewards.push(transfer);
-                            }
                         }
                     }
                 }
