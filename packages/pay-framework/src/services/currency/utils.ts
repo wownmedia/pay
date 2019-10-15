@@ -63,6 +63,7 @@ export class CurrencyUtils {
      */
     public static splitCurrencyAmountPair(data: string): AmountCurrency {
         for (const i in arkEcosystemConfig) {
+            /* istanbul ignore else */
             if (arkEcosystemConfig.hasOwnProperty(i)) {
                 const currency: string = i.toString().toUpperCase();
                 if (data.startsWith(currency) || data.endsWith(currency)) {
