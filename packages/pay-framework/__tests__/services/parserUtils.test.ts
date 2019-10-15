@@ -19,6 +19,8 @@ import { ArkTransaction } from "../../src/services";
 import { ParserUtils } from "../../src/services/parser/utils";
 import { Storage } from "../../src/services/storage";
 
+jest.setTimeout(30000);
+
 describe("pay-Parser: ParserUtils()", () => {
     describe("parseAmount()", () => {
         describe("should correctly parse amount/currency combinations", () => {

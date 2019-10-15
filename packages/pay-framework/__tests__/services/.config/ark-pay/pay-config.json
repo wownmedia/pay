@@ -126,6 +126,20 @@
                     "port": 4033
                 }
             ]
+        },
+
+        "epoch": {
+            "networkVersion": 30,
+            "minValue": 2000000,
+            "transactionFee": 1000000,
+            "epoch": "2019-05-24T11:48:58.165Z",
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4023
+                }
+            ],
+            "explorer": "https://dexplorer.ark.io"
         }
     },
 
