@@ -1,36 +1,15 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { config } from "../../src/core";
+import { resolve } from "path";
 
-// Mock Config
+import { config } from "../../src/core";
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "./.config/ark-pay/pay-config.json"));
 const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    seperator: "@",
-    baseCurrency: "ark",
-    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
-    ark: {
-        networkVersion: 23,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    dark: {
-        networkVersion: 30,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-}));
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
 
 import { AmountCurrency } from "../../src/interfaces";
 import { CoinGeckoAPI } from "../../src/services/currency/coinGecko";
