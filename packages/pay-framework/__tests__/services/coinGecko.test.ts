@@ -19,5 +19,10 @@ describe("pay-currency: CoinGeckoAPI()", () => {
 
             expect(value.isGreaterThan(0)).toBeTrue();
         });
+
+        it("should return 0 if the coinGecky API doesn't respond or has bad input", async () => {
+            const value: BigNumber = await CoinGeckoAPI.getSimplePrice("FAKE", "ALSOFAKE");
+            expect(value.isZero()).toBeTrue();
+        });
     });
 });
