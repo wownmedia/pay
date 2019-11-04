@@ -1,7 +1,18 @@
 // Mock Config
 import BigNumber from "bignumber.js";
 import "jest-extended";
+import { resolve } from "path";
+
 import { config } from "../../src/core";
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "./.config/ark-pay/pay-config.json"));
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
+
+/*
 const configMock = jest.spyOn(config, "get");
 configMock.mockImplementation(() => ({
     encryptionKey: "935bff586aeb4244452802e4cf87eaca",
@@ -41,6 +52,8 @@ configMock.mockImplementation(() => ({
         explorer: "https://dexplorer.ark.io",
     },
 }));
+
+ */
 import { ArkTransaction } from "../../src/services";
 
 describe("pay-ark: Transaction()", () => {
@@ -159,7 +172,7 @@ describe("pay-ark: Transaction()", () => {
             const vendorField: string = "test";
             const fee: BigNumber = new BigNumber(2);
             const seed: string = "this is a top secret passphrase";
-            const token = "PAY";
+            const token = "epoch";
             const result = await ArkTransaction.generateTransferTransaction(
                 amount,
                 recipientId,
@@ -185,15 +198,15 @@ describe("pay-ark: Transaction()", () => {
         });
     });
 
-    it("should correctly generate and sign a transaction on BAD without ArkEcosystem config", async () => {
+    it("should return null on a bad config received from a network", async () => {
         const networkMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
-        networkMock.mockImplementation(() => Promise.resolve(null));
+        networkMock.mockImplementation(() => Promise.resolve({}));
         const amount: BigNumber = new BigNumber(1);
         const recipientId: string = "D6Z26L69gdk9qYmTv5uzk3uGepigtHY4ax";
         const vendorField: string = "test";
         const fee: BigNumber = new BigNumber(2);
         const seed: string = "this is a top secret passphrase";
-        const token = "BAD";
+        const token = "DARK";
         const result = await ArkTransaction.generateTransferTransaction(
             amount,
             recipientId,
@@ -202,19 +215,7 @@ describe("pay-ark: Transaction()", () => {
             seed,
             token,
         );
-        expect(result).toContainKeys([
-            "amount",
-            "fee",
-            "id",
-            "network",
-            "recipientId",
-            "senderPublicKey",
-            "signature",
-            "timestamp",
-            "type",
-            "vendorField",
-            "version",
-        ]);
+        expect(result).toBeNull();
         networkMock.mockRestore();
     });
 });

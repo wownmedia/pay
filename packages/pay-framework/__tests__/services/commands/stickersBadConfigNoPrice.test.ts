@@ -38,11 +38,11 @@ describe("pay-commands: Stickers() - Exceptions, No Price", () => {
             getBalanceMock.mockImplementation(() => Promise.resolve(new BigNumber(1)));
             const sender: Username = {
                 username: "AAA",
-                platform: "ZZZ",
+                platform: "reddit",
             };
             const receiver: Username = {
                 username: "BBB",
-                platform: "ZZZ",
+                platform: "reddit",
             };
             const result: Reply = await Stickers.send(sender, receiver);
             expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);

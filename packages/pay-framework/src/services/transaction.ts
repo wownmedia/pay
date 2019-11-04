@@ -1,7 +1,7 @@
 import { Managers, Transactions } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { config } from "../core";
+import { config, logger } from "../core";
 import { Network } from "./network";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
@@ -30,7 +30,12 @@ export class ArkTransaction {
         // Load network specific config
         const config = await this.getNetworkConfig(token);
         if (config !== null) {
-            Managers.configManager.setConfig(config);
+            try {
+                Managers.configManager.setConfig(config);
+            } catch (e) {
+                logger.error(e.message);
+                return null;
+            }
         }
 
         let transaction = Transactions.BuilderFactory.transfer()
@@ -96,10 +101,6 @@ export class ArkTransaction {
      */
     private static getArkEcosystemEpochForToken(token: string): string {
         token = token.toLowerCase();
-        try {
-            return typeof arkEcosystemConfig[token].epoch !== "undefined" ? arkEcosystemConfig[token].epoch : null;
-        } catch (e) {
-            return null;
-        }
+        return typeof arkEcosystemConfig[token].epoch !== "undefined" ? arkEcosystemConfig[token].epoch : null;
     }
 }

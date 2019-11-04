@@ -1,55 +1,25 @@
 import BigNumber from "bignumber.js";
 import "jest-extended";
-import { config } from "../../src/core";
-import { AmountCurrency, Command, Transfer, Username } from "../../src/interfaces";
 
 const arktoshiValue = new BigNumber(Math.pow(10, 8));
 const amount = new BigNumber(10);
 
-// Mock Config
-const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    seperator: "@",
-    baseCurrency: "ark",
-    acceptedCurrencies: ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"],
-    ark: {
-        networkVersion: 23,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    dark: {
-        networkVersion: 30,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    pay: {
-        networkVersion: 30,
-        minValue: 2000000,
-        transactionFee: 300,
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-        ],
-    },
-    reddit: {},
-    twitter: {},
-}));
+import { resolve } from "path";
 
+import { config } from "../../src/core";
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "./.config/ark-pay/pay-config.json"));
+const configMock = jest.spyOn(config, "get");
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
+import { AmountCurrency, Command, Transfer, Username } from "../../src/interfaces";
+import { ArkTransaction } from "../../src/services";
 import { ParserUtils } from "../../src/services/parser/utils";
+import { Storage } from "../../src/services/storage";
+
+jest.setTimeout(30000);
 
 describe("pay-Parser: ParserUtils()", () => {
     describe("parseAmount()", () => {
@@ -163,26 +133,74 @@ describe("pay-Parser: ParserUtils()", () => {
                 username: "user1",
                 platform: "reddit",
             };
-            const result: boolean = ParserUtils.isValidUser(user);
+            const result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeTrue();
         });
 
-        it("should return FALSE on invalid input", async () => {
+        it("should return FALSE on a username that equals a command", async () => {
+            const user: Username = {
+                username: "SEND",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that equals a currency", async () => {
+            const user: Username = {
+                username: "USD",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that equals a currency pair", async () => {
+            const user: Username = {
+                username: "ARK",
+                platform: "10",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        it("should return FALSE on a username that equals a numerical input", async () => {
+            const user: Username = {
+                username: "10",
+                platform: "reddit",
+            };
+            const result: boolean = await ParserUtils.isValidUser(user);
+            expect(result).toBeFalse();
+        });
+
+        /* TODO: MOCK PLATFORM DB CALL
+        it("should return FALSE on a username that includes a bad platform", async () => {
             const user: Username = {
                 username: "user1",
                 platform: "badPlatform",
             };
-            let result: boolean = ParserUtils.isValidUser(user);
+            const result: boolean = await ParserUtils.isValidUser(user);
             expect(result).toBeFalse();
-            user.platform = "badPlatform";
-            result = ParserUtils.isValidUser(user);
+        });
+
+         */
+    });
+
+    describe("isValidPlatform()", () => {
+        it("should return TRUE on a valid platform", async () => {
+            const platform = "REDDIT";
+            const result: boolean = await ParserUtils.isValidPlatform(platform);
+            expect(result).toBeTrue();
+        });
+
+        it("should return FALSE on an invalid platform", async () => {
+            // Mock Storage.getPlatform()
+            const getPlatformMock = jest.spyOn(Storage, "getPlatform");
+            getPlatformMock.mockImplementation(() => Promise.resolve(null));
+            const platform = "falsePlatform";
+            const result: boolean = await ParserUtils.isValidPlatform(platform);
             expect(result).toBeFalse();
-            user.username = "10";
-            result = ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
-            user.username = "USD";
-            result = ParserUtils.isValidUser(user);
-            expect(result).toBeFalse();
+            getPlatformMock.mockRestore();
         });
     });
 
@@ -1247,21 +1265,39 @@ describe("pay-Parser: ParserUtils()", () => {
             expect(result).toBeFalse();
         });
 
-        it("should correctly validate a PAY address", async () => {
-            let address: string = "D73ocXmtwgEWfUcibeTTvJiCaFMNyoWmhC";
-            const token: string = "PAY";
-            let result: boolean = await ParserUtils.isValidAddress(address, token);
-            expect(result).toBeTrue();
-            address = "BFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            result = await ParserUtils.isValidAddress(address, token);
-            expect(result).toBeFalse();
-        });
-
-        it("should return false on other addresses", async () => {
+        it("should return false on addresses that do not return a config from their nodes", async () => {
+            // Mock ArkTransaction.getNetworkConfig()
+            const getNetworkConfigMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
+            getNetworkConfigMock.mockImplementation(() => Promise.resolve(null));
             const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
-            const token: string = "NOTSUPPORTED";
+            const token: string = "noFee";
             const result = await ParserUtils.isValidAddress(address, token);
             expect(result).toBeFalse();
+            getNetworkConfigMock.mockRestore();
+        });
+
+        it("should return false on addresses for a network that does not exist", async () => {
+            // Mock ArkTransaction.getNetworkConfig()
+            const getNetworkConfigMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
+            getNetworkConfigMock.mockImplementation(() => {
+                throw new Error("yeah, no such network");
+            });
+            const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            const token: string = "noNetwork";
+            const result = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeFalse();
+            getNetworkConfigMock.mockRestore();
+        });
+
+        it("should return false on addresses for a network that does exist, but is badly configured", async () => {
+            // Mock ArkTransaction.getNetworkConfig()
+            const getNetworkConfigMock = jest.spyOn(ArkTransaction, "getNetworkConfig");
+            getNetworkConfigMock.mockImplementation(() => Promise.resolve({}));
+            const address: string = "DFrPtEmzu6wdVpa2CnRDEKGQQMWgq8nE9V";
+            const token: string = "noNetwork";
+            const result = await ParserUtils.isValidAddress(address, token);
+            expect(result).toBeFalse();
+            getNetworkConfigMock.mockRestore();
         });
     });
 
@@ -1269,13 +1305,13 @@ describe("pay-Parser: ParserUtils()", () => {
         it("should correctly find a command in an array of strings", () => {
             const bla: string = "bla";
             let command: string = "COMMAND";
-            let stack: string[] = [command, bla, bla, bla];
+            let stack: string[] = [bla, command, bla, bla, bla];
             let result: number = ParserUtils.commandIndex(command, stack);
-            expect(result).toEqual(0);
+            expect(result).toEqual(1);
             command = "command";
-            stack = [command, bla, bla, bla];
+            stack = [bla, command, bla, bla, bla];
             result = ParserUtils.commandIndex(command, stack);
-            expect(result).toEqual(0);
+            expect(result).toEqual(1);
         });
     });
 

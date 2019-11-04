@@ -8,18 +8,25 @@ export class Config {
         this.loadFromFile(`${envPaths("ark-pay").config}/pay-config.json`);
     }
 
+    /**
+     * @dev Load a configuration from file
+     * @param path {string} the full path to the configuration file
+     */
     public loadFromFile(path: string): void {
         try {
+            this.configuration = {};
             this.configuration = require(path);
+            logger.info(`Loaded config from: ${path} ${JSON.stringify(this.get("currency"))}`);
         } catch (e) {
-            logger.warn(`pay-config: Bad configuration: ${e.message}`);
+            logger.warn(`pay-config: Bad configuration file: ${e.message}`);
+            throw e;
         }
     }
 
     /**
      * @dev Retrieve a sub-configuration from file
      * @param subConfig {string}
-     * @returns {T} The subconfiguration requested
+     * @returns {T} The sub-configuration requested
      */
     public get<T = any>(subConfig: string): T {
         return this.configuration[subConfig];

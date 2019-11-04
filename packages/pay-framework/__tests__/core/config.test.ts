@@ -18,4 +18,12 @@ describe("pay-currency: Config()", () => {
             expect(config.get("invalid-key")).toBeUndefined();
         });
     });
+
+    describe("loadFromFile()", () => {
+        it("should throw an error on an unloadable configuration file", () => {
+            expect(() => {
+                config.loadFromFile("badPath");
+            }).toThrowError();
+        });
+    });
 });

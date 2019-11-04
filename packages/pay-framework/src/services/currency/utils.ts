@@ -63,6 +63,7 @@ export class CurrencyUtils {
      */
     public static splitCurrencyAmountPair(data: string): AmountCurrency {
         for (const i in arkEcosystemConfig) {
+            /* istanbul ignore else */
             if (arkEcosystemConfig.hasOwnProperty(i)) {
                 const currency: string = i.toString().toUpperCase();
                 if (data.startsWith(currency) || data.endsWith(currency)) {
@@ -75,16 +76,13 @@ export class CurrencyUtils {
             }
         }
 
-        for (const i in acceptedCurrencies) {
-            if (typeof acceptedCurrencies[i] !== "undefined") {
-                const currency = acceptedCurrencies[i];
-                if (data.startsWith(currency) || data.endsWith(currency)) {
-                    const amount = new BigNumber(data.replace(currency, "").trim());
-                    if (amount.isNaN()) {
-                        return null;
-                    }
-                    return { currency, amount };
+        for (const currency of acceptedCurrencies) {
+            if (data.startsWith(currency) || data.endsWith(currency)) {
+                const amount = new BigNumber(data.replace(currency, "").trim());
+                if (amount.isNaN()) {
+                    return null;
                 }
+                return { currency, amount };
             }
         }
         return null;

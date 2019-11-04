@@ -93,7 +93,7 @@ describe("pay-storage: Storage()", () => {
 
     describe("addSubmission()", () => {
         const submission: string = "XXX";
-        it("should correctly find an exisitng submission", async () => {
+        it("should correctly find an existing submission", async () => {
             const payDatabaseMock: any = jest.spyOn(payDatabase, "query");
             payDatabaseMock.mockImplementation(() =>
                 Promise.resolve({
@@ -107,7 +107,7 @@ describe("pay-storage: Storage()", () => {
                 }),
             );
             const result: boolean = await Storage.addSubmission(submission);
-            expect(result).toBeTrue();
+            expect(result).toBeFalse();
             payDatabaseMock.mockRestore();
         });
     });

@@ -12,22 +12,22 @@ const stickersConfig = config.get("merchants").stickers;
 
 export class Stickers extends Send {
     /**
-     * @dev Generate, pay and send Stickers code
+     * @dev Generate, pay and send Stickers code to a Reddit user
      * @param sender {Username}     Sender of the Stickers command
      * @param receiver {Username}   Receiver of the Stickers code
      * @returns {Promise<Reply>} Object with messages for the Sender, Receiver, Merchant and a comment reply message
      */
     public static async send(sender: Username, receiver: Username): Promise<Reply> {
         try {
-            // Can't send stickers to Twitter as the code will be seen publicly
-            if (receiver.platform === "twitter") {
-                return Messenger.errorMessage();
-            }
-
             // Prepare the transfer
             const price: BigNumber = this.getStickersPrice();
             const address: string = this.getStickersAddress();
             const token: string = this.getStickersToken();
+
+            // Only accept receivers on Reddit for now
+            if (receiver.platform !== "reddit") {
+                return Messenger.errorMessage();
+            }
 
             // Check if the Sender has sufficient balance
             const senderBalance: WalletBalance = await Send.senderHasBalance(sender, token, price);
@@ -37,7 +37,6 @@ export class Stickers extends Send {
 
             // Generate the code
             const stickerCode: string = this.generateCode(sender, receiver);
-
             // and..... send
             const vendorField: string = "ARK Pay - Stickers!";
             return await this.sendStickersTransaction(
@@ -102,6 +101,7 @@ export class Stickers extends Send {
 
         const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(price, token);
+
         return Messenger.stickersMessage(
             sender,
             receiver,

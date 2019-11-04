@@ -1,0 +1,178 @@
+{
+    "pay-config": {
+        "test": "cryptology"
+    },
+    "database": {
+        "dbUser": "arkpay",
+        "dbPassword": "password",
+        "host": "localhost",
+        "database": "arkpay",
+        "port": 5432
+    },
+    "user": {},
+    "secureStorage": {
+        "encryptionKey": "935bff586aeb4244452802e4cf87eaca"
+    },
+
+    "currency": {
+        "baseCurrency": "ark",
+        "acceptedCurrencies": ["ARK", "Ѧ", "USD", "$", "EUR", "€", "BTC", "BCH", "GBP"]
+    },
+
+    "parser": {
+        "seperator": "@"
+    },
+
+    "arkEcosystem": {
+        "ark": {
+            "networkVersion": 23,
+            "minValue": 2000000,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "nominvalue": {
+            "networkVersion": 23,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "badminvalue": {
+            "minValue": "not a number",
+            "networkVersion": 23,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "nofee": {
+            "minValue": 1,
+            "networkVersion": 23,
+            "voteFee": 157,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "badfee": {
+            "minValue": 1,
+            "networkVersion": 23,
+            "voteFee": 157,
+            "transactionFee": "not a number",
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                },
+                {
+                    "host": "remote.host",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "verybad": {
+            "nodes": []
+        },
+
+        "dark": {
+            "minValue": 2000000,
+            "voteFee": 157,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4033
+                }
+            ]
+        },
+
+        "epoch": {
+            "networkVersion": 30,
+            "minValue": 2000000,
+            "transactionFee": 1000000,
+            "epoch": "2019-05-24T11:48:58.165Z",
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4023
+                }
+            ],
+            "explorer": "https://dexplorer.ark.io"
+        }
+    },
+
+    "merchants": {
+        "stickers": {
+            "token": "ark",
+            "price": "2",
+            "payoutTo": "Aa74QyqAFBsevReox3rMWy6FhMUyJVGPop",
+            "notify": { "username": "arkpay", "platform": "reddit" }
+        }
+    },
+
+    "platforms": {
+        "reddit": {
+            "admin": "marcs1970",
+            "clientId": "xxxxx",
+            "clientSecret": "yyyyy",
+            "username": "darktippr",
+            "password": "aaaaaa",
+            "usernamePrefix": "u/"
+        },
+        "twitter": {
+            "admin": "CryptologyHK",
+            "userId": "ArkTippr",
+            "usernamePrefix": "@",
+            "serverUrl": "https://xxx.yyy.com",
+            "route": "/webhooks",
+            "consumerKey": "zzzzzzz",
+            "consumerSecret": "gggggg",
+            "accessToken": "vvvvvvv",
+            "accessTokenSecret": "wwwww",
+            "environment": "arktippr",
+            "accountApiPort": 4466
+        }
+    }
+}

@@ -1,17 +1,8 @@
 import "jest-extended";
 import { config } from "../../src/core";
 
-// Mock Config
-const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    dbUser: "XXX",
-    dbPassword: "YYY",
-    database: "AAA",
-    host: "BBB",
-    port: 111,
-}));
-
-// mock database
+beforeEach(() => config.loadFromFile(resolve(__dirname, "./.config/ark-pay/pay-config.json")));
+import { resolve } from "path";
 import { payDatabase } from "../../src/core";
 
 describe("payDatabase", () => {
@@ -19,4 +10,3 @@ describe("payDatabase", () => {
         expect(payDatabase).toBeObject();
     });
 });
-configMock.mockRestore();

@@ -1,27 +1,16 @@
 import axios from "axios";
 import "jest-extended";
-
-// Mock Config
+import { resolve } from "path";
 import { config } from "../../src/core";
+
+// Overriding default config
+// tslint:disable-next-line
+const configuration: Record<string, any> = require(resolve(__dirname, "./.config/ark-pay/pay-config.json"));
 const configMock = jest.spyOn(config, "get");
-configMock.mockImplementation(() => ({
-    encryptionKey: "935bff586aeb4244452802e4cf87eaca",
-    ark: {
-        nodes: [
-            {
-                host: "localhost",
-                port: 4003,
-            },
-            {
-                host: "remote.host",
-                port: 4003,
-            },
-        ],
-    },
-    verybad: {
-        nodes: [],
-    },
-}));
+configMock.mockImplementation((subConfig: string) => {
+    return configuration[subConfig];
+});
+
 import { Network } from "../../src/services";
 
 describe("pay-ark: network()", () => {
@@ -124,3 +113,5 @@ describe("pay-ark: network()", () => {
         });
     });
 });
+
+configMock.mockRestore();

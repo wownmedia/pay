@@ -1,12 +1,20 @@
 import "jest-extended";
 
+beforeEach(() => jest.useFakeTimers());
+
 import { Poller } from "../../src/services";
-const poller: Poller = new Poller(1);
+const poller: Poller = new Poller(500);
 
 describe("pay-poller", () => {
     describe("Poller: poll", () => {
         it("should be a function", () => {
             expect(poller.poll).toBeFunction();
+        });
+
+        it("should correctly setup to emit a poll event after the configured timer expires", () => {
+            poller.poll();
+            expect(setTimeout).toHaveBeenCalledTimes(1);
+            expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 500);
         });
     });
 
@@ -20,10 +28,10 @@ describe("pay-poller", () => {
                 return true;
             });
             poller.onPoll(pollMock);
-            poller.poll();
-            await setTimeout(() => {
-                expect(pollMock).toHaveBeenCalled();
-            }, 2);
+            poller.emit("poll");
+            expect(pollMock).toHaveBeenCalledTimes(1);
+            jest.runOnlyPendingTimers();
+            expect(pollMock).toHaveBeenCalledTimes(2);
         });
     });
 });

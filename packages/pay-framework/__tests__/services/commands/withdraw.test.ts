@@ -47,7 +47,7 @@ describe("pay-commands: Withdraw()", () => {
                 receiver: sender,
             };
             const result: Reply = await Withdraw.transfer(transfer);
-            expect(result).toContainAllKeys(["directMessageSender", "replyComment"]);
+            expect(result).toContainAllKeys(["directMessageSender", "replyComment", "error"]);
         });
 
         it("should return error on low Balance", async () => {
@@ -73,7 +73,7 @@ describe("pay-commands: Withdraw()", () => {
                 arkToshiValue: new BigNumber(2100000000),
             };
             const result: Reply = await Withdraw.transfer(transfer);
-            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result).toContainAllKeys(["directMessageSender", "error"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -129,7 +129,7 @@ describe("pay-commands: Withdraw()", () => {
                 arkToshiValue: null,
             };
             const result: Reply = await Withdraw.transfer(transfer);
-            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result).toContainAllKeys(["directMessageSender", "data"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });
@@ -185,7 +185,7 @@ describe("pay-commands: Withdraw()", () => {
                 arkToshiValue: new BigNumber(5000000),
             };
             const result: Reply = await Withdraw.transfer(transfer);
-            expect(result).toContainAllKeys(["directMessageSender"]);
+            expect(result).toContainAllKeys(["directMessageSender", "data"]);
             getBalanceMock.mockRestore();
             getWalletAddressMock.mockRestore();
         });

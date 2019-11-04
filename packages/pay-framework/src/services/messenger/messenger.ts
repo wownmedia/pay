@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { Messages } from ".";
-import { config } from "../../core";
+import { config, logger } from "../../core";
 import { Reply, Username } from "../../interfaces";
 
 const ARKTOSHI = new BigNumber(Math.pow(10, 8));
@@ -254,6 +254,7 @@ export class Messenger {
         const receiverUsernamePrefix = platforms.hasOwnProperty(receiver.platform)
             ? platforms[receiver.platform].usernamePrefix
             : "";
+
         const formattedAmount: string = this.formatBalance(amount, "Ѧ");
         const usdValueConverted: string = usdValue.toFixed(4).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
         const footer: string = Messages.getFooter(smallFooter);
@@ -267,6 +268,7 @@ export class Messenger {
         const directMessageMerchant: string = Messages.stickersMerchantReply(stickerCode, transactionId);
         let replyComment: string = Messages.stickersCommentReply(receiver.username, transactionId);
         replyComment = replyComment + footer;
+
         return { directMessageSender, replyComment, directMessageReceiver, directMessageMerchant };
     }
 

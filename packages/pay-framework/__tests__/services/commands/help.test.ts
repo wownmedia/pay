@@ -12,5 +12,12 @@ describe("pay-commands: Help()", () => {
             const result = Help.getHelp(command);
             expect(result).toContainAllKeys(["directMessageSender"]);
         });
+
+        it("should return a Reply for a valid command with a request for a short version", () => {
+            const command: string = "HELP";
+            const short: boolean = true;
+            const result = Help.getHelp(command, short);
+            expect(result).toContainAllKeys(["directMessageSender"]);
+        });
     });
 });

@@ -2,7 +2,6 @@ import BigNumber from "bignumber.js";
 import Joi from "joi";
 import { config, logger } from "../../core";
 import {
-    APITransaction,
     ArkEcosystemWallet,
     Reply,
     TransactionResponse,
@@ -157,11 +156,14 @@ export class Send {
      */
     protected static processTransaction(response: TransactionResponse[]): string {
         for (const item in response) {
-            if (response[item]) {
-                const data: APITransaction = response[item].response.data;
-                if (data.accept[0]) {
-                    return data.accept[0];
-                }
+            if (
+                response[item] &&
+                response[item].hasOwnProperty("response") &&
+                response[item].response.hasOwnProperty("data") &&
+                response[item].response.data.hasOwnProperty("accept") &&
+                response[item].response.data.accept[0]
+            ) {
+                return response[item].response.data.accept[0];
             }
         }
         throw new Error("Could not successfully send Transaction");
@@ -193,7 +195,7 @@ export class Send {
             typeof arkEcosystemConfig[token] === "undefined" ||
             typeof arkEcosystemConfig[token].minValue === "undefined"
         ) {
-            throw TypeError(`Could not find ${token.toUpperCase()} in the configuration`);
+            throw TypeError(`Could not find minValue for ${token.toUpperCase()} in the configuration`);
         }
 
         const minValue: BigNumber = new BigNumber(arkEcosystemConfig[token].minValue);
