@@ -1,57 +1,18 @@
 {
-    "platforms": {
-        "reddit": {
-            "admin": "bot-admin-reddit-username",
-            "clientId": "reddit-client-id",
-            "clientSecret": "reddit-client-secret",
-            "username": "reddit-bot-username",
-            "password": "reddit-bot-password",
-            "usernamePrefix": "u/"
-        }
+    "server": {
+        "seed": "great squeeze swing air find seed siege flag bench hundred garlic culture"
     },
 
     "database": {
-        "dbUser": "db-username",
-        "dbPassword": "db-password",
-        "host": "db-host",
-        "database": "db",
+        "dbUser": "arktippr",
+        "dbPassword": "your-secret-password",
+        "host": "your-database-server",
+        "database": "arktippr",
         "port": 5432
     },
 
     "secureStorage": {
-        "encryptionKey": "32-character-token-to-encrypt-db-entries"
-    },
-
-    "arkEcosystem": {
-        "ark": {
-            "networkVersion": 23,
-            "minValue": 2000000,
-            "transactionFee": 300,
-            "nodes": [
-                {
-                    "host": "ip-node-1",
-                    "port": 4003
-                },
-                {
-                    "host": "ip-node-2",
-                    "port": 4003
-                }
-            ],
-            "explorer": "https://explorer.ark.io"
-        },
-
-        "dark": {
-            "networkVersion": 30,
-            "minValue": 2000000,
-            "transactionFee": 300,
-            "nodes": [
-                {
-                    "host": "ip-node-1",
-                    "port": 4003
-                }
-            ],
-            "explorer": "https://dexplorer.ark.io"
-        }
+        "encryptionKey": "32CharactersKey"
     },
 
     "currency": {
@@ -63,12 +24,86 @@
         "seperator": "@"
     },
 
-    "merchants": {
-        "stickers": {
-            "token": "ark",
-            "price": "200000000",
-            "payoutTo": "justins-ark-wallet",
-            "notify": { "username": "justins-reddit-username", "platform": "reddit" }
+    "arkEcosystem": {
+        "ark": {
+            "networkVersion": 23,
+            "minValue": 20000000,
+            "transactionFee": 800000,
+            "nodes": [
+                {
+                    "host": "localhost",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://explorer.ark.io"
+        },
+
+        "xqr": {
+            "networkVersion": 58,
+            "minValue": 20000000,
+            "transactionFee": 1300000,
+            "nodes": [
+                {
+                    "host": "159.69.89.111",
+                    "port": 4103
+                },
+                {
+                    "host": "116.203.58.165",
+                    "port": 4103
+                }
+            ],
+            "explorer": "https://explorer.qredit.io/#",
+            "epoch": "2017-03-21T13:00:00.000Z"
+        },
+
+        "dark": {
+            "networkVersion": 30,
+            "minValue": 2000000,
+            "transactionFee": 300,
+            "nodes": [
+                {
+                    "host": "devnet.server",
+                    "port": 4003
+                }
+            ],
+            "explorer": "https://dexplorer.ark.io"
         }
+    },
+
+    "platforms": {
+        "reddit": {
+            "admin": "adminAccountUsername",
+            "clientId": "Reddit-client-id",
+            "clientSecret": "Reddit-client-secret",
+            "username": "tipbotAccountUsername",
+            "password": "tipbotAccountPassword",
+            "usernamePrefix": "u/"
+        },
+
+        "twitter": {
+            "admin": "adminAccountUsername",
+            "userId": "tipbotAccountUsername",
+            "usernamePrefix": "@",
+            "serverUrl": "https://your-webhook-server",
+            "route": "/webhooks",
+            "consumerKey": "Twitter-app-consumerKey",
+            "consumerSecret": "Twitter-app-consumerSecret",
+            "accessToken": "Twitter-accessToken",
+            "accessTokenSecret": "Twitter-accessTokenSecret",
+            "environment": "Twitter-webhook-environment",
+            "accountApiPort": 4466
+        }
+    },
+
+    "apiServer": {
+        "port": 4467,
+        "url": "http://127.0.0.1:4467/",
+        "node": "http://127.0.0.1:4004",
+        "seed": "a valid BIP39 seed for the wallet that receives the on-chain requests"
+    },
+
+    "apiFees": {
+        "registration": 2500000000,
+        "command": 1000
     }
 }

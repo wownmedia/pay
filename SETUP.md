@@ -28,12 +28,5 @@ See [example.pay-config.json](example.pay-config.json). The `pay-config.json` fi
 the `~/.config/ark-pay-nodejs/` directory on your platform listener servers.
 
 To start it's easiest to copy the `example.pay-config.json` file into the config directory and change it's setting.
-Consult the [CONFIG.md](CONFIG.md) file for an overview of all settings.
 
 `cp -rp ./example.pay-config.json ~/.config/ark-pay-nodejs/pay-config.json`
-
-## Reddit
-
-## Twitter
-
-## On-Chain API Listener
