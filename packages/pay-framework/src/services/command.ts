@@ -2,7 +2,7 @@ import { Command, Reply } from "../interfaces";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
 import { Messenger } from "./messenger";
 
-export const COMMANDS = ["WITHDRAW", "BALANCE", "DEPOSIT", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
+export const COMMANDS = ["WITHDRAW"]; // , "BALANCE", "DEPOSIT", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
 
 export class Commander {
     /**
