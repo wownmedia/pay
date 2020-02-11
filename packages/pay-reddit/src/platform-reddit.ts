@@ -269,9 +269,7 @@ export class PlatformReddit {
                                     );
                                     // todo check platform
                                     Core.logger.info(
-                                        `Sending Direct Message to merchant: ${merchant.username} on ${
-                                            merchant.platform
-                                        }`,
+                                        `Sending Direct Message to merchant: ${merchant.username} on ${merchant.platform}`,
                                     );
                                     await this.sendDirectMessage(
                                         merchant.username,
@@ -353,8 +351,8 @@ export class PlatformReddit {
      */
     public async postCommentReply(submissionId: string, reply: string): Promise<boolean> {
         try {
-            const submission = await this.platformConfig.getComment(submissionId);
-            await submission.reply(reply);
+            const submission = this.platformConfig.getComment(submissionId);
+            submission.reply(reply);
             return true;
         } catch (e) {
             Core.logger.error(e.message);
@@ -457,7 +455,7 @@ export class PlatformReddit {
      * @private
      */
     private async getParentAuthor(commentId: string): Promise<Author> {
-        const parentAuthor: Author = await this.platformConfig.getComment(commentId).author;
+        const parentAuthor: Author = this.platformConfig.getComment(commentId).author;
         if (!parentAuthor || !parentAuthor.hasOwnProperty("name") || parentAuthor.name === "[deleted]") {
             throw new Error("Parent comment has been deleted.");
         }
@@ -490,7 +488,7 @@ export class PlatformReddit {
      */
     private async markCommentRead(id: string): Promise<void> {
         try {
-            const comment: any = await this.platformConfig.getComment(id);
+            const comment: any = this.platformConfig.getComment(id);
             await this.platformConfig.markMessagesAsRead([comment]);
         } catch (e) {
             Core.logger.error(e.message);
@@ -504,7 +502,7 @@ export class PlatformReddit {
      */
     private async markMessageRead(id: string): Promise<void> {
         try {
-            const privateMessage: any = await this.platformConfig.getMessage(id);
+            const privateMessage: any = this.platformConfig.getMessage(id);
             await privateMessage.markAsRead();
         } catch (e) {
             Core.logger.error(e.message);

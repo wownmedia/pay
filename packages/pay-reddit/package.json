@@ -40,12 +40,12 @@
         "@cryptology.hk/pay-framework": "^2.5.0",
         "bignumber.js": "^9.0.0",
         "joi": "^14.3.1",
-        "snoowrap": "^1.19.0",
-        "underscore": "^1.9.1"
+        "snoowrap": "^1.20.1",
+        "underscore": "^1.9.2"
     },
     "devDependencies": {
-        "@types/joi": "^14.3.3",
-        "jest-extended": "^0.11.2"
+        "@types/joi": "^14.3.4",
+        "jest-extended": "^0.11.5"
     },
     "engines": {
         "node": ">=10.x"
