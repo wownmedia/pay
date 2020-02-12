@@ -212,6 +212,7 @@ export class PlatformReddit {
 
                     if (commands === null) {
                         // Nothing to do here, bad command, no connection to DB or it was processed already by an other server
+                        Core.logger.warn("No commands parsed in message.");
                         return;
                     }
 
@@ -351,8 +352,9 @@ export class PlatformReddit {
      */
     public async postCommentReply(submissionId: string, reply: string): Promise<boolean> {
         try {
-            const submission = this.platformConfig.getComment(submissionId);
-            submission.reply(reply);
+            // @ts-ignore
+            const submission = await this.platformConfig.getComment(submissionId);
+            await submission.reply(reply);
             return true;
         } catch (e) {
             Core.logger.error(e.message);

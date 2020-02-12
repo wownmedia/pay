@@ -24,11 +24,7 @@
         "deps:missing": "node ./scripts/deps/missing.js",
         "updates": "./node_modules/npm-check-updates/bin/npm-check-updates"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
+
     "jest": {
         "collectCoverageFrom": [
             "packages/**/src/**/*.ts",
