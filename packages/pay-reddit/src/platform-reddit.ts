@@ -457,7 +457,8 @@ export class PlatformReddit {
      * @private
      */
     private async getParentAuthor(commentId: string): Promise<Author> {
-        const parentAuthor: Author = this.platformConfig.getComment(commentId).author;
+        // @ts-ignore
+        const parentAuthor: Author = await this.platformConfig.getComment(commentId).author;
         if (!parentAuthor || !parentAuthor.hasOwnProperty("name") || parentAuthor.name === "[deleted]") {
             throw new Error("Parent comment has been deleted.");
         }
@@ -490,7 +491,8 @@ export class PlatformReddit {
      */
     private async markCommentRead(id: string): Promise<void> {
         try {
-            const comment: any = this.platformConfig.getComment(id);
+            // @ts-ignore
+            const comment: any = await this.platformConfig.getComment(id);
             await this.platformConfig.markMessagesAsRead([comment]);
         } catch (e) {
             Core.logger.error(e.message);
@@ -504,7 +506,8 @@ export class PlatformReddit {
      */
     private async markMessageRead(id: string): Promise<void> {
         try {
-            const privateMessage: any = this.platformConfig.getMessage(id);
+            // @ts-ignore
+            const privateMessage: any = await this.platformConfig.getMessage(id);
             await privateMessage.markAsRead();
         } catch (e) {
             Core.logger.error(e.message);
