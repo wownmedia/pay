@@ -1,4 +1,4 @@
-import { config, logger } from "../../core";
+import { config } from "../../core";
 import { Command, Username } from "../../interfaces";
 import { Commander } from "../command";
 import { ParserUtils } from "./utils";
@@ -72,8 +72,6 @@ export class Parser {
         platform: string,
         sender: Username,
     ): Promise<Command[]> {
-
-        logger.info(`body: ${directMessageBody}; platform: ${platform}; sender: ${sender.username} ${sender.platform}`);
 
         // We need something to work with
         if (typeof directMessageBody === "undefined" || directMessageBody === "") {
