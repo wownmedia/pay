@@ -1,7 +1,6 @@
 import { Command, Reply } from "../interfaces";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
 import { Messenger } from "./messenger";
-import { logger } from "../core";
 
 export const COMMANDS = ["WITHDRAW", "BALANCE", "DEPOSIT", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
 
@@ -12,7 +11,6 @@ export class Commander {
      * @returns {boolean} TRUE if the input is a valid command
      */
     public static isValidCommand(command: string): boolean {
-        logger.info(`Command: ${command} with index: ${ COMMANDS.indexOf(command)} ${COMMANDS.entries()}`);
         command = command.toUpperCase();
         return COMMANDS.indexOf(command) !== -1;
     }
