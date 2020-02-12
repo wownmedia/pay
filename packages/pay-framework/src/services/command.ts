@@ -1,8 +1,9 @@
 import { Command, Reply } from "../interfaces";
 import { Balance, Deposit, Help, Send, Stickers, Withdraw } from "./commands";
 import { Messenger } from "./messenger";
+import { logger } from "../core";
 
-export const COMMANDS = ["BALANCE", "DEPOSIT", "WITHDRAW", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
+export const COMMANDS = ["WITHDRAW", "BALANCE", "DEPOSIT", "SEND", "HELP", "ADDRESS", "STICKERS", "TIP", "REWARD"];
 
 export class Commander {
     /**
@@ -11,6 +12,7 @@ export class Commander {
      * @returns {boolean} TRUE if the input is a valid command
      */
     public static isValidCommand(command: string): boolean {
+        logger.info(`Command: ${command} with index: ${ COMMANDS.indexOf(command)} ${COMMANDS.entries()}`);
         command = command.toUpperCase();
         return COMMANDS.indexOf(command) !== -1;
     }
@@ -64,9 +66,7 @@ export class Commander {
                     return Help.getHelp(command.command, command.smallFooter);
                 }
                 const parentId: string = command.hasOwnProperty("id") ? command.id : "";
-                const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${
-                    command.commandSender.platform
-                } >> ${command.transfer.receiver.username}@${command.transfer.receiver.platform} ${parentId}`;
+                const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${command.commandSender.platform} >> ${command.transfer.receiver.username}@${command.transfer.receiver.platform} ${parentId}`;
                 return await Send.transfer(
                     command.transfer,
                     vendorField,

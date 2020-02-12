@@ -1,6 +1,6 @@
 import axios from "axios";
 import { config, logger } from "../core";
-import { ApiResponse, Node, Parameters, TransactionResponse } from "../interfaces";
+import { ApiResponse, APIResults, Node, Parameters, TransactionResponse } from "../interfaces";
 
 const arkEcosystemConfig: Record<string, any> = config.get("arkEcosystem");
 
@@ -66,6 +66,20 @@ export class Network {
             }
         }
         return null;
+    }
+
+    public static async getNonceForWallet(wallet: string, token: string): Promise<number> {
+        try {
+            const walletInfo: APIResults = await Network.getFromAPI(`/api/wallets/${wallet}`, token);
+            const nonce: number =
+                walletInfo.hasOwnProperty("data") && walletInfo.data.hasOwnProperty("nonce")
+                    ? parseInt(walletInfo.data.nonce, 10)
+                    : null;
+            logger.info(`Nonce loaded for ${wallet}: ${nonce}`);
+            return nonce;
+        } catch (e) {
+            return 0;
+        }
     }
 
     /**

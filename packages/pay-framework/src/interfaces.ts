@@ -31,6 +31,16 @@ export interface Transaction {
     currency?: string;
 }
 
+export interface APIResults {
+    meta?: any;
+    data?: any;
+}
+
+export interface Receiver {
+    wallet: string;
+    amount: BigNumber;
+}
+
 /**
  * Parsed amount/currency pair and it's value in Arktoshi
  */

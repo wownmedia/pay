@@ -14,7 +14,7 @@ export interface RedditMessage {
     author: Author;
     name: string;
     body: string;
-    was_comment: boolean;
+    was_comment?: boolean;
     id: string;
     parent_id?: string;
 }

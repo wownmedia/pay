@@ -1,4 +1,4 @@
-import { config } from "../../core";
+import { config, logger } from "../../core";
 import { Command, Username } from "../../interfaces";
 import { Commander } from "../command";
 import { ParserUtils } from "./utils";
@@ -72,6 +72,9 @@ export class Parser {
         platform: string,
         sender: Username,
     ): Promise<Command[]> {
+
+        logger.info(`body: ${directMessageBody}; platform: ${platform}; sender: ${sender.username} ${sender.platform}`);
+
         // We need something to work with
         if (typeof directMessageBody === "undefined" || directMessageBody === "") {
             return null;
@@ -83,7 +86,7 @@ export class Parser {
 
         // We allow multiple commands per PM.
         // Process Commands
-        for (const item in commandBodyParts) {
+        for (const item of commandBodyParts) {
             if (commandBodyParts[item] && Commander.isValidCommand(commandBodyParts[item])) {
                 const command: string = commandBodyParts[item].toUpperCase();
                 const index: number = parseInt(item, 10);

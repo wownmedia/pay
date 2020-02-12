@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-twitter",
-    "version": "2.4.1",
+    "version": "2.6.1",
     "description": "Interface with the Twitter platform for ARK Pay.",
     "license": "MIT",
     "author": "Marc Schot",
@@ -37,17 +37,17 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-framework": "^2.4.1",
+        "@cryptology.hk/pay-framework": "^2.6.1",
         "body-parser": "^1.19.0",
         "express": "^4.17.1",
         "joi": "^14.3.1",
         "twit": "^2.2.11",
         "twitter": "^1.7.1",
-        "twitter-webhooks": "^0.3.0"
+        "twitter-webhooks": "^0.3.3"
     },
     "devDependencies": {
-        "@types/joi": "^14.3.3",
-        "jest-extended": "^0.11.2"
+        "@types/joi": "^14.3.4",
+        "jest-extended": "^0.11.5"
     },
     "engines": {
         "node": ">=10.x"

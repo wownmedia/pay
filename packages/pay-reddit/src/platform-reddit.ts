@@ -43,7 +43,7 @@ export class PlatformReddit {
                 return commands;
             } else {
                 // Direct Messenger
-                Core.logger.info(`Reddit Direct Message received: ${item.id}`);
+                Core.logger.info(`Reddit Direct Message received: ${item.id} : ${item.body}`);
                 return await Services.Parser.Parser.parseDirectMessage(item.body, platform, sender);
             }
         } catch (e) {
@@ -212,6 +212,7 @@ export class PlatformReddit {
 
                     if (commands === null) {
                         // Nothing to do here, bad command, no connection to DB or it was processed already by an other server
+                        Core.logger.warn("No commands parsed in message.");
                         return;
                     }
 
@@ -269,9 +270,7 @@ export class PlatformReddit {
                                     );
                                     // todo check platform
                                     Core.logger.info(
-                                        `Sending Direct Message to merchant: ${merchant.username} on ${
-                                            merchant.platform
-                                        }`,
+                                        `Sending Direct Message to merchant: ${merchant.username} on ${merchant.platform}`,
                                     );
                                     await this.sendDirectMessage(
                                         merchant.username,
@@ -353,6 +352,7 @@ export class PlatformReddit {
      */
     public async postCommentReply(submissionId: string, reply: string): Promise<boolean> {
         try {
+            // @ts-ignore
             const submission = await this.platformConfig.getComment(submissionId);
             await submission.reply(reply);
             return true;
@@ -457,6 +457,7 @@ export class PlatformReddit {
      * @private
      */
     private async getParentAuthor(commentId: string): Promise<Author> {
+        // @ts-ignore
         const parentAuthor: Author = await this.platformConfig.getComment(commentId).author;
         if (!parentAuthor || !parentAuthor.hasOwnProperty("name") || parentAuthor.name === "[deleted]") {
             throw new Error("Parent comment has been deleted.");
@@ -490,6 +491,7 @@ export class PlatformReddit {
      */
     private async markCommentRead(id: string): Promise<void> {
         try {
+            // @ts-ignore
             const comment: any = await this.platformConfig.getComment(id);
             await this.platformConfig.markMessagesAsRead([comment]);
         } catch (e) {
@@ -504,6 +506,7 @@ export class PlatformReddit {
      */
     private async markMessageRead(id: string): Promise<void> {
         try {
+            // @ts-ignore
             const privateMessage: any = await this.platformConfig.getMessage(id);
             await privateMessage.markAsRead();
         } catch (e) {
