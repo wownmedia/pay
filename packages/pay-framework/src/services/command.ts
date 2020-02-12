@@ -12,7 +12,7 @@ export class Commander {
      * @returns {boolean} TRUE if the input is a valid command
      */
     public static isValidCommand(command: string): boolean {
-        logger.info(`Command: ${command} with index: ${ COMMANDS.indexOf(command)} ${COMMANDS.entries()}`);
+        logger.info(`Command: ${command} with index: ${ COMMANDS.indexOf(command)} ${COMMANDS.length}`);
         command = command.toUpperCase();
         return COMMANDS.indexOf(command) !== -1;
     }

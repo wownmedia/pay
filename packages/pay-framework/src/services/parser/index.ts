@@ -84,10 +84,9 @@ export class Parser {
         // Split up the mention so we can parse it for commands
         const commandBodyParts: string[] = ParserUtils.splitMessageToParts(directMessageBody, true);
 
-        logger.info(`Parts: ${commandBodyParts.length}`);
         // We allow multiple commands per PM.
         // Process Commands
-        for (const item of commandBodyParts) {
+        for (const item in commandBodyParts) {
             if (commandBodyParts[item] && Commander.isValidCommand(commandBodyParts[item])) {
                 const command: string = commandBodyParts[item].toUpperCase();
                 const index: number = parseInt(item, 10);
