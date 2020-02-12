@@ -84,7 +84,7 @@ export class Parser {
         // Split up the mention so we can parse it for commands
         const commandBodyParts: string[] = ParserUtils.splitMessageToParts(directMessageBody, true);
 
-        logger.info(`Parts: ${commandBodyParts.entries()}`);
+        logger.info(`Parts: ${commandBodyParts.length}`);
         // We allow multiple commands per PM.
         // Process Commands
         for (const item of commandBodyParts) {
