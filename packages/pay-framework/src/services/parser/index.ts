@@ -86,8 +86,7 @@ export class Parser {
 
         // We allow multiple commands per PM.
         // Process Commands
-        for (const item in commandBodyParts) {
-            logger.info(`possible command: ${commandBodyParts[item]}`);
+        for (const item of commandBodyParts) {
             if (commandBodyParts[item] && Commander.isValidCommand(commandBodyParts[item])) {
                 const command: string = commandBodyParts[item].toUpperCase();
                 const index: number = parseInt(item, 10);
