@@ -43,7 +43,7 @@ export class PlatformReddit {
                 return commands;
             } else {
                 // Direct Messenger
-                Core.logger.info(`Reddit Direct Message received: ${item.id}`);
+                Core.logger.info(`Reddit Direct Message received: ${item.id} : ${item.body}`);
                 return await Services.Parser.Parser.parseDirectMessage(item.body, platform, sender);
             }
         } catch (e) {
