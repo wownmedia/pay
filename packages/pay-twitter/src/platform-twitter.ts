@@ -179,9 +179,7 @@ export class PlatformTwitter {
                                 // Reply to the Sender of the command
                                 if (reply.hasOwnProperty("directMessageSender")) {
                                     Core.logger.info(
-                                        `Sending Direct Message to sender: ${
-                                            command.commandSender.username
-                                        } on twitter`,
+                                        `Sending Direct Message to sender: ${command.commandSender.username} on twitter`,
                                     );
                                     const messageText: string = Services.Platform.undoTextFormatting(
                                         reply.directMessageSender,
@@ -196,9 +194,7 @@ export class PlatformTwitter {
                                 }
                                 if (reply.hasOwnProperty("directMessageReceiver") && receiver.platform !== "twitter") {
                                     Core.logger.info(
-                                        `Sending Direct Message to receiver: ${receiver.username} on ${
-                                            receiver.platform
-                                        }`,
+                                        `Sending Direct Message to receiver: ${receiver.username} on ${receiver.platform}`,
                                     );
                                     await this.platform.notifyReceiver(receiver, reply);
                                 }

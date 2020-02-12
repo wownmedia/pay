@@ -72,7 +72,6 @@ export class Parser {
         platform: string,
         sender: Username,
     ): Promise<Command[]> {
-
         // We need something to work with
         if (typeof directMessageBody === "undefined" || directMessageBody === "") {
             return null;
