@@ -6,6 +6,8 @@ export interface RedditConfig {
     username: string;
     password: string;
     requestDelay: number;
+    requestTimeout: number;
+    maxRetryAttempts: number,
     continueAfterRatelimitError: boolean;
     networks: string[];
 }

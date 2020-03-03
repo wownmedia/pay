@@ -70,7 +70,9 @@ export class PlatformReddit {
             clientSecret: redditConfiguration.hasOwnProperty("clientSecret") ? redditConfiguration.clientSecret : null,
             username: redditConfiguration.hasOwnProperty("username") ? redditConfiguration.username : null,
             password: redditConfiguration.hasOwnProperty("password") ? redditConfiguration.password : null,
-            requestDelay: 3000,
+            requestDelay: 5000,
+            requestTimeout: 50000,
+            maxRetryAttempts: 10,
             continueAfterRatelimitError: true,
             networks: redditConfiguration.hasOwnProperty("networks") ? redditConfiguration.networks : ["ARK"],
         };
@@ -181,6 +183,8 @@ export class PlatformReddit {
 
             const parameters: any = {
                 requestDelay: this.redditConfig.requestDelay,
+                requestTimeout: this.redditConfig.requestTimeout,
+                maxRetryAttempts: this.redditConfig.maxRetryAttempts,
                 continueAfterRatelimitError: this.redditConfig.continueAfterRatelimitError,
             };
             this.platformConfig.config(parameters);
