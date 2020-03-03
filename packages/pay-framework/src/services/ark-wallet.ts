@@ -142,11 +142,18 @@ export class ArkWallet {
         token: string,
         nonce?: number
     ): Promise<TransactionResponse[]> {
+        logger.info(`A`);
         if (!nonce) {
             nonce = 0;
         }
+
+        logger.info(`B Nonce: ${nonce}`);
+
         const fee = this.getArkEcosystemNetworkTransactionFee(token);
+
+        logger.info(`C fee: ${fee}`);
         const seed = SecureStorage.getSeedFromSecret(sender.encryptedSeed);
+        logger.info(`D Seed: ${seed}`);
         const transaction: Interfaces.ITransactionData = await ArkTransaction.generateTransferTransaction(
             amount,
             receiver.address,
@@ -157,6 +164,7 @@ export class ArkWallet {
             nonce
         );
 
+        logger.info(`E Transaction: ${JSON.stringify(transaction)}`);
         if(transaction.nonce.isGreaterThan(1)) {
             nonce = parseInt(transaction.nonce.toString(), 10);
         }

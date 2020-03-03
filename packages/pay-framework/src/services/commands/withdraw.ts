@@ -79,8 +79,6 @@ export class Withdraw extends Send {
             transfer.token,
         );
 
-        logger.info(`A`);
-
         const token: string = transfer.token;
         const txSender: ArkEcosystemWallet = {
             address: walletSender.address,
@@ -89,16 +87,12 @@ export class Withdraw extends Send {
             token,
         };
 
-        logger.info(`B`);
-
         const txReceiver: ArkEcosystemWallet = {
             address: transfer.address,
             encryptedSeed: "",
             networkVersion,
             token,
         };
-
-        logger.info(`C`);
 
         const response: TransactionResponse[] = await ArkWallet.sendTransaction(
             txSender,
@@ -107,8 +101,6 @@ export class Withdraw extends Send {
             vendorField,
             token,
         );
-
-        logger.info(`D`);
 
         const transactionId: string = this.processTransaction(response);
         const usdValue: BigNumber = await Currency.baseCurrencyUnitsToUSD(transfer.arkToshiValue, transfer.token);
