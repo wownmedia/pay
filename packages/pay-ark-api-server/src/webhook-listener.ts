@@ -502,7 +502,7 @@ export class WebhookListener {
         );
         const replyTransactions: any[] = [];
         replyTransactions.push(replyTransaction);
-        await Services.Network.broadcastTransactions(replyTransactions, "ARK");
+        await Services.Network.broadcastTransactions(replyTransactions, "ARK", 0);
     }
 
     /**
