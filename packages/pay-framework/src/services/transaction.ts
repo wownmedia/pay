@@ -32,6 +32,7 @@ export class ArkTransaction {
         secondPassphrase?: string,
     ): Promise<Interfaces.ITransactionData> {
         // Load network specific config
+        token = token.toLowerCase();
         const config = await this.getNetworkConfig(token);
         if (config !== null) {
             try {
