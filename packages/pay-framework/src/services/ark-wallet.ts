@@ -59,6 +59,7 @@ export class ArkWallet {
      */
     public static getArkEcosystemNetworkVersionForToken(token: string): number {
         token = token.toLowerCase();
+        logger.info(`Getting Network version for ${token}`);
         if (
             typeof arkEcosystemConfig[token] === "undefined" ||
             arkEcosystemConfig[token].networkVersion === "undefined"
