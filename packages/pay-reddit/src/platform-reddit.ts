@@ -225,10 +225,12 @@ export class PlatformReddit {
                     }
 
                     // Reply to them commands baby
+                    let nonce: number = 0;
                     for (const commandIndex in commands) {
                         if (commands[commandIndex]) {
                             try {
                                 const command: Interfaces.Command = commands[commandIndex];
+                                command.nonce = nonce;
 
                                 // check receiver
                                 if (!(await this.checkReceiver(command))) {
@@ -237,6 +239,10 @@ export class PlatformReddit {
 
                                 // Execute the command
                                 const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
+                                if(reply.nonce) {
+                                    nonce = reply.nonce;
+                                }
+
                                 const subject: string = `ArkPay: ${command.command}`;
 
                                 // Reply to the Sender of the command

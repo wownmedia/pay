@@ -63,6 +63,7 @@ export class Commander {
                 if (!command.hasOwnProperty("commandReplyTo")) {
                     return Help.getHelp(command.command, command.smallFooter);
                 }
+                const nonce: number = command.hasOwnProperty("nonce") ? command.nonce : 0;
                 const parentId: string = command.hasOwnProperty("id") ? command.id : "";
                 const vendorField: string = `ARK Pay - SEND: ${command.commandSender.username}@${command.commandSender.platform} >> ${command.transfer.receiver.username}@${command.transfer.receiver.platform} ${parentId}`;
                 return await Send.transfer(
@@ -70,6 +71,7 @@ export class Commander {
                     vendorField,
                     command.smallFooter,
                     command.hasOwnProperty("id"),
+                    nonce
                 );
             case "WITHDRAW":
                 // Check if the user requested WITHDRAW help:

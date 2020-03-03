@@ -1,6 +1,5 @@
 import { Identities, Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import { MultiPaymentBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/multi-payment";
-import { TransferBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/transfer";
 import BigNumber from "bignumber.js";
 import moment from "moment";
 import { config, logger } from "../core";
@@ -18,6 +17,7 @@ export class ArkTransaction {
      * @param fee {BigNumber}       The fee to set for the Transfer
      * @param seed  {string}        The decrypted seed of the sender's wallet
      * @param token {string}        The token of the ArkEcosystem blockchain to send the transfer on
+     * @param nonce
      * @param secondPassphrase {string} Optional decrypted second seed of the sender's wallet
      * @returns {Promise<any>}      A signed structure of the Transfer
      */
@@ -28,8 +28,9 @@ export class ArkTransaction {
         fee: BigNumber,
         seed: string,
         token: string,
+        nonce?: number,
         secondPassphrase?: string,
-    ): Promise<any> {
+    ): Promise<Interfaces.ITransactionData> {
         // Load network specific config
         const config = await this.getNetworkConfig(token);
         if (config !== null) {
@@ -46,7 +47,9 @@ export class ArkTransaction {
             senderPublicKey,
             arkEcosystemConfig[token].networkVersion,
         );
-        let nonce: number = await Network.getNonceForWallet(senderWallet, token);
+        if (!nonce || nonce < 1) {
+            nonce = await Network.getNonceForWallet(senderWallet, token);
+        }
         nonce += 1;
 
         let transaction = Transactions.BuilderFactory.transfer()

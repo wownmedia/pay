@@ -9,9 +9,10 @@ export class Network {
      * @dev Broadcast a transaction to the configured Nodes of an ArkEcosystem Blockchain
      * @param transactions {any[]}  An array with transactions
      * @param token {string}        The ArkEcosystem token of the blockchain to broadcast on
+     * @param nonce
      * @returns {Promise<TransactionResponse[]>} An array with response messages per Node the transactions were broadcasted to.
      */
-    public static async broadcastTransactions(transactions: any[], token: string): Promise<TransactionResponse[]> {
+    public static async broadcastTransactions(transactions: any[], token: string, nonce: number): Promise<TransactionResponse[]> {
         const nodes: Node[] = this.loadNodes(token);
         const results: TransactionResponse[] = [];
         for (const item in nodes) {
@@ -28,7 +29,7 @@ export class Network {
                             headers: { "Content-Type": "application/json" },
                         },
                     );
-                    results.push({ node: nodes[item], response: response.data });
+                    results.push({ node: nodes[item], response: response.data, nonce });
                     logger.info(`Posted transaction to ${node}`);
                 } catch (e) {
                     logger.error(e.message);

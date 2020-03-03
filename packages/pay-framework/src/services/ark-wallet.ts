@@ -1,4 +1,4 @@
-import { Identities } from "@arkecosystem/crypto";
+import { Identities, Interfaces } from "@arkecosystem/crypto";
 import BigNumber from "bignumber.js";
 import { generateMnemonic } from "bip39";
 import Joi from "joi";
@@ -131,6 +131,7 @@ export class ArkWallet {
      * @param amount {BigNumber}            The amount to transfer
      * @param vendorField {string}          The vendor field message
      * @param token {string}                The ArkEcosystem token of the blockchain where to transfer
+     * @param nonce
      */
     public static async sendTransaction(
         sender: ArkEcosystemWallet,
@@ -138,20 +139,29 @@ export class ArkWallet {
         amount: BigNumber,
         vendorField: string,
         token: string,
+        nonce?: number
     ): Promise<TransactionResponse[]> {
+        if (!nonce) {
+            nonce = 0;
+        }
         const fee = this.getArkEcosystemNetworkTransactionFee(token);
         const seed = SecureStorage.getSeedFromSecret(sender.encryptedSeed);
-        const transaction = await ArkTransaction.generateTransferTransaction(
+        const transaction: Interfaces.ITransactionData = await ArkTransaction.generateTransferTransaction(
             amount,
             receiver.address,
             vendorField,
             fee,
             seed,
             token,
+            nonce
         );
 
-        const transactions: any[] = [];
+        if(transaction.nonce.isGreaterThan(1)) {
+            nonce = parseInt(transaction.nonce.toString(), 10);
+        }
+
+        const transactions: Interfaces.ITransactionData[] = [];
         transactions.push(transaction);
-        return await Network.broadcastTransactions(transactions, token);
+        return await Network.broadcastTransactions(transactions, token, nonce);
     }
 }
