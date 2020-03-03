@@ -161,6 +161,8 @@ export class ArkWallet {
             nonce = parseInt(transaction.nonce.toString(), 10);
         }
 
+        logger.info(`TX Generated: ${JSON.stringify(transaction)}`);
+
         const transactions: Interfaces.ITransactionData[] = [];
         transactions.push(transaction);
         return await Network.broadcastTransactions(transactions, token, nonce);

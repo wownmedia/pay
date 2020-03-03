@@ -93,7 +93,6 @@ export class Withdraw extends Send {
             token,
         };
 
-        logger.info(`WITHDRAW Sender: ${JSON.stringify(txSender)} | Receiver: ${JSON.stringify(txReceiver)} on ${token} (${networkVersion})`);
         const response: TransactionResponse[] = await ArkWallet.sendTransaction(
             txSender,
             txReceiver,
