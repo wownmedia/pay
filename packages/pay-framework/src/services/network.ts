@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Interfaces } from "@arkecosystem/crypto";
 import { config, logger } from "../core";
 import { ApiResponse, APIResults, Node, Parameters, TransactionResponse } from "../interfaces";
 
@@ -67,6 +68,26 @@ export class Network {
             }
         }
         return null;
+    }
+
+    public static async getNetworkConfig(token: string): Promise<Interfaces.INetworkConfig> {
+        try {
+            const config: APIResults = await this.getFromAPI(
+                "/api/node/configuration/crypto", token
+            );
+            return config.data;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    public static async getCurrentHeight(token: string): Promise<number> {
+        try {
+            const config: APIResults = await this.getFromAPI("/api/blockchain", token);
+            return config.data.block.height;
+        } catch (e) {
+            return null;
+        }
     }
 
     public static async getNonceForWallet(wallet: string, token: string): Promise<number> {

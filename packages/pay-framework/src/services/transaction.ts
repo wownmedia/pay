@@ -33,15 +33,7 @@ export class ArkTransaction {
     ): Promise<Interfaces.ITransactionData> {
         // Load network specific config
         token = token.toLowerCase();
-        const config = await this.getNetworkConfig(token);
-        if (config !== null) {
-            try {
-                Managers.configManager.setConfig(config);
-            } catch (e) {
-                logger.error(e.message);
-                return null;
-            }
-        }
+        await ArkTransaction.setupNetwork(token);
 
         const senderPublicKey: string = ArkTransaction.getPublicKeyFromSeed(seed);
         const senderWallet: string = ArkTransaction.getAddressFromPublicKey(
@@ -78,6 +70,19 @@ export class ArkTransaction {
         }
 
         return transaction.getStruct();
+    }
+
+    private static async setupNetwork(token: string) {
+        const networkConfig: Interfaces.INetworkConfig = await Network.getNetworkConfig(token);
+        if (networkConfig !== null) {
+            Managers.configManager.setConfig(networkConfig);
+        }
+
+        let height: number = await Network.getCurrentHeight(token);
+        if (height === null) {
+            height = 1;
+        }
+        Managers.configManager.setHeight(height);
     }
 
     /**
