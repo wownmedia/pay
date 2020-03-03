@@ -158,11 +158,11 @@ export class ArkWallet {
             nonce
         );
 
+        logger.info(`TX: ${JSON.stringify(transaction)}`);
+
         if(transaction.nonce.isGreaterThan(1)) {
             nonce = parseInt(transaction.nonce.toString(), 10);
         }
-
-        logger.info(`TX Generated: ${JSON.stringify(transaction)}`);
 
         const transactions: Interfaces.ITransactionData[] = [];
         transactions.push(transaction);
