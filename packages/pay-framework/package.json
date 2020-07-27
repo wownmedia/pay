@@ -27,33 +27,34 @@
         "test:debug": "cross-env CORE_ENV=test node --inspect-brk ../../node_modules/.bin/jest --runInBand",
         "test:watch": "cross-env CORE_ENV=test jest --runInBand --watch",
         "test:watch:all": "cross-env CORE_ENV=test jest --runInBand --watchAll",
-        "updates": "../../node_modules/npm-check-updates/bin/npm-check-updates"
+        "updates": "ncu",
+        "update": "ncu -u"
     },
     "jest": {
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.6.1",
+        "@arkecosystem/crypto": "^2.6.49",
         "axios": "^0.19.2",
         "bignumber.js": "^9.0.0",
         "bip39": "^3.0.2",
         "coingecko-api": "^1.0.10",
         "env-paths": "^2.2.0",
-        "joi": "^14.3.1",
-        "moment": "^2.24.0",
-        "pg": "^7.18.1",
-        "pino": "^5.16.0",
-        "pino-pretty": "^3.5.0",
-        "snoowrap": "^1.20.1",
+        "joi": "^17.1.1",
+        "moment": "^2.27.0",
+        "pg": "^8.3.0",
+        "pino": "^6.4.1",
+        "pino-pretty": "^4.1.0",
+        "snoowrap": "^1.21.0",
         "twit": "^2.2.11",
         "twitter": "^1.7.1"
     },
     "devDependencies": {
         "@types/joi": "^14.3.4",
-        "@types/pg": "^7.14.1",
-        "@types/pino": "^5.20.0",
+        "@types/pg": "^7.14.4",
+        "@types/pino": "^6.3.0",
         "jest-extended": "^0.11.5",
-        "joi": "^14.3.1"
+        "joi": "^17.1.1"
     },
     "engines": {
         "node": ">=10.x"

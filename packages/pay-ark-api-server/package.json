@@ -31,13 +31,14 @@
         "test:debug": "cross-env CORE_ENV=test node --inspect-brk ../../node_modules/.bin/jest --runInBand",
         "test:watch": "cross-env CORE_ENV=test jest --runInBand --watch",
         "test:watch:all": "cross-env CORE_ENV=test jest --runInBand --watchAll",
-        "updates": "../../node_modules/npm-check-updates/bin/npm-check-updates"
+        "updates": "ncu",
+        "update": "ncu -u"
     },
     "jest": {
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.6.1",
+        "@arkecosystem/crypto": "^2.6.49",
         "@cryptology.hk/pay-framework": "^2.6.2",
         "bignumber.js": "^9.0.0",
         "env-paths": "^2.2.0",
@@ -46,7 +47,7 @@
     "devDependencies": {
         "@types/joi": "^14.3.4",
         "jest-extended": "^0.11.5",
-        "joi": "^14.3.1"
+        "joi": "^17.1.1"
     },
     "engines": {
         "node": ">=10.x"
