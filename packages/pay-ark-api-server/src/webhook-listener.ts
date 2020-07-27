@@ -327,6 +327,7 @@ export class WebhookListener {
                 const transfers: Interfaces.TransactionResponse[] = await Services.Network.broadcastTransactions(
                     transactions,
                     "ARK",
+                    0
                 );
 
                 // Check if we have an accepted transaction
@@ -501,7 +502,7 @@ export class WebhookListener {
         );
         const replyTransactions: any[] = [];
         replyTransactions.push(replyTransaction);
-        await Services.Network.broadcastTransactions(replyTransactions, "ARK");
+        await Services.Network.broadcastTransactions(replyTransactions, "ARK", 0);
     }
 
     /**

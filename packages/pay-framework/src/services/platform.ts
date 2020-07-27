@@ -252,6 +252,7 @@ export class Platform {
             }
 
             const redditUser: any = await this.reddit.getUser(username).getTrophies();
+            logger.info(`Reddit User: ${username} | ${JSON.stringify(redditUser)}`);
             return redditUser && redditUser.hasOwnProperty("trophies");
         } catch (e) {
             logger.error(e.message);

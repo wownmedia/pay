@@ -11,6 +11,7 @@ export interface Command {
     smallFooter?: boolean;
     token?: string;
     id?: string;
+    nonce?: number;
 }
 
 export interface Transfer {
@@ -62,6 +63,7 @@ export interface Reply {
     replyComment?: string;
     data?: string;
     error?: string;
+    nonce?: number;
 }
 
 export interface Username {
@@ -123,6 +125,7 @@ export interface APITransaction {
 export interface TransactionResponse {
     node: Node;
     response: ApiResponse;
+    nonce: number;
 }
 
 export interface Wallet {

@@ -70,7 +70,9 @@ export class PlatformReddit {
             clientSecret: redditConfiguration.hasOwnProperty("clientSecret") ? redditConfiguration.clientSecret : null,
             username: redditConfiguration.hasOwnProperty("username") ? redditConfiguration.username : null,
             password: redditConfiguration.hasOwnProperty("password") ? redditConfiguration.password : null,
-            requestDelay: 3000,
+            requestDelay: 5000,
+            requestTimeout: 50000,
+            maxRetryAttempts: 10,
             continueAfterRatelimitError: true,
             networks: redditConfiguration.hasOwnProperty("networks") ? redditConfiguration.networks : ["ARK"],
         };
@@ -181,6 +183,8 @@ export class PlatformReddit {
 
             const parameters: any = {
                 requestDelay: this.redditConfig.requestDelay,
+                requestTimeout: this.redditConfig.requestTimeout,
+                maxRetryAttempts: this.redditConfig.maxRetryAttempts,
                 continueAfterRatelimitError: this.redditConfig.continueAfterRatelimitError,
             };
             this.platformConfig.config(parameters);
@@ -225,10 +229,12 @@ export class PlatformReddit {
                     }
 
                     // Reply to them commands baby
+                    let nonce: number = 0;
                     for (const commandIndex in commands) {
                         if (commands[commandIndex]) {
                             try {
                                 const command: Interfaces.Command = commands[commandIndex];
+                                command.nonce = nonce;
 
                                 // check receiver
                                 if (!(await this.checkReceiver(command))) {
@@ -237,52 +243,72 @@ export class PlatformReddit {
 
                                 // Execute the command
                                 const reply: Interfaces.Reply = await Services.Commander.executeCommand(command);
+                                if (reply.nonce) {
+                                    nonce = reply.nonce;
+                                }
+
                                 const subject: string = `ArkPay: ${command.command}`;
 
                                 // Reply to the Sender of the command
-                                if (reply.hasOwnProperty("directMessageSender")) {
-                                    Core.logger.info(
-                                        `Sending Direct Message to sender: ${command.commandSender.username} on reddit`,
-                                    );
-                                    await this.sendDirectMessage(
-                                        command.commandSender.username,
-                                        reply.directMessageSender,
-                                        subject,
-                                    );
+                                try {
+                                    if (reply.hasOwnProperty("directMessageSender")) {
+                                        Core.logger.info(
+                                            `Sending Direct Message to sender: ${command.commandSender.username} on reddit`,
+                                        );
+                                        await this.sendDirectMessage(
+                                            command.commandSender.username,
+                                            reply.directMessageSender,
+                                            subject,
+                                        );
+                                    }
+                                } catch (e) {
+                                    Core.logger.error(`Error sending to Sender: ${e.message}`);
                                 }
 
                                 // Reply to the receiver of the command
-                                if (reply.hasOwnProperty("directMessageReceiver")) {
-                                    let receiver: Interfaces.Username = command.commandReplyTo;
-                                    if (
-                                        command.hasOwnProperty("transfer") &&
-                                        command.transfer.hasOwnProperty("receiver")
-                                    ) {
-                                        receiver = command.transfer.receiver;
+                                try {
+                                    if (reply.hasOwnProperty("directMessageReceiver")) {
+                                        let receiver: Interfaces.Username = command.commandReplyTo;
+                                        if (
+                                            command.hasOwnProperty("transfer") &&
+                                            command.transfer.hasOwnProperty("receiver")
+                                        ) {
+                                            receiver = command.transfer.receiver;
+                                        }
+                                        await this.platform.notifyReceiver(receiver, reply);
                                     }
-                                    await this.platform.notifyReceiver(receiver, reply);
+                                } catch (e) {
+                                    Core.logger.error(`Error sending to Receiver: ${e.message}`);
                                 }
 
                                 // Reply to a Merchant (that's you Justin)
-                                if (reply.hasOwnProperty("directMessageMerchant")) {
-                                    const merchant: Interfaces.Username = PlatformReddit.getMerchantUsername(
-                                        command.command,
-                                    );
-                                    // todo check platform
-                                    Core.logger.info(
-                                        `Sending Direct Message to merchant: ${merchant.username} on ${merchant.platform}`,
-                                    );
-                                    await this.sendDirectMessage(
-                                        merchant.username,
-                                        reply.directMessageMerchant,
-                                        subject,
-                                    );
+                                try {
+                                    if (reply.hasOwnProperty("directMessageMerchant")) {
+                                        const merchant: Interfaces.Username = PlatformReddit.getMerchantUsername(
+                                            command.command,
+                                        );
+                                        // todo check platform
+                                        Core.logger.info(
+                                            `Sending Direct Message to merchant: ${merchant.username} on ${merchant.platform}`,
+                                        );
+                                        await this.sendDirectMessage(
+                                            merchant.username,
+                                            reply.directMessageMerchant,
+                                            subject,
+                                        );
+                                    }
+                                } catch (e) {
+                                    Core.logger.error(`Error sending to Merchant: ${e.message}`);
                                 }
 
                                 // Reply to a Post or Comment
-                                if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
-                                    Core.logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
-                                    await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
+                                try {
+                                    if (reply.hasOwnProperty("replyComment") && inbox[inboxIndex].was_comment) {
+                                        Core.logger.info(`Sending Reply to comment: ${inbox[inboxIndex].id} on reddit`);
+                                        await this.postCommentReply(inbox[inboxIndex].id, reply.replyComment);
+                                    }
+                                } catch (e) {
+                                    Core.logger.error(`Error sending to Comment: ${e.message}`);
                                 }
                             } catch (e) {
                                 Core.logger.error(e.message);

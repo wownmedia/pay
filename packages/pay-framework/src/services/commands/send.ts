@@ -15,6 +15,7 @@ import { Currency } from "../currency/";
 import { Messenger } from "../messenger";
 import { Storage } from "../storage/";
 import { User } from "../user";
+import { Network } from "../network";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 
@@ -40,6 +41,7 @@ export class Send {
      * @param vendorField {string}  The text to place in the vendor field
      * @param smallFooter {boolean} True when user requested a small footer instead of a regular footer
      * @param isComment {boolean}   True if the SEND comes from a comment instead of a DM
+     * @param nonce
      * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
      */
     public static async transfer(
@@ -47,6 +49,7 @@ export class Send {
         vendorField: string,
         smallFooter: boolean = true,
         isComment?: boolean,
+        nonce?: number
     ): Promise<Reply> {
         try {
             // Check if not sending to self
@@ -82,7 +85,10 @@ export class Send {
             }
 
             // and..... send
-            return await this.sendTransaction(transfer, vendorField, smallFooter);
+            if(!nonce) {
+                nonce = 0;
+            }
+            return await this.sendTransaction(transfer, vendorField, smallFooter, nonce);
         } catch (e) {
             logger.warn(e.message);
             const reply: Reply = Messenger.errorMessage();
@@ -96,6 +102,7 @@ export class Send {
      * @param transfer {Transfer}   A parsed transfer
      * @param vendorField {string}  The text to add to the vendor field
      * @param smallFooter {boolean} True when user requested a small footer instead of a regular footer
+     * @param nonce
      * @returns {Promise<Reply>} A Reply-object containing messages to send to Sender, Receiver and optionally a Comment reply
      * @protected
      */
@@ -103,6 +110,7 @@ export class Send {
         transfer: Transfer,
         vendorField: string,
         smallFooter: boolean,
+        nonce: number
     ): Promise<Reply> {
         const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(transfer.token);
         const walletSender: Wallet = await Storage.getWallet(
@@ -130,6 +138,7 @@ export class Send {
             transfer.arkToshiValue,
             vendorField,
             token,
+            nonce
         );
 
         const transactionId: string = this.processTransaction(response);
@@ -145,6 +154,7 @@ export class Send {
             smallFooter,
         );
         reply.data = transactionId;
+        reply.nonce = response[response.length -1].nonce;
         return reply;
     }
 
