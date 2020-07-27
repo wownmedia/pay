@@ -72,7 +72,9 @@ export class Withdraw extends Send {
      * @protected
      */
     protected static async sendTransaction(transfer: Transfer, vendorField: string): Promise<Reply> {
+        logger.info(`getting networkVersion for: ${JSON.stringify(transfer)}`);
         const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(transfer.token);
+        logger.info(`networkVersion: ${networkVersion}`);
         const walletSender: Wallet = await Storage.getWallet(
             transfer.sender.username,
             transfer.sender.platform,
