@@ -1,6 +1,6 @@
 {
     "name": "@cryptology.hk/pay-reddit",
-    "version": "2.6.2",
+    "version": "2.6.3",
     "description": "Interface with the Reddit platform for ARK Pay.",
     "license": "MIT",
     "author": "Marc Schot",
@@ -38,7 +38,7 @@
         "preset": "../../jest-preset.json"
     },
     "dependencies": {
-        "@cryptology.hk/pay-framework": "^2.6.2",
+        "@cryptology.hk/pay-framework": "^2.6.3",
         "bignumber.js": "^9.0.0",
         "joi": "^17.1.1",
         "snoowrap": "^1.21.0",
