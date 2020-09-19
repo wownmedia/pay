@@ -1,9 +1,7 @@
 import { Identities, Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
-import { MultiPaymentBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/multi-payment";
 import BigNumber from "bignumber.js";
 import moment from "moment";
-import { config, logger } from "../core";
-import { Receiver } from "../interfaces";
+import { config } from "../core";
 import { Network } from "./network";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
@@ -45,6 +43,10 @@ export class ArkTransaction {
         }
         nonce += 1;
 
+        if(arkEcosystemConfig[token].noVendorField) {
+            vendorField="";
+        }
+
         let transaction = Transactions.BuilderFactory.transfer()
             .amount(amount.toFixed(0))
             .recipientId(recipientId)
@@ -83,75 +85,6 @@ export class ArkTransaction {
             height = 1;
         }
         Managers.configManager.setHeight(height);
-    }
-
-    /**
-     *
-     * @param receivers
-     * @param timestamp
-     * @param vendorField
-     * @param seed
-     * @param secondPassphrase
-     * @param token
-     * @param fee
-     */
-    public static async createMultiPayment(
-        receivers: Receiver[],
-        timestamp: number,
-        vendorField: string,
-        seed: string,
-        token: string,
-        fee: BigNumber,
-        secondPassphrase?: string,
-    ): Promise<Interfaces.ITransactionData[]> {
-        const transactions: Interfaces.ITransactionData[] = [];
-
-        const senderPublicKey: string = ArkTransaction.getPublicKeyFromSeed(seed);
-        const senderWallet: string = ArkTransaction.getAddressFromPublicKey(
-            senderPublicKey,
-            arkEcosystemConfig[token].networkVersion,
-        );
-        let nonce: number = await Network.getNonceForWallet(senderWallet, token);
-
-        for (let i = 0; i < receivers.length; i += 120) {
-            const chunk: Receiver[] = receivers.slice(i, i + 120);
-
-            if (chunk.length === 1) {
-                const receiver: Receiver = {
-                    wallet: chunk[0].wallet,
-                    amount: chunk[0].amount,
-                };
-                const transaction: Interfaces.ITransactionData = await ArkTransaction.generateTransferTransaction(
-                    chunk[0].amount,
-                    chunk[0].wallet,
-                    vendorField,
-                    fee,
-                    seed,
-                    token,
-                );
-                transactions.push(transaction);
-            } else {
-                nonce += 1;
-                let transaction: MultiPaymentBuilder = Transactions.BuilderFactory.multiPayment()
-                    .vendorField(vendorField)
-                    .fee(fee.toFixed(0))
-                    .nonce(nonce.toString());
-                for (const receiver of chunk) {
-                    transaction.addPayment(receiver.wallet, receiver.amount.toFixed(0));
-                }
-                if (timestamp) {
-                    transaction.data.timestamp = timestamp;
-                }
-
-                transaction = transaction.sign(seed);
-
-                if (secondPassphrase !== null) {
-                    transaction = transaction.secondSign(secondPassphrase);
-                }
-                transactions.push(transaction.getStruct());
-            }
-        }
-        return transactions;
     }
 
     /**
