@@ -15,7 +15,6 @@ import { Currency } from "../currency/";
 import { Messenger } from "../messenger";
 import { Storage } from "../storage/";
 import { User } from "../user";
-import { Network } from "../network";
 
 const arkEcosystemConfig = config.get("arkEcosystem");
 
@@ -49,7 +48,7 @@ export class Send {
         vendorField: string,
         smallFooter: boolean = true,
         isComment?: boolean,
-        nonce?: number
+        nonce?: number,
     ): Promise<Reply> {
         try {
             // Check if not sending to self
@@ -85,7 +84,7 @@ export class Send {
             }
 
             // and..... send
-            if(!nonce) {
+            if (!nonce) {
                 nonce = 0;
             }
             return await this.sendTransaction(transfer, vendorField, smallFooter, nonce);
@@ -110,7 +109,7 @@ export class Send {
         transfer: Transfer,
         vendorField: string,
         smallFooter: boolean,
-        nonce: number
+        nonce: number,
     ): Promise<Reply> {
         const networkVersion: number = ArkWallet.getArkEcosystemNetworkVersionForToken(transfer.token);
         const walletSender: Wallet = await Storage.getWallet(
@@ -138,7 +137,7 @@ export class Send {
             transfer.arkToshiValue,
             vendorField,
             token,
-            nonce
+            nonce,
         );
 
         const transactionId: string = this.processTransaction(response);
@@ -154,7 +153,7 @@ export class Send {
             smallFooter,
         );
         reply.data = transactionId;
-        reply.nonce = response[response.length -1].nonce;
+        reply.nonce = response[response.length - 1].nonce;
         return reply;
     }
 

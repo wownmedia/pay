@@ -13,7 +13,11 @@ export class Network {
      * @param nonce
      * @returns {Promise<TransactionResponse[]>} An array with response messages per Node the transactions were broadcasted to.
      */
-    public static async broadcastTransactions(transactions: any[], token: string, nonce: number): Promise<TransactionResponse[]> {
+    public static async broadcastTransactions(
+        transactions: any[],
+        token: string,
+        nonce: number,
+    ): Promise<TransactionResponse[]> {
         const nodes: Node[] = this.loadNodes(token);
         const results: TransactionResponse[] = [];
         for (const item in nodes) {
@@ -72,9 +76,7 @@ export class Network {
 
     public static async getNetworkConfig(token: string): Promise<Interfaces.INetworkConfig> {
         try {
-            const config: APIResults = await this.getFromAPI(
-                "/api/node/configuration/crypto", token
-            );
+            const config: APIResults = await this.getFromAPI("/api/node/configuration/crypto", token);
             return config.data;
         } catch (e) {
             return null;

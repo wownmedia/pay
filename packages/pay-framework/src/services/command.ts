@@ -71,7 +71,7 @@ export class Commander {
                     vendorField,
                     command.smallFooter,
                     command.hasOwnProperty("id"),
-                    nonce
+                    nonce,
                 );
             case "WITHDRAW":
                 // Check if the user requested WITHDRAW help:

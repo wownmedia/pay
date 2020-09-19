@@ -140,7 +140,7 @@ export class ArkWallet {
         amount: BigNumber,
         vendorField: string,
         token: string,
-        nonce?: number
+        nonce?: number,
     ): Promise<TransactionResponse[]> {
         if (!nonce) {
             nonce = 0;
@@ -155,12 +155,12 @@ export class ArkWallet {
             fee,
             seed,
             token,
-            nonce
+            nonce,
         );
 
         logger.info(`TX: ${JSON.stringify(transaction)}`);
 
-        if(transaction.nonce.isGreaterThan(1)) {
+        if (transaction.nonce.isGreaterThan(1)) {
             nonce = parseInt(transaction.nonce.toString(), 10);
         }
 

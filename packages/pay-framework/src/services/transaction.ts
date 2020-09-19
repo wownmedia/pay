@@ -43,8 +43,8 @@ export class ArkTransaction {
         }
         nonce += 1;
 
-        if(arkEcosystemConfig[token].noVendorField) {
-            vendorField="";
+        if (arkEcosystemConfig[token].noVendorField) {
+            vendorField = "";
         }
 
         let transaction = Transactions.BuilderFactory.transfer()
